@@ -58,7 +58,7 @@
           v-bind="props"
           class="nav-item"
           prepend-icon="mdi-receipt-text-outline"
-          title="INV Solusi Nusa Segara"
+          title="INV Duta Raya Marine"
         />
       </template>
 

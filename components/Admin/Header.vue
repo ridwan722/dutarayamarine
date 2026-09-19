@@ -1,4 +1,3 @@
-```vue
 <script setup>
 import { ref, computed, watchEffect } from "vue";
 import { useDisplay } from "vuetify";
@@ -54,7 +53,7 @@ const logout = async () => {
       <div class="header-left">
         <div class="logo-box">
           <img
-            src="/public/Logo-SNS.png"
+            src="/public/Logo-DRM.png"
             alt="PT. DUTA RAYA MARINE"
             class="logo-img"
           />
@@ -78,7 +77,7 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          Update Version. 1.7
+          Update Version. 1.0
         </v-chip>
 
         <v-btn
@@ -267,8 +266,8 @@ const logout = async () => {
 }
 
 .logo-img {
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 50px;
 
   object-fit: contain;
 }

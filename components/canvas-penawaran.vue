@@ -67,13 +67,13 @@
   <div>
     <div id="offer-to-print" class="offer-card">
       <div class="watermark">
-        <img src="/Logo-SNS.png" alt="Logo Watermark" />
+        <img src="/Logo-DRM.png" alt="Logo Watermark" />
       </div>
 
       <div class="header-section">
         <div class="header-brand">
           <div class="logo-wrapper">
-            <img src="/Logo-SNS.png" alt="Logo Header" />
+            <img src="/Logo-DRM.png" alt="Logo Header" />
           </div>
           <div class="company-titles">
             <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
@@ -701,7 +701,7 @@ const handlePrint = () => {
   doc.write(`
     <html>
       <head>
-        <title>Penawaran_${props.detailpenawaran?.no_penawaran || "SNS"}</title>
+        <title>Penawaran_${props.detailpenawaran?.no_penawaran || "DRM"}</title>
         <style>
           ${styles} 
 
@@ -843,8 +843,8 @@ const handleSavePdf = async () => {
       heightLeft -= pageHeight;
     }
 
-    const number = props.detailpenawaran?.no_penawaran || "SNS";
-    const nama = props.detailpenawaran?.pic || "SNS";
+    const number = props.detailpenawaran?.no_penawaran || "DRM";
+    const nama = props.detailpenawaran?.pic || "DRM";
     const subject = props.detailpenawaran?.perihal || "";
     const nomorQT = number.match(/\d{5}$/)?.[0] || "00000";
 

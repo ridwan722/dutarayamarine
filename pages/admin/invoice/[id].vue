@@ -444,7 +444,7 @@
           <div class="d-flex justify-space-between align-start mb-4">
             <div>
               <img
-                src="/public/Logo-SNS.png"
+                src="/public/Logo-DRM.png"
                 class="logo-header"
                 alt="Logo SNS"
               />

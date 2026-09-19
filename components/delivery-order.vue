@@ -389,7 +389,7 @@ const handleSavePdf = async () => {
         <div class="header-section text-center mb-6">
           <div class="d-flex align-center justify-center mb-2">
             <img
-              src="/Logo-SNS.png"
+              src="/Logo-DRM.png"
               class="logo-header mr-3"
               alt="Logo Perusahaan"
             />
