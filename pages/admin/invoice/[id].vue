@@ -451,11 +451,11 @@
 
               <div class="company-address">
                 <strong>PT. DUTA RAYA MARINE</strong><br />
-                Ruko Dream Land Blok A No.05, Dreamland Square, Marina City,
+                Cipta Grand City G-8, Sagulung, Kota Batam, <br>
+
+Kepulauan Riau 29425
                 <br />
-                Tanjung Riau, Kec. Sekupang, Kota Batam 29425.
-                <br />
-                Hp. +62821 9998 8670
+                Hp. +62853 6201 8099
               </div>
             </div>
 
@@ -679,7 +679,7 @@
                       <tr>
                         <td>NAMA PENERIMA</td>
                         <td>:</td>
-                        <td>MUHAMMAD RIDWAN</td>
+                        <td>Leo Adiatmaja Sembiring</td>
                       </tr>
                     </tbody>
                   </table>
@@ -698,7 +698,7 @@
                 class="ml-11"
               ></v-img>
 
-              <strong>( Muhammad Ridwan )</strong>
+              <strong>( Leo Adiatmaja Sembiring )</strong>
             </div>
           </div>
         </v-card>

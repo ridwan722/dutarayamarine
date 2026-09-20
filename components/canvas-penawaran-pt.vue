@@ -16,7 +16,7 @@
           <p>Ruko Dream Land Blok A No.05,</p>
           <p>Dreamland Square, Marina City Tanjung Riau,</p>
           <p>Kec. Sekupang, Kota Batam 29425</p>
-          <p class="phone">Hp.+62 821 9998 8670</p>
+          <p class="phone">Hp.+62 853 6201 8099</p>
         </div>
       </div>
 

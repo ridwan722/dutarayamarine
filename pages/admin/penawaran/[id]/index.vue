@@ -258,27 +258,20 @@ async function opendialogaddpengeluaran() {
                 <v-icon start size="18">mdi-file-document-outline</v-icon>
                 Asli
               </v-tab>
-              <v-tab :value="1" class="tab-item">
+              <!-- <v-tab :value="1" class="tab-item">
                 <v-icon start size="18"
                   >mdi-file-document-multiple-outline</v-icon
                 >
                 PT Lain
-              </v-tab>
+              </v-tab> -->
             </v-tabs>
           </div>
 
-          <!-- CANVAS AREA WITH TAB WINDOW -->
-          <div class="paper-container">
-            <v-window v-model="activeTab">
-              <v-window-item :value="0">
-                <canvas-penawaran :detailpenawaran="detailpenawaran" />
-              </v-window-item>
 
-              <v-window-item :value="1">
-                <canvas-penawaran-pt :detailpenawaran="detailpenawaran" />
-              </v-window-item>
-            </v-window>
-          </div>
+                <canvas-penawaran :detailpenawaran="detailpenawaran" />
+
+
+
         </main>
       </div>
     </div>

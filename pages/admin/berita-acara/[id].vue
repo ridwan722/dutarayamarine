@@ -100,7 +100,7 @@
                       <path d="M30 35 C 50 45, 80 15, 120 30" stroke="black" stroke-width="1.5" fill="none"/>
                     </svg>
                   </div>
-                  <p class="text-body-1 font-weight-medium mb-0">Muhammad Ridwan</p>
+                  <p class="text-body-1 font-weight-medium mb-0">Leo Adiatmaja Sembiring</p>
                   <p class="text-body-2 text-grey-darken-1 mb-0">PT. DUTA RAYA MARINE</p>
                 </div>
               </v-col>

@@ -1183,7 +1183,7 @@ const isCurrentMonth = (dateString: string): boolean => {
             <span class="bank-title">REKENING OPERASIONAL</span>
           </div>
           <div class="bank-card-body">
-            <div class="holder-name">Muhammad Ridwan</div>
+            <div class="holder-name">Leo Adiatmaja Sembiring</div>
             <div class="account-number-group">
               <span class="acc-number">586-573-7332</span>
               <button class="btn-copy" @click="copyRekening">

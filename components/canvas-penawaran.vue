@@ -70,48 +70,37 @@
         <img src="/Logo-DRM.png" alt="Logo Watermark" />
       </div>
 
-      <div class="header-section">
-        <div class="header-brand">
+      <div class="letterhead">
+        <div class="header-section">
           <div class="logo-wrapper">
-            <img src="/Logo-DRM.png" alt="Logo Header" />
+            <img src="/logokopsurat.png" alt="Logo Header" />
           </div>
-          <div class="company-titles">
+
+          <div class="letterhead-info">
             <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
+            <p class="address-line">
+              Cipta Grand City G-8, Sagulung, Kota Batam, <br />
+              Kepulauan Riau 29425
+            </p>
+            <p class="phone-line">
+              E-mail: sales@dutarayamarine.com, HP : (+62) 853 6201 8099 <br />
+              Website: www.dutarayamarine.com
+            </p>
           </div>
+
+          <div class="header-spacer" aria-hidden="true"></div>
         </div>
 
-        <div class="header-contact">
-          <p class="address-line">
-            Ruko Dream Land Blok A No.05,<br />
-            Dreamland Square, Marina City Tanjung Riau, <br />Kec. Sekupang,
-            Kota Batam 29425
-          </p>
-          <p class="phone-line">Hp. +62821 9998 8670</p>
+        <div class="header-divider">
+          <div
+            class="accent-bar"
+            :style="{ backgroundColor: warnaBackgroundCustom }"
+          ></div>
+          <div class="secondary-bar"></div>
         </div>
-      </div>
-
-      <div class="header-divider">
-        <div
-          class="accent-bar"
-          :style="{ backgroundColor: warnaBackgroundCustom }"
-        ></div>
-        <div class="secondary-bar"></div>
       </div>
 
       <div class="content-body">
-        <div class="doc-meta-header">
-          <div
-            class="doc-badge"
-            :style="{ borderColor: warnaBackgroundCustom }"
-          ></div>
-          <div class="doc-date">
-            <span>Batam, </span>
-            <strong>{{
-              rubahtanggalpenawaran(props.detailpenawaran.tanggal_penawaran)
-            }}</strong>
-          </div>
-        </div>
-
         <div class="info-grid-card">
           <div class="grid-col">
             <div class="meta-row">
@@ -122,6 +111,17 @@
               }}</span>
             </div>
             <div class="meta-row">
+              <span class="lbl">{{ t.date }}</span>
+              <span class="sep">:</span>
+              <span class="val bold">
+  {{
+    props.detailpenawaran.tanggal_penawaran
+      ? moment(props.detailpenawaran.tanggal_penawaran).format("DD-MM-YYYY")
+      : "-"
+  }}
+</span>
+            </div>
+            <div class="meta-row">
               <span class="lbl">{{ t.to }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
@@ -130,24 +130,9 @@
             </div>
 
             <div class="meta-row">
-              <span class="lbl">{{ t.address }}</span>
-              <span class="sep">:</span>
-              <span class="val bold">{{
-                props.detailpenawaran.alamat_perusahaan || "-"
-              }}</span>
-            </div>
-            <div class="meta-row">
               <span class="lbl">{{ t.attn }}</span>
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.pic || "-" }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="lbl">{{ t.phone }}</span>
-              <span class="sep">:</span>
-              <span class="val">{{
-                props.detailpenawaran.no_telp || "-"
-              }}</span>
             </div>
 
             <div class="meta-row">
@@ -155,8 +140,7 @@
               <span class="sep">:</span>
               <span class="val">{{ props.detailpenawaran.email || "-" }}</span>
             </div>
-          </div>
-          <div class="grid-col">
+
             <div class="meta-row">
               <span class="lbl">{{ t.subject }}</span>
               <span class="sep">:</span>
@@ -164,35 +148,32 @@
                 props.detailpenawaran.perihal || "-"
               }}</span>
             </div>
+
             <div class="meta-row">
-              <span class="lbl">{{ t.vessel }}</span>
+              <span class="lbl">{{ t.address }}</span>
               <span class="sep">:</span>
-              <span class="val">{{ props.detailpenawaran.vessel }}</span>
+              <span class="val bold-navy">{{
+                props.detailpenawaran.alamat_perusahaan || "-"
+              }}</span>
             </div>
 
             <div class="meta-row">
-              <span class="lbl">{{ t.location }}</span>
+              <span class="lbl">{{ t.vessel }}</span>
               <span class="sep">:</span>
-              <span class="val">Batam</span>
+              <span class="val bold-navy">{{
+                props.detailpenawaran.vessel || "-"
+              }}</span>
             </div>
           </div>
         </div>
 
         <div class="text-salutation">
-          <p class="salutation-title">{{ t.salutationTitle }}</p>
+          <!-- <p class="salutation-title">{{ t.salutationTitle }}</p> -->
           <p class="salutation-body" v-if="lang === 'id'">
-            Sehubungan dengan kebutuhan operasional perusahaan Bapak/Ibu,
-            bersama surat ini kami mengajukan penawaran harga untuk
-            <strong>{{ props.detailpenawaran.perihal }}</strong> kepada
-            <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong> dengan
-            rincian sebagai berikut:
+            Bersama ini kami sampaikan penawaran harga sebagai berikut:
           </p>
           <p class="salutation-body" v-else>
-            In response to your company's operational requirements, we are
-            pleased to submit our quotation for
-            <strong>{{ props.detailpenawaran.perihal }}</strong> to
-            <strong>{{ props.detailpenawaran.nama_perusahaan }}</strong
-            >, with the following details:
+            We are pleased to submit our quotation as follows:
           </p>
         </div>
 
@@ -230,7 +211,7 @@
                   class="text-center print-only-cell"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  NO
+                  SN
                 </th>
 
                 <th
@@ -240,7 +221,7 @@
                 >
                   {{ t.thDescription }}
                 </th>
-                 <!-- <th
+                <!-- <th
                   width="60"
                   class="text-center no-print"
 
@@ -273,7 +254,7 @@
                   class="text-right"
                   :style="{ color: warnaTeksHeader }"
                 >
-                  Total Amount
+                  Total Price
                 </th>
               </tr>
             </thead>
@@ -298,7 +279,7 @@
                 >
                   {{ item.nama }}
                 </td>
-                 <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
+                <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
                 <td class="text-center">{{ item.qty }}</td>
                 <td class="text-center text-slate-500">{{ item.uom }}</td>
                 <td class="text-right text-slate-600">
@@ -311,21 +292,6 @@
             </tbody>
 
             <tfoot v-if="showTotal">
-              <tr class="summary-row subtotal-row">
-                <td colspan="5" class="text-right text-slate-600">
-                  {{ t.subtotal }}
-                </td>
-                <td class="text-right text-slate-800">
-                  Rp
-                  {{
-                    rupiah(
-                      props.detailpenawaran.subtotal_penawaran ||
-                        props.detailpenawaran.grand_total_penawaran,
-                    )
-                  }}
-                </td>
-              </tr>
-
               <tr class="summary-row grand-total-row">
                 <td colspan="5" class="text-right font-weight-bold text-navy">
                   {{ t.grandTotal }}
@@ -366,11 +332,7 @@
           </div>
         </div>
 
-        <p class="closing-paragraph" v-if="showTable">
-          {{ t.closingText }}
-        </p>
-
-        <div class="closing-paragraph" v-if="showTable">
+        <div class="closing-paragraph" v-if="(detailpenawaran.termCondition?.length ?? 0) > 0" >
           <p><strong>TERMS &amp; CONDITIONS:</strong></p>
           <ul class="ml-3" style="list-style: none; padding-left: 0">
             <li
@@ -389,7 +351,7 @@
             <div class="sig-img-container">
               <img src="/ttd_ridwan.png" alt="Signature" class="sig-image" />
             </div>
-            <p class="sig-person-name">Muhammad Ridwan</p>
+            <p class="sig-person-name">Leo Adiatmaja Sembiring</p>
           </div>
 
           <div class="sig-block">
@@ -406,7 +368,9 @@
         </div>
       </div>
 
-      <div class="footer-wave"></div>
+      <div class="page-footer" aria-hidden="true">
+        <div class="footer-line"></div>
+      </div>
     </div>
 
     <div
@@ -443,7 +407,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import type { penawaranM } from "~/types/penawaranModel";
-
+import moment from "moment";
 const props = defineProps<{
   detailpenawaran: penawaranM;
 }>();
@@ -467,6 +431,7 @@ const t = computed(() => {
   if (lang.value === "id") {
     return {
       refNo: "No. Penawaran",
+      date: "Tanggal",
       to: "Kepada",
       attn: "Up.",
       phone: "No. Telp",
@@ -492,6 +457,7 @@ const t = computed(() => {
   }
   return {
     refNo: "Quotation Ref No",
+    date: "Date",
     to: "To",
     attn: "Attn",
     phone: "Phone",
@@ -501,7 +467,7 @@ const t = computed(() => {
     subject: "Subject",
     vessel: "Vessel",
     salutationTitle: "Dear Sir/Madam,",
-    thDescription: "DESCRIPTION / KETERANGAN",
+    thDescription: "DESCRIPTION",
     thQty: "QTY",
     thUom: "UOM",
     thUnitPrice: "UNIT/PRICE",
@@ -673,128 +639,122 @@ const formatTanggal = (tanggal: string) => {
 const rubahtanggalpenawaran = (tgl: any) => formatTanggal(tgl);
 const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
 
-const handlePrint = () => {
-  const printContents = document.getElementById("offer-to-print")?.innerHTML;
-  if (!printContents) return;
+const handlePrint = async () => {
+  const offerElement = document.getElementById("offer-to-print");
+  const letterheadElement = offerElement?.querySelector(".letterhead");
+  const contentElement = offerElement?.querySelector(".content-body");
+  const footerElement = offerElement?.querySelector(".page-footer");
+  if (!letterheadElement || !contentElement || !footerElement) return;
+
+  const { default: html2canvas } = await import("html2canvas");
+  const canvasOptions = {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    logging: false,
+    onclone: (clonedDocument: Document) => {
+      clonedDocument
+        .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+        .forEach((element) => ((element as HTMLElement).style.display = "none"));
+      clonedDocument
+        .querySelectorAll(".print-only-cell")
+        .forEach((element) => ((element as HTMLElement).style.display = "table-cell"));
+    },
+  };
+  const [letterheadCanvas, contentCanvas, footerCanvas] = await Promise.all([
+    html2canvas(letterheadElement as HTMLElement, canvasOptions),
+    html2canvas(contentElement as HTMLElement, canvasOptions),
+    html2canvas(footerElement as HTMLElement, canvasOptions),
+  ]);
+
+  const pageWidth = 1240;
+  const pageHeight = 1754;
+  const sideMargin = 80;
+  const topMargin = 48;
+  const footerMargin = 48;
+  const contentWidth = pageWidth - sideMargin * 2;
+  const letterheadHeight = Math.round(
+    (letterheadCanvas.height * contentWidth) / letterheadCanvas.width,
+  );
+  const footerHeight = Math.round(
+    (footerCanvas.height * contentWidth) / footerCanvas.width,
+  );
+  const contentTop = topMargin + letterheadHeight + 36;
+  const contentBottom = pageHeight - footerMargin - footerHeight - 30;
+  const sourceSliceHeight = Math.floor(
+    ((contentBottom - contentTop) * contentCanvas.width) / contentWidth,
+  );
+
+  const pages: string[] = [];
+  for (let sourceY = 0; sourceY < contentCanvas.height; sourceY += sourceSliceHeight) {
+    const sliceHeight = Math.min(
+      sourceSliceHeight,
+      contentCanvas.height - sourceY,
+    );
+    const pageCanvas = document.createElement("canvas");
+    pageCanvas.width = pageWidth;
+    pageCanvas.height = pageHeight;
+    const context = pageCanvas.getContext("2d");
+    if (!context) return;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, pageWidth, pageHeight);
+    context.drawImage(
+      letterheadCanvas,
+      sideMargin,
+      topMargin,
+      contentWidth,
+      letterheadHeight,
+    );
+    context.drawImage(
+      footerCanvas,
+      sideMargin,
+      pageHeight - footerMargin - footerHeight,
+      contentWidth,
+      footerHeight,
+    );
+    context.drawImage(
+      contentCanvas,
+      0,
+      sourceY,
+      contentCanvas.width,
+      sliceHeight,
+      sideMargin,
+      contentTop,
+      contentWidth,
+      (sliceHeight * contentWidth) / contentCanvas.width,
+    );
+    pages.push(pageCanvas.toDataURL("image/png"));
+  }
 
   const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
+  iframe.style.cssText = "position:fixed; width:0; height:0; border:0;";
   document.body.appendChild(iframe);
-
   const doc = iframe.contentWindow?.document;
   if (!doc) return;
 
-  let styles = "";
-  document.querySelectorAll("link[rel='stylesheet'], style").forEach((node) => {
-    if (node.tagName === "LINK") {
-      styles += `@import url('${(node as HTMLLinkElement).href}');`;
-    } else {
-      styles += node.innerHTML;
-    }
-  });
-
   doc.write(`
-    <html>
-      <head>
-        <title>Penawaran_${props.detailpenawaran?.no_penawaran || "DRM"}</title>
-        <style>
-          ${styles} 
-
-          @media print {
-            @page {
-              size: A4;
-              margin: 0mm;
-            }
-
-            html, body {
-              font-family: 'Segoe UI', Arial, sans-serif;
-              height: 100%;
-              margin: 0 !important;
-              padding: 0 !important;
-              background: #fff !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-
-            .offer-card {
-              box-shadow: none !important;
-              width: 210mm !important;
-              height: 297mm !important;
-              margin: 0 !important;
-              padding: 12mm 16mm 20mm 16mm !important;
-              box-sizing: border-box !important;
-              position: relative !important;
-              overflow: hidden !important;
-              page-break-after: avoid;
-              page-break-before: avoid;
-            }
-
-            .no-print, .no-print-cell, .drag-icon {
-              display: none !important;
-            }
-
-            .print-only-cell {
-              display: table-cell !important;
-            }
-
-            .footer-wave {
-              position: absolute !important;
-              bottom: 0 !important;
-              left: 0 !important;
-              width: 100% !important;
-              height: 130px !important;
-              z-index: 0 !important;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="offer-card">
-          ${printContents}
-        </div>
-      </body>
-    </html>
+    <html><head><title>Penawaran_${props.detailpenawaran?.no_penawaran || "DRM"}</title>
+    <style>@page { size: A4; margin: 0; } body { margin: 0; } .page { display: block; width: 210mm; height: 297mm; break-after: page; }</style>
+    </head><body>${pages.map((page) => `<img class="page" src="${page}" />`).join("")}</body></html>
   `);
-
   doc.close();
 
-  const images = doc.getElementsByTagName("img");
-  const printAction = () => {
-    setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }, 600);
-  };
-
-  if (images.length > 0) {
-    let loaded = 0;
-    for (let i = 0; i < images.length; i++) {
-      images[i].onload = () => {
-        loaded++;
-        if (loaded === images.length) printAction();
-      };
-      images[i].onerror = () => {
-        loaded++;
-        if (loaded === images.length) printAction();
-      };
-    }
-  } else {
-    iframe.onload = printAction;
-    printAction();
-  }
+  setTimeout(() => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  }, 600);
 };
 
 const handleSavePdf = async () => {
   const offerElement = document.getElementById("offer-to-print");
   if (!offerElement || isSavingPdf.value) return;
+
+  const letterheadElement = offerElement.querySelector(".letterhead");
+  const contentElement = offerElement.querySelector(".content-body");
+  const footerElement = offerElement.querySelector(".page-footer");
+  if (!letterheadElement || !contentElement || !footerElement) return;
 
   isSavingPdf.value = true;
 
@@ -803,12 +763,12 @@ const handleSavePdf = async () => {
       import("html2canvas"),
       import("jspdf"),
     ]);
-    const canvas = await html2canvas(offerElement, {
+    const canvasOptions = {
       scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff",
       logging: false,
-      onclone: (clonedDocument) => {
+      onclone: (clonedDocument: Document) => {
         clonedDocument
           .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
           .forEach((element) => {
@@ -820,7 +780,12 @@ const handleSavePdf = async () => {
             (element as HTMLElement).style.display = "table-cell";
           });
       },
-    });
+    };
+    const [letterheadCanvas, contentCanvas, footerCanvas] = await Promise.all([
+      html2canvas(letterheadElement as HTMLElement, canvasOptions),
+      html2canvas(contentElement as HTMLElement, canvasOptions),
+      html2canvas(footerElement as HTMLElement, canvasOptions),
+    ]);
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -828,27 +793,80 @@ const handleSavePdf = async () => {
     });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const imageHeight = (canvas.height * pageWidth) / canvas.width;
-    const image = canvas.toDataURL("image/png");
+    const sideMargin = 12;
+    const topMargin = 8;
+    const footerMargin = 8;
+    const contentWidth = pageWidth - sideMargin * 2;
+    const letterheadHeight =
+      (letterheadCanvas.height * contentWidth) / letterheadCanvas.width;
+    const footerHeight =
+      (footerCanvas.height * contentWidth) / footerCanvas.width;
+    const contentTop = topMargin + letterheadHeight + 6;
+    const contentBottom = pageHeight - footerMargin - footerHeight - 5;
+    const printableContentHeight = contentBottom - contentTop;
+    const pixelsPerMm = contentCanvas.width / contentWidth;
+    const pageSliceHeight = Math.floor(printableContentHeight * pixelsPerMm);
 
-    let heightLeft = imageHeight;
-    let position = 0;
-    pdf.addImage(image, "PNG", 0, position, pageWidth, imageHeight);
-    heightLeft -= pageHeight;
+    let sourceY = 0;
+    let pageNumber = 0;
+    while (sourceY < contentCanvas.height) {
+      if (pageNumber > 0) pdf.addPage();
 
-    while (heightLeft > 1) {
-      position = heightLeft - imageHeight;
-      pdf.addPage();
-      pdf.addImage(image, "PNG", 0, position, pageWidth, imageHeight);
-      heightLeft -= pageHeight;
+      const sliceHeight = Math.min(
+        pageSliceHeight,
+        contentCanvas.height - sourceY,
+      );
+      const sliceCanvas = document.createElement("canvas");
+      sliceCanvas.width = contentCanvas.width;
+      sliceCanvas.height = sliceHeight;
+      const context = sliceCanvas.getContext("2d");
+      context?.drawImage(
+        contentCanvas,
+        0,
+        sourceY,
+        contentCanvas.width,
+        sliceHeight,
+        0,
+        0,
+        contentCanvas.width,
+        sliceHeight,
+      );
+
+      pdf.addImage(
+        letterheadCanvas.toDataURL("image/png"),
+        "PNG",
+        sideMargin,
+        topMargin,
+        contentWidth,
+        letterheadHeight,
+      );
+      pdf.addImage(
+        footerCanvas.toDataURL("image/png"),
+        "PNG",
+        sideMargin,
+        pageHeight - footerMargin - footerHeight,
+        contentWidth,
+        footerHeight,
+      );
+      pdf.addImage(
+        sliceCanvas.toDataURL("image/png"),
+        "PNG",
+        sideMargin,
+        contentTop,
+        contentWidth,
+        sliceHeight / pixelsPerMm,
+      );
+
+      sourceY += sliceHeight;
+      pageNumber++;
     }
 
     const number = props.detailpenawaran?.no_penawaran || "DRM";
     const nama = props.detailpenawaran?.pic || "DRM";
     const subject = props.detailpenawaran?.perihal || "";
-    const nomorQT = number.match(/\d{5}$/)?.[0] || "00000";
+    const nomorQT = props.detailpenawaran?.id_penawaran;
 
-    pdf.save(`Quotation ${subject} #${nomorQT}.pdf`);
+    pdf.save(`${nomorQT} (${props.detailpenawaran?.vessel}).pdf`);
   } finally {
     isSavingPdf.value = false;
   }
@@ -859,7 +877,7 @@ const handleSavePdf = async () => {
 .offer-card {
   width: 210mm;
   min-height: 297mm;
-  padding: 14mm 18mm 25mm 18mm;
+  padding: 2mm 18mm 25mm 18mm;
   margin: 0 auto;
   background: #ffffff;
   position: relative;
@@ -890,28 +908,26 @@ const handleSavePdf = async () => {
 }
 
 .header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 130px;
+  align-items: center;
   position: relative;
   z-index: 1;
-  padding-bottom: 8px;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  padding: 2px 0 8px;
 }
 
 .logo-wrapper img {
-  width: 105px;
+  width: 145px;
   height: auto;
   display: block;
 }
 
+.letterhead-info {
+  text-align: center;
+}
+
 .company-name {
-  font-size: 17px;
+  font-size: 26px;
   font-weight: 800;
   color: #0f2b48;
   letter-spacing: 0.3px;
@@ -919,20 +935,11 @@ const handleSavePdf = async () => {
   line-height: 1.2;
 }
 
-.header-contact {
-  text-align: right;
-  line-height: 1.4;
-}
-
 .address-line,
 .phone-line {
   font-size: 9.5px;
-  color: #475569;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  max-width: 250px;
+  line-height: 1.4;
+  margin: 1px 0 0;
 }
 
 .header-divider {
@@ -940,7 +947,7 @@ const handleSavePdf = async () => {
   flex-direction: column;
   gap: 2px;
   margin-top: 6px;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .accent-bar {
@@ -979,17 +986,10 @@ const handleSavePdf = async () => {
   text-transform: uppercase;
 }
 
-.doc-date {
-  font-size: 11px;
-  color: #475569;
-}
-
 .info-grid-card {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
   gap: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+
   border-radius: 8px;
   padding: 10px 14px;
   margin-bottom: 14px;
@@ -999,7 +999,7 @@ const handleSavePdf = async () => {
   display: flex;
   align-items: center;
   font-size: 10.5px;
-  margin-bottom: 3px;
+  margin-bottom: 0px;
 }
 .meta-row:last-child {
   margin-bottom: 0;
@@ -1007,34 +1007,11 @@ const handleSavePdf = async () => {
 
 .meta-row .lbl {
   width: 105px;
-  color: #64748b;
-  font-weight: 600;
   flex-shrink: 0;
 }
 
 .meta-row .sep {
   width: 12px;
-  color: #94a3b8;
-}
-
-.meta-row .val {
-  color: #334155;
-  font-weight: 500;
-}
-
-.meta-row .val.highlight {
-  font-weight: 700;
-  color: #2563eb;
-}
-
-.meta-row .val.bold {
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.meta-row .val.bold-navy {
-  font-weight: 700;
-  color: #0f2b48;
 }
 
 .text-salutation {
@@ -1046,7 +1023,7 @@ const handleSavePdf = async () => {
 
 .salutation-title {
   font-weight: 700;
-  margin-bottom: 3px;
+  margin-bottom: 0px;
   color: #0f2b48;
 }
 
@@ -1227,20 +1204,22 @@ const handleSavePdf = async () => {
   margin-top: 2px;
 }
 
-.footer-wave {
+.page-footer {
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 130px;
+  left: 18mm;
+  right: 18mm;
+  height: 12mm;
   z-index: 0;
   pointer-events: none;
+  display: flex;
+  align-items: center;
 }
 
-.footer-wave svg {
+.footer-line {
   width: 100%;
-  height: 100%;
-  display: block;
+  height: 1px;
+  background-color: #cbd5e1;
 }
 
 .text-navy {
