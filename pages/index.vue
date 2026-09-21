@@ -63,7 +63,7 @@ async function verifyPin() {
             <span class="brand-gradient">DUTA RAYA MARINE</span>
           </h1>
           <p class="hero-subtitle">
-            Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda secara presisi.
+            Platform administrasi terpadu untuk mengelola operasional, performa, dan data bisnis Anda.
           </p>
         </div>
 
