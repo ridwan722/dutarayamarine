@@ -58,7 +58,7 @@
             :disabled="saving"
             :items="['Unit', 'Pcs', 'Kg']"
           />
-          <a-text-field-new
+          <a-field-number-new
             v-model="form.nominal"
             label="Nominal"
             :disabled="saving"
@@ -84,7 +84,59 @@
             :disabled="saving"
           />
         </div>
+
+         <v-divider class="my-2" />
+        <div class="po-upload-row">
+          <!-- Upload -->
+          <div class="po-upload-wrapper">
+            <label for="upload-po" class="po-upload-label"> Bill Upload </label>
+
+            <div class="po-upload-box">
+              <input
+                id="upload-po"
+                type="file"
+                multiple
+                :disabled="saving"
+                @change="addfile"
+                class="po-file-input"
+              />
+
+              <div class="po-upload-icon">↑</div>
+
+              <div class="po-upload-text">
+                <div class="po-upload-title">Pilih File</div>
+                <div class="po-upload-info">Maks. 650 KB</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hasil Upload -->
+          <div v-if="billFiles.length" class="po-files-wrapper">
+            <div class="po-upload-label">File Terpilih</div>
+
+            <div class="po-file-list">
+              <div
+                v-for="(file, index) in billFiles"
+                :key="index"
+                class="po-file-item"
+              >
+                <div class="po-file-name">📄 {{ file.name }}</div>
+
+                <button
+                  type="button"
+                  class="po-file-remove"
+                  :disabled="saving"
+                  @click="billFiles.splice(index, 1)"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+
 
       <!-- Footer Actions -->
       <div class="modal-footer">
@@ -106,8 +158,9 @@
 
 <script setup lang="ts">
 import moment from "moment";
-import type { penawaranM, pengeluaranM } from "~/types/penawaranModel";
-
+import type { penawaranM, pengeluaranM, buktiPengeluaranM } from "~/types/penawaranModel";
+const billFiles = ref<File[]>([]);
+const MAX_INVOICE_BYTES = 900_000;
 const props = defineProps<{
   modelValue: boolean;
   penawaran: penawaranM;
@@ -129,6 +182,7 @@ const emptyForm = (): pengeluaranM => ({
   dikeluarkan_oleh: "",
   qty: 1,
   nama_vendor: "",
+  doc_pengeluaran: [],
   no_telp_vendor: "",
   lokasi_vendor: "",
   tanggal_pengeluaran: moment().format("YYYY-MM-DD"),
@@ -141,6 +195,14 @@ watch(
     if (open) form.value = emptyForm();
   },
 );
+
+function addfile(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    billFiles.value = [...billFiles.value, ...Array.from(target.files)];
+  }
+  target.value = "";
+}
 
 async function save() {
   if (saving.value) return;
@@ -166,6 +228,36 @@ async function save() {
 
   saving.value = true;
   try {
+    const estimatedFileBytes = billFiles.value.reduce(
+      (total, file) => total + 4 * Math.ceil(file.size / 3),
+      0,
+    );
+    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
+      return notificationStore.showError(
+        "Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).",
+      );
+    }
+
+    const documents: buktiPengeluaranM[] = [];
+    for (const file of billFiles.value) {
+      documents.push({
+        name: file.name,
+        dataUrl: await readBillFile(file),
+        size: file.size,
+        contentType: file.type || "application/octet-stream",
+      });
+    }
+    form.value.doc_pengeluaran = documents;
+
+    if (
+      new TextEncoder().encode(JSON.stringify(form.value)).byteLength >
+      MAX_INVOICE_BYTES
+    ) {
+      return notificationStore.showError(
+        "Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.",
+      );
+    }
+
     await createPengeluaran(
       {
         ...form.value,
@@ -181,6 +273,20 @@ async function save() {
   } finally {
     saving.value = false;
   }
+}
+
+function readBillFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("File PO tidak dapat dibaca"));
+    };
+    reader.onerror = () =>
+      reject(reader.error || new Error("File PO tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+    reader.readAsDataURL(file);
+  });
 }
 </script>
 
@@ -477,5 +583,126 @@ async function save() {
 .btn-primary:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.po-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.po-upload-wrapper {
+  flex-shrink: 0;
+}
+
+.po-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Upload Box */
+.po-upload-box {
+  position: relative;
+  width: 150px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.po-upload-box:hover {
+  border-color: #64748b;
+  background: #f1f5f9;
+}
+
+.po-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.po-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 17px;
+}
+
+.po-upload-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.po-upload-info {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Files */
+.po-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.po-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.po-file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #475569;
+}
+
+.po-file-remove {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.po-file-remove:hover:not(:disabled) {
+  color: #dc2626;
 }
 </style>

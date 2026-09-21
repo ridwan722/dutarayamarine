@@ -418,6 +418,12 @@
         </div>
       </template>
 
+      <template v-slot:item.perihal="{ item }">
+        <div class="subject-cell">
+          <span>{{ item.perihal }}</span>
+        </div>
+      </template>
+
       <template v-slot:item.nama_perusahaan="{ item }">
         <div style="display: flex; align-items: center">
           <v-icon color="primary" class="mb-1 mr-2">mdi-domain</v-icon>
@@ -584,7 +590,7 @@ const data = reactive({
     { title: "Date", value: "tanggal_penawaran", sortable: true },
     { title: "Quotation Ref No", value: "no_penawaran", sortable: true },
     { title: "Client", value: "nama_perusahaan", sortable: true },
-    { title: "Subject", value: "perihal", sortable: true },
+    { title: "Subject", value: "perihal", sortable: true, width: "220px" },
     { title: "Total Amount", value: "grand_total", sortable: true },
     { title: "Status", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "120px" },
@@ -887,6 +893,15 @@ async function refreshData() {
 <style scoped>
 .quotation-link {
   text-decoration: none;
+}
+
+.subject-cell {
+  display: block;
+  max-width: 220px;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 
 .quotation-badge {

@@ -56,7 +56,18 @@ export interface pengeluaranM {
   satuan: string;
   qty: number;
 
+  doc_pengeluaran: buktiPengeluaranM[];
   nama_vendor: string;
   no_telp_vendor: string;
   lokasi_vendor: string;
 }
+
+
+export interface buktiPengeluaranM {
+  name: string;
+  dataUrl: string;
+  size: number;
+  contentType: string;
+}
+
+

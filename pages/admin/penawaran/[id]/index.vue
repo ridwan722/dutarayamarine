@@ -189,7 +189,7 @@ async function opendialogaddpengeluaran() {
                 Buat Invoice
               </v-btn>
 
-               <div
+              <div
                 v-if="detailpenawaran.status == 'INVOICE'"
                 class="d-flex align-center justify-center mt-2"
               >
@@ -267,11 +267,7 @@ async function opendialogaddpengeluaran() {
             </v-tabs>
           </div>
 
-
-                <canvas-penawaran :detailpenawaran="detailpenawaran" />
-
-
-
+          <canvas-penawaran :detailpenawaran="detailpenawaran" />
         </main>
       </div>
     </div>
