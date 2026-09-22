@@ -7,9 +7,11 @@ export interface pettyCashM {
   createdAt?: number;
   updatedBy?: string;
   updatedAt?: number;
+  dikeluarkan_oleh: string;
   amount: number;
   keterangan: string;
-  bukti: string;
+  // String tetap didukung untuk transaksi lama, array untuk bukti baru.
+  bukti: string | string[];
   type: PettyCashType;
   tanggal: string;
   kategori: PettyCashCategory;

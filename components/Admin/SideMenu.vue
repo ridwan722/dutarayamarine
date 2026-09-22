@@ -34,13 +34,13 @@
 
     <!-- <v-list-item
       class="nav-item mb-1"
-      title="Petty Cash (new)"
+      title="Kas (new)"
       prepend-icon="mdi-cash-multiple"
       @click="openPinDialog"
     /> -->
     <v-list-item
       class="nav-item mb-1"
-      title="Petty Cash"
+      title="Kas"
       prepend-icon="mdi-cash-multiple"
       to="/admin/petty-cash"
     />
@@ -89,7 +89,7 @@
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
         </div>
-        <h3>PIN Akses Petty Cash</h3>
+        <h3>PIN Akses Kas</h3>
         <p>Silakan masukkan PIN keamanan Anda untuk melanjutkan</p>
       </div>
 

@@ -42,13 +42,15 @@ interface Transaction {
   date: string;
   category: PettyCashCategory;
   description: string;
+  dikeluarkan_oleh: string;
   amount: number;
   type: PettyCashType;
-  image: string;
+  images: string[];
 }
 
 const pettyCashStore = usepettyCashStore();
 const userStore = useUserStore();
+const MAX_PETTY_CASH_BYTES = 900_000;
 
 const filterCategory = ref<string>("all");
 
@@ -63,10 +65,11 @@ const isEditMode = ref<boolean>(false);
 const editingId = ref<string | null>(null);
 
 const form = ref({
-  category: "Keperluan Kantor" as PettyCashCategory,
+  category: "Kredit" as PettyCashCategory,
   amount: null as number | null,
   description: "",
-  image: "",
+  dikeluarkan_oleh: "",
+  images: [] as string[],
   tanggal: "",
   isMealAllowance: false, // State untuk melacak checkbox uang makan
 });
@@ -85,9 +88,14 @@ const transactions = computed<Transaction[]>(() =>
       date: item.tanggal,
       category: item.kategori,
       description: item.keterangan,
+      dikeluarkan_oleh: item.dikeluarkan_oleh || "",
       amount: Number(item.amount || 0),
       type: item.type,
-      image: item.bukti || "", // Memastikan data "bukti" masuk ke "image"
+      images: Array.isArray(item.bukti)
+        ? item.bukti
+        : item.bukti
+          ? [item.bukti]
+          : [],
     };
   }),
 );
@@ -165,29 +173,54 @@ const filteredTransactions = computed(() => {
 
 const topupTransactions = computed(() =>
   transactions.value
-    .filter((t) => t.category === "Top Up")
+    .filter((t) => t.category === "Debet")
     .sort(compareDateDescending),
 );
 
-const handleImageUpload = (event: Event) => {
+const isUploadingImages = ref(false);
+const isSaving = ref(false);
+
+const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
-  if (target.files && target.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target?.result) form.value.image = e.target.result as string;
-    };
-    reader.readAsDataURL(target.files[0]);
+  const files = Array.from(target.files || []);
+  if (!files.length) return;
+
+  isUploadingImages.value = true;
+  try {
+    form.value.images.push(...(await Promise.all(files.map(readImageFile))));
+  } catch (error) {
+    useNotificationStore().showError("Gambar bukti tidak dapat dibaca");
+  } finally {
+    isUploadingImages.value = false;
+    target.value = "";
   }
 };
+
+const removeImage = (index: number) => form.value.images.splice(index, 1);
+
+function readImageFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () =>
+      typeof reader.result === "string"
+        ? resolve(reader.result)
+        : reject(new Error("File bukti tidak dapat dibaca"));
+    reader.onerror = () =>
+      reject(reader.error || new Error("File bukti tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file bukti dibatalkan"));
+    reader.readAsDataURL(file);
+  });
+}
 
 const openModal = (type: "topup" | "expense") => {
   isEditMode.value = false;
   editingId.value = null;
   modalType.value = type;
-  form.value.category = type === "topup" ? "Top Up" : "Keperluan Kantor";
+  form.value.category = type === "topup" ? "Debet" : "Kredit";
   form.value.amount = null;
   form.value.description = "";
-  form.value.image = "";
+  form.value.dikeluarkan_oleh = "";
+  form.value.images = [];
   form.value.isMealAllowance = false;
   isModalOpen.value = true;
 };
@@ -200,7 +233,8 @@ const openEditModal = (tx: Transaction) => {
   form.value.category = tx.category;
   form.value.amount = tx.amount;
   form.value.description = tx.description;
-  form.value.image = tx.image; // Gunakan URL dari uploadStore jika ada
+  form.value.dikeluarkan_oleh = tx.dikeluarkan_oleh;
+  form.value.images = [...tx.images];
   form.value.isMealAllowance = false; // Reset ketika edit, karena nominal lama diasumsikan sudah final
   isModalOpen.value = true;
 };
@@ -226,8 +260,8 @@ const previewImage = (imgUrl: string) => {
 };
 
 const handleSubmit = async () => {
+  if (isSaving.value || isUploadingImages.value) return;
   if (!form.value.amount || !form.value.description) return;
-  const imageUrl = uploadStore().getUrlRef || form.value.image;
   // Hitung final amount, jika kategori Uang Jalan dan checkbox diisi, tambahkan 15000
   let finalAmount = form.value.amount;
   if (
@@ -242,30 +276,43 @@ const handleSubmit = async () => {
   const payload = {
     amount: finalAmount,
     keterangan: form.value.description,
-    bukti: imageUrl,
+    dikeluarkan_oleh: form.value.dikeluarkan_oleh,
+    bukti: form.value.images,
     type: (modalType.value === "topup" ? "in" : "out") as PettyCashType,
     tanggal: form.value.tanggal,
     kategori: form.value.category,
   };
 
-  if (isEditMode.value && editingId.value) {
-    // EDIT
-    await pettyCashStore.updatePettyCashAct({
-      id: editingId.value,
-      ...payload,
-      updatedAt: moment().unix(),
-      updatedBy: useUserStore().getEmail || "",
-    });
-  } else {
-    // TAMBAH
-    await pettyCashStore.addPettyCashAct({
-      ...payload,
-      createdAt: moment().unix(),
-      createdBy: userStore.getEmail || "",
-    });
+  if (
+    new TextEncoder().encode(JSON.stringify(payload)).byteLength >
+    MAX_PETTY_CASH_BYTES
+  ) {
+    useNotificationStore().showError(
+      "Total ukuran gambar bukti terlalu besar. Kurangi ukuran atau jumlah gambar (maksimal sekitar 650 KB total).",
+    );
+    return;
   }
 
-  closeModal();
+  isSaving.value = true;
+  try {
+    if (isEditMode.value && editingId.value) {
+      await pettyCashStore.updatePettyCashAct({
+        id: editingId.value,
+        ...payload,
+        updatedAt: moment().unix(),
+        updatedBy: useUserStore().getEmail || "",
+      });
+    } else {
+      await pettyCashStore.addPettyCashAct({
+        ...payload,
+        createdAt: moment().unix(),
+        createdBy: userStore.getEmail || "",
+      });
+    }
+    closeModal();
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 async function deletePettyCash(id: string) {
@@ -379,7 +426,7 @@ const downloadExcel = () => {
   };
 
   const worksheet = XLSX.utils.aoa_to_sheet([
-    ["REKAPAN PETTY CASH ARESA"],
+    ["REKAPAN KAS DUTA RAYA MARINE"],
     [`Periode: ${period} (Urutan Terlama ke Terbaru)`],
     [],
     [
@@ -549,9 +596,9 @@ const downloadExcel = () => {
   XLSX.utils.book_append_sheet(
     workbook,
     worksheet,
-    `Petty Cash ${period}`.slice(0, 31),
+    `Kas ${period}`.slice(0, 31),
   );
-  XLSX.writeFile(workbook, `Laporan Petty Cash - ${period}.xlsx`);
+  XLSX.writeFile(workbook, `Laporan Kas - ${period}.xlsx`);
 };
 
 // Mengecek apakah tanggal transaksi berada pada bulan & tahun yang sama dengan hari ini
@@ -580,9 +627,9 @@ const isCurrentMonth = (dateString: string): boolean => {
   <div class="petty-cash-container">
     <div class="pc-header">
       <div class="header-info">
-        <h1 class="pc-title">Petty Cash Management</h1>
+        <h1 class="pc-title">Kas Management</h1>
         <p class="pc-subtitle">
-          Pantau saldo, pengeluaran operasional, dan riwayat klaim kas kecil.
+          Pantau saldo, pengeluaran operasional, dan riwayat klaim kas.
         </p>
       </div>
 
@@ -593,7 +640,7 @@ const isCurrentMonth = (dateString: string): boolean => {
         </button>
         <button @click="openTopupHistoryModal" class="btn btn-outline">
           <v-icon size="18">mdi-history</v-icon>
-          <span class="btn-text">Riwayat Top Up</span>
+          <span class="btn-text">Riwayat Debet</span>
         </button>
         <button @click="openModal('topup')" class="btn btn-success">
           <v-icon size="18">mdi-plus-circle-outline</v-icon>
@@ -601,7 +648,7 @@ const isCurrentMonth = (dateString: string): boolean => {
         </button>
         <button @click="openModal('expense')" class="btn btn-primary">
           <v-icon size="18">mdi-minus-circle-outline</v-icon>
-          <span class="btn-text">Catat Keluar</span>
+          <span class="btn-text">Create Pengeluaran</span>
         </button>
       </div>
     </div>
@@ -739,10 +786,10 @@ const isCurrentMonth = (dateString: string): boolean => {
           <div class="filter-wrapper select-wrapper">
             <select v-model="filterCategory" class="form-select">
               <option value="all">Semua Kategori</option>
-              <option value="Top Up">Top Up Saldo</option>
-              <option value="Uang Jalan">Uang Jalan</option>
-              <option value="Keperluan Kantor">Keperluan Kantor</option>
-              <option value="Listrik Kantor">Listrik Kantor</option>
+              <option value="Debet">Debet Saldo</option>
+              <!-- <option value="Uang Jalan">Uang Jalan</option> -->
+              <option value="Kredit">Kredit</option>
+              <!-- <option value="Listrik Kantor">Listrik Kantor</option> -->
             </select>
 
             <v-icon class="select-icon" size="18"> mdi-chevron-down </v-icon>
@@ -766,10 +813,10 @@ const isCurrentMonth = (dateString: string): boolean => {
             <span
               class="badge"
               :class="{
-                'badge-topup': tx.category === 'Top Up',
-                'badge-jalan': tx.category === 'Uang Jalan',
-                'badge-kantor': tx.category === 'Keperluan Kantor',
-                'badge-listrik': tx.category === 'Listrik Kantor',
+                'badge-topup': tx.category === 'Debet',
+                // 'badge-jalan': tx.category === 'Uang Jalan',
+                'badge-kantor': tx.category === 'Kredit',
+                // 'badge-listrik': tx.category === 'Listrik Kantor',
               }"
             >
               {{ tx.category }}
@@ -792,13 +839,14 @@ const isCurrentMonth = (dateString: string): boolean => {
 
             <div class="mobile-card-actions">
               <v-btn
-                v-if="tx.image"
+                v-for="image in tx.images"
+                :key="image"
                 icon
                 variant="flat"
                 color="#f1f5f9"
                 density="comfortable"
                 size="small"
-                @click="previewImage(tx.image)"
+                @click="previewImage(image)"
               >
                 <v-icon size="18" color="#475569">mdi-image-outline</v-icon>
               </v-btn>
@@ -833,6 +881,7 @@ const isCurrentMonth = (dateString: string): boolean => {
               <th>Keterangan / Keperluan</th>
               <th>Bukti</th>
               <th class="text-right">Nominal</th>
+              <th>Dikeluarkan Oleh</th>
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
@@ -863,27 +912,32 @@ const isCurrentMonth = (dateString: string): boolean => {
                 <span
                   class="badge"
                   :class="{
-                    'badge-topup': tx.category === 'Top Up',
-                    'badge-jalan': tx.category === 'Uang Jalan',
-                    'badge-kantor': tx.category === 'Keperluan Kantor',
-                    'badge-listrik': tx.category === 'Listrik Kantor',
+                    'badge-topup': tx.category === 'Debet',
+                    // 'badge-jalan': tx.category === 'Uang Jalan',
+                    'badge-kantor': tx.category === 'Kredit',
+                    // 'badge-listrik': tx.category === 'Listrik Kantor',
                   }"
                 >
                   {{ tx.category }}
                 </span>
               </td>
               <td style="max-width: 250px">{{ tx.description }}</td>
-              <td style="max-width: 100px">
-                <div v-if="tx.image">
-                  <v-tooltip text="Pratinjau Gambar" location="top">
-                    <template v-slot:activator="{ props }">
+              <td style="max-width: 220px">
+                <div v-if="tx.images.length" class="proof-links">
+                  <v-tooltip
+                    v-for="(image, imageIndex) in tx.images"
+                    :key="image"
+                    text="Pratinjau Gambar"
+                    location="top"
+                  >
+                    <template #activator="{ props }">
                       <button
                         v-bind="props"
                         class="btn-image-preview"
-                        @click="previewImage(tx.image)"
+                        @click="previewImage(image)"
                       >
-                        <v-icon size="16">mdi-image-outline</v-icon>
-                        <span>Lihat</span>
+                        <v-icon size="20">mdi-image-outline</v-icon>
+                        <!-- <span>{{ imageIndex === 0 ? "Lihat" : `Bukti ${imageIndex + 1}` }}</span> -->
                       </button>
                     </template>
                   </v-tooltip>
@@ -898,6 +952,9 @@ const isCurrentMonth = (dateString: string): boolean => {
               >
                 {{ tx.type === "in" ? "+" : "-" }} Rp
                 {{ formatNumber(tx.amount) }}
+              </td>
+              <td >
+                {{ tx.dikeluarkan_oleh }}
               </td>
               <td class="text-center">
                 <div class="table-action-btns">
@@ -934,20 +991,20 @@ const isCurrentMonth = (dateString: string): boolean => {
                 isEditMode
                   ? "Edit Transaksi"
                   : modalType === "topup"
-                    ? "Top Up Saldo Kas"
+                    ? "Debet Saldo Kas"
                     : "Catat Pengeluaran Kas"
               }}
             </h3>
             <p class="modal-subtitle">Isi rincian transaksi dengan benar</p>
           </div>
-          <button @click="closeModal" class="btn-close">&times;</button>
+          <button :disabled="isSaving" @click="closeModal" class="btn-close">&times;</button>
         </div>
 
         <form @submit.prevent="handleSubmit" class="modal-form">
           <div v-if="modalType === 'expense'" class="form-group">
             <label class="form-label">Kategori Penggunaan</label>
             <div class="radio-group">
-              <label
+              <!-- <label
                 class="radio-box"
                 :class="{ active: form.category === 'Uang Jalan' }"
               >
@@ -957,19 +1014,19 @@ const isCurrentMonth = (dateString: string): boolean => {
                   value="Uang Jalan"
                 />
                 Uang Jalan
-              </label>
+              </label> -->
               <label
                 class="radio-box"
-                :class="{ active: form.category === 'Keperluan Kantor' }"
+                :class="{ active: form.category === 'Kredit' }"
               >
                 <input
                   type="radio"
                   v-model="form.category"
-                  value="Keperluan Kantor"
+                  value="Kredit"
                 />
-                Keperluan Kantor
+                Kredit
               </label>
-              <label
+              <!-- <label
                 class="radio-box"
                 :class="{ active: form.category === 'Listrik Kantor' }"
               >
@@ -979,11 +1036,11 @@ const isCurrentMonth = (dateString: string): boolean => {
                   value="Listrik Kantor"
                 />
                 Listrik
-              </label>
+              </label> -->
             </div>
           </div>
 
-          <div
+          <!-- <div
             v-if="modalType === 'expense' && form.category === 'Uang Jalan'"
             class="meal-allowance-box"
           >
@@ -994,7 +1051,7 @@ const isCurrentMonth = (dateString: string): boolean => {
                 >Tambah Uang Makan (+ Rp 15.000)</span
               >
             </label>
-          </div>
+          </div> -->
 
           <div class="form-group">
             <label class="form-label">Tanggal</label>
@@ -1030,33 +1087,50 @@ const isCurrentMonth = (dateString: string): boolean => {
           </div>
 
           <div class="form-group">
+            <label class="form-label">Dikeluarkan Oleh</label>
+            <input
+              v-model="form.dikeluarkan_oleh"
+              type="text"
+              required
+              placeholder="Nama pihak yang mengeluarkan dana"
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
             <label class="form-label"
               >Upload Bukti <span class="text-muted">(Opsional)</span></label
             >
             <div class="upload-wrapper">
-              <upload-image @image-uploaded="form.image = $event" />
-            </div>
-            <div
-              v-if="uploadStore().getUrlRef || form.image"
-              class="image-preview-card mt-2"
-            >
-              <img
-                :src="uploadStore().getUrlRef || form.image"
-                alt="Form Preview"
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="form-control"
+                :disabled="isUploadingImages || isSaving"
+                @change="handleImageUpload"
               />
+              <small v-if="isUploadingImages" class="text-muted">Menyiapkan gambar...</small>
+            </div>
+            <div v-if="form.images.length" class="proof-preview-list mt-2">
+              <div v-for="(image, index) in form.images" :key="image" class="image-preview-card">
+                <img :src="image" :alt="`Bukti ${index + 1}`" />
+                <button type="button" class="btn-remove-image" :disabled="isSaving" @click="removeImage(index)">&times;</button>
+              </div>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button type="button" @click="closeModal" class="btn btn-secondary">
+            <button type="button" :disabled="isSaving" @click="closeModal" class="btn btn-secondary">
               Batal
             </button>
             <button
               type="submit"
+              :disabled="isSaving || isUploadingImages"
               class="btn"
               :class="modalType === 'topup' ? 'btn-success' : 'btn-primary'"
             >
-              {{ isEditMode ? "Simpan Perubahan" : "Simpan Transaksi" }}
+              {{ isSaving ? "Menyimpan..." : isEditMode ? "Simpan Perubahan" : "Simpan Transaksi" }}
             </button>
           </div>
         </form>
@@ -1067,7 +1141,7 @@ const isCurrentMonth = (dateString: string): boolean => {
       <div class="modal-content modal-large">
         <div class="modal-header">
           <div class="modal-title-box">
-            <h3>Riwayat Top Up Masuk</h3>
+            <h3>Riwayat Debet Masuk</h3>
             <p class="modal-subtitle">
               Daftar penambahan kas masuk yang tercatat
             </p>
@@ -1090,10 +1164,12 @@ const isCurrentMonth = (dateString: string): boolean => {
                 >
               </div>
               <div class="mobile-card-desc">{{ tx.description }}</div>
-              <div v-if="tx.image" class="mt-2">
+              <div v-if="tx.images.length" class="proof-preview-list mt-2">
                 <img
-                  :src="tx.image"
-                  @click="previewImage(tx.image)"
+                  v-for="image in tx.images"
+                  :key="image"
+                  :src="image"
+                  @click="previewImage(image)"
                   class="table-thumb"
                   alt="Bukti Transfer"
                 />
@@ -1132,13 +1208,16 @@ const isCurrentMonth = (dateString: string): boolean => {
                 <td class="text-muted font-mono">{{ tx.date }}</td>
                 <td class="font-medium">{{ tx.description }}</td>
                 <td>
-                  <img
-                    v-if="tx.image"
-                    :src="tx.image"
-                    @click="previewImage(tx.image)"
-                    class="table-thumb"
-                    alt="Bukti"
-                  />
+                  <div v-if="tx.images.length" class="proof-preview-list">
+                    <img
+                      v-for="image in tx.images"
+                      :key="image"
+                      :src="image"
+                      @click="previewImage(image)"
+                      class="table-thumb"
+                      alt="Bukti"
+                    />
+                  </div>
                   <span v-else class="text-muted italic text-xs">Kosong</span>
                 </td>
                 <td class="text-right text-emerald tx-amount">
@@ -1709,6 +1788,31 @@ const isCurrentMonth = (dateString: string): boolean => {
 .btn-image-preview:hover {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+.proof-links,
+.proof-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.image-preview-card {
+  position: relative;
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  line-height: 18px;
 }
 
 .mobile-tx-card {
