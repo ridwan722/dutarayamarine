@@ -943,7 +943,7 @@ const isCurrentMonth = (dateString: string): boolean => {
                   </v-tooltip>
                 </div>
                 <span v-else class="text-muted italic text-xs"
-                  >Tanpa bukti</span
+                  >-</span
                 >
               </td>
               <td

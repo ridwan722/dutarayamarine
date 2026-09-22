@@ -1,45 +1,28 @@
 <script setup>
-import { ref, computed, watchEffect } from "vue";
+import { computed } from "vue";
 import { useDisplay } from "vuetify";
 import { useUserStore } from "@/stores/userStore";
 import { getAuth, signOut } from "firebase/auth";
 import { navigateTo } from "#app";
 
-const { width } = useDisplay();
+const { mdAndUp } = useDisplay();
 const useuser = useUserStore();
-
-/* =========================
-   DRAWER
-========================= */
-
-const drawer = ref(width.value > 500);
-
-watchEffect(() => {
-  if (width.value < 500) {
-    drawer.value = false;
-  }
-});
 
 /* =========================
    USER
 ========================= */
-
 const displayname = computed(() => useuser.getDisplayName || "Admin");
-
 const role = computed(() => useuser.getRole || "Administrator");
 
 /* =========================
    LOGOUT
 ========================= */
-
 const logout = async () => {
   const auth = getAuth();
 
   try {
     await signOut(auth);
-
     useuser.setUser(null);
-
     await navigateTo("/");
   } catch (error) {
     console.error("Logout gagal:", error);
@@ -48,10 +31,171 @@ const logout = async () => {
 </script>
 
 <template>
+  <!-- SIDE NAVIGATION DRAWER (Corporate Minimalist Rail) -->
+  <v-navigation-drawer
+    v-if="mdAndUp"
+    permanent
+    rail
+    width="72"
+    rail-width="72"
+    class="desktop-side-menu"
+  >
+    <!-- BRAND / MINI LOGO HEADER -->
+    <div class="side-brand-header">
+      <div class="mini-logo-box">
+        <img
+          src="/public/Logo-DRM.png"
+          alt="DRM Logo"
+          class="mini-logo-img"
+        />
+      </div>
+    </div>
+
+    <v-divider class="mx-3 my-2 border-opacity-25" />
+
+    <!-- NAVIGATION ITEMS -->
+    <v-list nav density="compact" class="side-nav-list px-2">
+      <!-- Dashboard -->
+      <v-list-item
+        to="/admin/"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+        exact
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-view-dashboard-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Dashboard</span>
+      </v-list-item>
+
+      <!-- Quotation -->
+      <v-list-item
+        to="/admin/penawaran"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-file-edit-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Quotation</span>
+      </v-list-item>
+
+      <!-- Invoice -->
+      <v-list-item
+        to="/admin/invoice"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+        exact
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-receipt-text-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Invoice</span>
+      </v-list-item>
+
+      <!-- Invoice Success -->
+      <v-list-item
+        to="/admin/invoice/selesai"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-check-decagram-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Invoice Success</span>
+      </v-list-item>
+
+      <!-- Berita Acara -->
+      <v-list-item
+        to="/admin/berita-acara"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-file-certificate-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Berita Acara</span>
+      </v-list-item>
+
+      <!-- Master User -->
+      <!-- <v-list-item
+        to="/admin/master/users"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-account-group-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">User Management</span>
+      </v-list-item> -->
+
+      <!-- Master Client -->
+      <v-list-item
+        to="/admin/master/client"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-domain</v-icon>
+        </div>
+        <span class="nav-title-flyout">Master Client</span>
+      </v-list-item>
+
+      <!-- Master Barang / Service -->
+      <v-list-item
+        to="/admin/master/barang"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-package-variant-closed</v-icon>
+        </div>
+        <span class="nav-title-flyout">Master Barang / Service</span>
+      </v-list-item>
+
+      <!-- Master T&C -->
+      <v-list-item
+        to="/admin/master/termcondition"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-information-variant-circle-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Master T&C</span>
+      </v-list-item>
+
+      <!-- Kas -->
+      <v-list-item
+        to="/admin/petty-cash"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-cash-multiple</v-icon>
+        </div>
+        <span class="nav-title-flyout">Kas</span>
+      </v-list-item>
+
+      <!-- Report Order -->
+      <v-list-item
+        to="/admin/report-order"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-chart-box-outline</v-icon>
+        </div>
+        <span class="nav-title-flyout">Report Order</span>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
+  <!-- APP BAR / TOP HEADER -->
   <v-app-bar flat color="white" height="68" class="app-bar-border">
     <template #prepend>
       <div class="header-left">
-        <div class="logo-box">
+        <div class="logo-box" v-if="!mdAndUp">
           <img
             src="/public/Logo-DRM.png"
             alt="PT. DUTA RAYA MARINE"
@@ -77,7 +221,7 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          Update Version. 1.1
+          v1.1
         </v-chip>
 
         <v-btn
@@ -86,7 +230,7 @@ const logout = async () => {
           size="small"
           prepend-icon="mdi-home-outline"
           to="/admin"
-          class="text-capitalize font-weight-bold"
+          class="text-capitalize font-weight-bold ml-2"
         >
           Home
         </v-btn>
@@ -199,7 +343,7 @@ const logout = async () => {
                 color="error-lighten-5"
                 class="logout-btn justify-start"
                 rounded="lg"
-                to="/"
+                @click="logout"
               >
                 <template #prepend>
                   <v-icon color="error"> mdi-logout-variant </v-icon>
@@ -217,114 +361,226 @@ const logout = async () => {
 
 <style scoped>
 /* =========================================================
-   APP BAR
+   CORPORATE MINIMALIST SIDE NAVIGATION DRAWER
 ========================================================= */
 
-.app-bar-border {
-  border-bottom: 1px solid #f1f5f9 !important;
-
-  background: rgba(255, 255, 255, 0.96) !important;
-
-  backdrop-filter: blur(8px);
-
-  padding: 0 8px !important;
+.desktop-side-menu {
+  border-right: 1px solid #e2e8f0 !important;
+  background-color: #0f172a !important; /* Corporate Slate Dark Theme */
+  overflow: visible !important;
 }
 
-/* =========================================================
-   HEADER LEFT
-========================================================= */
-
-.header-left {
+:deep(.v-navigation-drawer__content) {
+  overflow: visible !important;
   display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  min-width: 0;
+  flex-direction: column;
 }
 
-/* =========================================================
-   LOGO
-========================================================= */
-
-.logo-box {
-  width: 40px;
-  height: 40px;
-
-  flex-shrink: 0;
-
+/* BRAND LOGO HEADER */
+.side-brand-header {
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
-  padding: 5px;
-
-  border-radius: 10px;
+  height: 68px;
+  flex-shrink: 0;
 }
 
-.logo-img {
-  width: 50px;
-  height: 50px;
+.mini-logo-box {
+  width: 48px;
+  height: 48px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  transition: all 0.2s ease;
+}
 
+.mini-logo-box:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mini-logo-img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
+/* NAVIGATION LIST & ITEMS */
+.side-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: visible !important;
+}
+
+.side-nav-item {
+  position: relative !important;
+  border-radius: 10px !important;
+  color: #94a3b8 !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+  overflow: visible !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Reset Inner Elements Vuetify agar Rata Tengah Presisi */
+.side-nav-item :deep(.v-list-item__content) {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+.side-nav-item :deep(.v-list-item__overlay) {
+  border-radius: 10px !important;
+}
+
+/* Wrapper Ikon Center */
+.nav-icon-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon-wrapper .v-icon {
+  color: #94a3b8;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* TOOLTIP / FLYOUT TEXT HOVER */
+.nav-title-flyout {
+  position: absolute;
+  left: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+              0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
+}
+
+/* Hover States */
+.side-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+}
+
+.side-nav-item:hover .nav-icon-wrapper .v-icon {
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.side-nav-item:hover .nav-title-flyout {
+  opacity: 1;
+  visibility: visible;
+  left: 62px;
+}
+
+/* Active State (Red DRM Accent) */
+.side-nav-item--active {
+  background-color: rgba(220, 38, 38, 0.12) !important;
+}
+
+.side-nav-item--active::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background-color: #ef4444;
+  border-radius: 0 4px 4px 0;
+}
+
+.side-nav-item--active .nav-icon-wrapper .v-icon {
+  color: #ef4444 !important;
+}
+
 /* =========================================================
-   COMPANY
+   APP BAR & UTILITIES
 ========================================================= */
+
+.app-bar-border {
+  border-bottom: 1px solid #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(8px);
+  padding: 0 8px !important;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.logo-box {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
 
 .company-info {
   display: flex;
-
   flex-direction: column;
-
   min-width: 0;
-
   line-height: 1.2;
 }
 
 .company-name {
-  font-size: 14px;
-
+  font-size: 13.5px;
   font-weight: 700;
-
   color: #0f172a;
-
+  letter-spacing: 0.3px;
   white-space: nowrap;
 }
 
 .company-subtitle {
-  margin-top: 2px;
-
+  margin-top: 1px;
   font-size: 11px;
-
   color: #64748b;
-
   white-space: nowrap;
 }
 
-/* =========================================================
-   VERSION
-========================================================= */
-
 .version-chip {
   flex-shrink: 0;
-
-  margin-left: 2px;
 }
-
-/* =========================================================
-   HEADER RIGHT
-========================================================= */
 
 .header-right {
   display: flex;
-
   align-items: center;
-
   gap: 4px;
 }
 
@@ -333,26 +589,16 @@ const logout = async () => {
 }
 
 .header-divider {
-  height: 28px;
-
+  height: 24px;
   margin: 0 6px;
-
   opacity: 0.2;
 }
 
-/* =========================================================
-   USER PROFILE
-========================================================= */
-
 .user-profile-btn {
   text-transform: none !important;
-
   border-radius: 12px !important;
-
   padding: 4px 8px !important;
-
   min-width: auto !important;
-
   transition: background-color 0.2s ease;
 }
 
@@ -360,148 +606,81 @@ const logout = async () => {
   background-color: #f8fafc !important;
 }
 
-/* =========================================================
-   USER INFO
-========================================================= */
-
 .user-info {
   text-align: left;
-
   margin-left: 10px;
-
   min-width: 0;
 }
 
 .user-name {
   margin: 0;
-
   font-size: 13px;
-
   font-weight: 700;
-
   color: #0f172a;
-
   max-width: 140px;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   white-space: nowrap;
 }
 
 .user-role {
-  margin: 2px 0 0;
-
+  margin: 1px 0 0;
   font-size: 11px;
-
   color: #64748b;
-
   max-width: 140px;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   white-space: nowrap;
 }
 
 .profile-chevron {
   margin-left: 6px;
-
   color: #94a3b8;
 }
 
-/* =========================================================
-   AVATAR
-========================================================= */
-
 .avatar-placeholder {
-  background: linear-gradient(135deg, #fc2626 0%, #b91c1c 100%);
-
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
   color: white;
-
   width: 100%;
-
   height: 100%;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 }
 
 .avatar-shadow {
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
 }
-
-/* =========================================================
-   PROFILE CARD
-========================================================= */
 
 .profile-card {
   border: 1px solid #e2e8f0 !important;
-
-  box-shadow:
-    0 20px 25px -5px rgba(15, 23, 42, 0.08),
-    0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08) !important;
 }
 
 .profile-card-header {
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  background: #f8fafc;
 }
-
-/* =========================================================
-   MENU ITEM
-========================================================= */
 
 .menu-item {
   color: #475569 !important;
-
   font-size: 0.875rem !important;
-
   transition: all 0.15s ease;
 }
 
 .menu-item:hover {
   background-color: #f1f5f9 !important;
-
   color: #0f172a !important;
 }
 
-/* =========================================================
-   LOGOUT
-========================================================= */
-
 .logout-btn {
   text-transform: none !important;
-
   letter-spacing: 0;
-
   background-color: #fef2f2 !important;
-
   transition: background-color 0.2s ease;
 }
 
 .logout-btn:hover {
   background-color: #fee2e2 !important;
-}
-
-/* =========================================================
-   COLOR UTILITY
-========================================================= */
-
-.text-slate-400 {
-  color: #94a3b8;
-}
-
-.text-slate-500 {
-  color: #64748b;
-}
-
-.text-slate-600 {
-  color: #475569;
 }
 
 .text-slate-900 {
@@ -512,75 +691,30 @@ const logout = async () => {
   background-color: #f8fafc;
 }
 
-/* =========================================================
-   DEFAULT
-========================================================= */
-
 .mobile-company {
   display: none;
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
-
 @media (max-width: 800px) {
   .header-left {
-    gap: 9px;
+    gap: 8px;
   }
 
   .company-name {
-    font-size: 13px;
+    font-size: 12.5px;
   }
 
   .version-chip {
     display: none;
   }
 
-  .user-name {
-    max-width: 100px;
-  }
-
+  .user-name,
   .user-role {
     max-width: 100px;
   }
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
 @media (max-width: 600px) {
-  .app-bar-border {
-    padding: 0 4px !important;
-  }
-
-  /* LEFT */
-
-  .header-left {
-    gap: 8px;
-  }
-
-  /* LOGO */
-
-  .logo-box {
-    width: 36px;
-
-    height: 36px;
-
-    padding: 4px;
-
-    border-radius: 9px;
-  }
-
-  .logo-img {
-    width: 27px;
-
-    height: 27px;
-  }
-
-  /* COMPANY */
-
   .desktop-company {
     display: none;
   }
@@ -589,81 +723,18 @@ const logout = async () => {
     display: inline;
   }
 
-  .company-name {
-    font-size: 13px;
-  }
-
-  /* VERSION */
-
-  .version-chip {
-    display: none;
-  }
-
-  /* RIGHT */
-
-  .header-right {
-    gap: 0;
-  }
-
-  /* NOTIFICATION */
-
-  .notification-btn {
-    display: none;
-  }
-
-  /* DIVIDER */
-
-  .header-divider {
-    display: none;
-  }
-
-  /* PROFILE */
-
-  .user-profile-btn {
-    padding: 4px !important;
-
-    min-width: 42px !important;
-
-    width: 42px !important;
-  }
-
-  /* USER INFO */
-
-  .user-info {
-    display: none;
-  }
-
-  /* CHEVRON */
-
+  .version-chip,
+  .notification-btn,
+  .header-divider,
+  .user-info,
   .profile-chevron {
     display: none;
   }
-}
 
-/* =========================================================
-   SMALL PHONE
-========================================================= */
-
-@media (max-width: 380px) {
-  .company-name {
-    font-size: 12px;
-  }
-
-  .header-left {
-    gap: 6px;
-  }
-
-  .logo-box {
-    width: 34px;
-
-    height: 34px;
-  }
-
-  .logo-img {
-    width: 25px;
-
-    height: 25px;
+  .user-profile-btn {
+    padding: 4px !important;
+    min-width: 42px !important;
+    width: 42px !important;
   }
 }
 </style>
-```
