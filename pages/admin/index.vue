@@ -30,14 +30,14 @@ onErrorCaptured((err: unknown) => {
           <div class="header-tag">ENTERPRISE SYSTEM</div>
           <h1 class="header-title">Ringkasan Sistem & Directory Menu</h1>
         </div>
-        <div class="header-metrics">
+        <!-- <div class="header-metrics">
           <div class="metric-pill">
             <span class="metric-label">Server</span>
             <span class="metric-value status-online">
               <span class="dot"></span> 
             </span>
           </div>
-        </div>
+        </div> -->
       </header>
 
       <!-- Main Bento Grid -->

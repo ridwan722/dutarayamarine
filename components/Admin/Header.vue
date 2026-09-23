@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 import { useUserStore } from "@/stores/userStore";
 import { getAuth, signOut } from "firebase/auth";
@@ -13,6 +13,89 @@ const useuser = useUserStore();
 ========================= */
 const displayname = computed(() => useuser.getDisplayName || "Admin");
 const role = computed(() => useuser.getRole || "Administrator");
+
+/* =========================
+   QUOTATION FLOW DIALOG
+========================= */
+const dialogQuotationFlow = ref(false);
+const dialogInvoiceFlow = ref(false);
+const activeQuotationSlide = ref(0);
+const activeInvoiceSlide = ref(0);
+
+const quotationFlowSlides = [
+  {
+    title: "Buka menu Quotation",
+    description:
+      "Pilih menu Quotation pada navigasi untuk melihat seluruh daftar penawaran yang sedang dikerjakan.",
+    image: "/tutorial/quotation/1.jpeg",
+  },
+  {
+    title: "Buat quotation baru",
+    description:
+      "Tekan tombol Create New Quotation, lengkapi informasi klien, kapal, item pekerjaan, dan harga penawaran.",
+    image: "/tutorial/quotation/2.jpeg",
+  },
+  {
+    title: "Tinjau dan kirim",
+    description:
+      "Periksa kembali total serta syarat penawaran, lalu simpan quotation.",
+    image: "/tutorial/quotation/3.jpeg",
+  },
+];
+
+const invoiceFlowSlides = [
+  {
+    title: "Buka menu Quotation",
+    description: "Pilih Quotation yang ingin dibuat invoice nya.",
+    image: "/tutorial/invoice/1.jpeg",
+  },
+  {
+    title: "Buat Invoice (by Quotation)",
+    description: "Tekan tombol Buat Invoice.",
+    image: "/tutorial/invoice/2.jpeg",
+  },
+  {
+    title: "Tinjau dan kirim",
+    description: "Periksa kembali data sudah sesuai, lalu simpan invoice.",
+    image: "/tutorial/invoice/3.jpeg",
+  },
+  {
+    title: "Lihat Hasil",
+    description: "Invoice yang dibuat akan ditampilkan di bagian menu invoice",
+    image: "/tutorial/invoice/4.jpeg",
+  },
+];
+
+const openQuotationFlow = () => {
+  activeQuotationSlide.value = 0;
+  dialogQuotationFlow.value = true;
+};
+const openInvoiceFlow = () => {
+  activeInvoiceSlide.value = 0;
+  dialogInvoiceFlow.value = true;
+};
+
+const previousQuotationSlide = () => {
+  activeQuotationSlide.value = Math.max(0, activeQuotationSlide.value - 1);
+};
+
+const nextQuotationSlide = () => {
+  activeQuotationSlide.value = Math.min(
+    quotationFlowSlides.length - 1,
+    activeQuotationSlide.value + 1,
+  );
+};
+
+const previousInvoiceSlide = () => {
+  activeInvoiceSlide.value = Math.max(0, activeInvoiceSlide.value - 1);
+};
+
+const nextInvoiceSlide = () => {
+  activeInvoiceSlide.value = Math.min(
+    invoiceFlowSlides.length - 1,
+    activeInvoiceSlide.value + 1,
+  );
+};
 
 /* =========================
    LOGOUT
@@ -31,7 +114,193 @@ const logout = async () => {
 </script>
 
 <template>
-  <!-- SIDE NAVIGATION DRAWER (Corporate Minimalist Rail) -->
+  <!-- DIALOG QUOTATION FLOW -->
+  <v-dialog
+    v-model="dialogQuotationFlow"
+    max-width="900"
+    scrollable
+    teleport="body"
+  >
+    <v-card class="quotation-flow-card">
+      <v-card-title class="quotation-flow-header">
+        <div>
+          <div class="quotation-flow-title">Quotation Flow</div>
+          <div class="quotation-flow-step">
+            Langkah {{ activeQuotationSlide + 1 }} dari
+            {{ quotationFlowSlides.length }}
+          </div>
+        </div>
+
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="dialogQuotationFlow = false"
+        />
+      </v-card-title>
+
+      <v-divider />
+
+      <v-card-text class="quotation-flow-content">
+        <div class="quotation-flow-visual">
+          <img
+            :src="quotationFlowSlides[activeQuotationSlide].image"
+            :alt="quotationFlowSlides[activeQuotationSlide].title"
+            class="quotation-flow-image"
+          />
+        </div>
+
+        <div class="quotation-flow-description">
+          <h3>{{ quotationFlowSlides[activeQuotationSlide].title }}</h3>
+          <p>{{ quotationFlowSlides[activeQuotationSlide].description }}</p>
+        </div>
+
+        <div class="quotation-flow-dots">
+          <button
+            v-for="(slide, index) in quotationFlowSlides"
+            :key="index"
+            type="button"
+            class="quotation-flow-dot"
+            :class="{
+              'quotation-flow-dot--active': activeQuotationSlide === index,
+            }"
+            :aria-label="`Ke slide ${index + 1}`"
+            @click="activeQuotationSlide = index"
+          />
+        </div>
+      </v-card-text>
+
+      <v-divider />
+
+      <v-card-actions class="quotation-flow-actions">
+        <v-btn
+          variant="text"
+          prepend-icon="mdi-arrow-left"
+          :disabled="activeQuotationSlide === 0"
+          @click="previousQuotationSlide"
+        >
+          Sebelumnya
+        </v-btn>
+
+        <v-spacer />
+
+        <v-btn
+          v-if="activeQuotationSlide < quotationFlowSlides.length - 1"
+          color="primary"
+          variant="flat"
+          append-icon="mdi-arrow-right"
+          @click="nextQuotationSlide"
+        >
+          Berikutnya
+        </v-btn>
+
+        <v-btn
+          v-else
+          color="primary"
+          variant="flat"
+          prepend-icon="mdi-check"
+          @click="dialogQuotationFlow = false"
+        >
+          Selesai
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- DIALOG INVOICE FLOW -->
+  <v-dialog
+    v-model="dialogInvoiceFlow"
+    max-width="900"
+    scrollable
+    teleport="body"
+  >
+    <v-card class="quotation-flow-card">
+      <v-card-title class="quotation-flow-header">
+        <div>
+          <div class="quotation-flow-title">Invoice Flow</div>
+          <div class="quotation-flow-step">
+            Langkah {{ activeInvoiceSlide + 1 }} dari
+            {{ invoiceFlowSlides.length }}
+          </div>
+        </div>
+
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="dialogInvoiceFlow = false"
+        />
+      </v-card-title>
+
+      <v-divider />
+
+      <v-card-text class="quotation-flow-content">
+        <div class="quotation-flow-visual">
+          <img
+            :src="invoiceFlowSlides[activeInvoiceSlide].image"
+            :alt="invoiceFlowSlides[activeInvoiceSlide].title"
+            class="quotation-flow-image"
+          />
+        </div>
+
+        <div class="quotation-flow-description">
+          <h3>{{ invoiceFlowSlides[activeInvoiceSlide].title }}</h3>
+          <p>{{ invoiceFlowSlides[activeInvoiceSlide].description }}</p>
+        </div>
+
+        <div class="quotation-flow-dots">
+          <button
+            v-for="(slide, index) in invoiceFlowSlides"
+            :key="index"
+            type="button"
+            class="quotation-flow-dot"
+            :class="{
+              'quotation-flow-dot--active': activeInvoiceSlide === index,
+            }"
+            :aria-label="`Ke slide ${index + 1}`"
+            @click="activeInvoiceSlide = index"
+          />
+        </div>
+      </v-card-text>
+
+      <v-divider />
+
+      <v-card-actions class="quotation-flow-actions">
+        <v-btn
+          variant="text"
+          prepend-icon="mdi-arrow-left"
+          :disabled="activeInvoiceSlide === 0"
+          @click="previousInvoiceSlide"
+        >
+          Sebelumnya
+        </v-btn>
+
+        <v-spacer />
+
+        <v-btn
+          v-if="activeInvoiceSlide < invoiceFlowSlides.length - 1"
+          color="primary"
+          variant="flat"
+          append-icon="mdi-arrow-right"
+          @click="nextInvoiceSlide"
+        >
+          Berikutnya
+        </v-btn>
+
+        <v-btn
+          v-else
+          color="primary"
+          variant="flat"
+          prepend-icon="mdi-check"
+          @click="dialogInvoiceFlow = false"
+        >
+          Selesai
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- SIDE NAVIGATION DRAWER -->
   <v-navigation-drawer
     v-if="mdAndUp"
     permanent
@@ -40,22 +309,15 @@ const logout = async () => {
     rail-width="72"
     class="desktop-side-menu"
   >
-    <!-- BRAND / MINI LOGO HEADER -->
     <div class="side-brand-header">
       <div class="mini-logo-box">
-        <img
-          src="/public/Logo-DRM.png"
-          alt="DRM Logo"
-          class="mini-logo-img"
-        />
+        <img src="/Logo-DRM.png" alt="DRM Logo" class="mini-logo-img" />
       </div>
     </div>
 
     <v-divider class="mx-3 my-2 border-opacity-25" />
 
-    <!-- NAVIGATION ITEMS -->
     <v-list nav density="compact" class="side-nav-list px-2">
-      <!-- Dashboard -->
       <v-list-item
         to="/admin/"
         class="side-nav-item"
@@ -68,7 +330,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Dashboard</span>
       </v-list-item>
 
-      <!-- Quotation -->
       <v-list-item
         to="/admin/penawaran"
         class="side-nav-item"
@@ -80,7 +341,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Quotation</span>
       </v-list-item>
 
-      <!-- Invoice -->
       <v-list-item
         to="/admin/invoice"
         class="side-nav-item"
@@ -93,7 +353,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Invoice</span>
       </v-list-item>
 
-      <!-- Invoice Success -->
       <v-list-item
         to="/admin/invoice/selesai"
         class="side-nav-item"
@@ -105,7 +364,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Invoice Success</span>
       </v-list-item>
 
-      <!-- Berita Acara -->
       <v-list-item
         to="/admin/berita-acara"
         class="side-nav-item"
@@ -117,19 +375,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Berita Acara</span>
       </v-list-item>
 
-      <!-- Master User -->
-      <!-- <v-list-item
-        to="/admin/master/users"
-        class="side-nav-item"
-        active-class="side-nav-item--active"
-      >
-        <div class="nav-icon-wrapper">
-          <v-icon size="20">mdi-account-group-outline</v-icon>
-        </div>
-        <span class="nav-title-flyout">User Management</span>
-      </v-list-item> -->
-
-      <!-- Master Client -->
       <v-list-item
         to="/admin/master/client"
         class="side-nav-item"
@@ -141,7 +386,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Master Client</span>
       </v-list-item>
 
-      <!-- Master Barang / Service -->
       <v-list-item
         to="/admin/master/barang"
         class="side-nav-item"
@@ -153,7 +397,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Master Barang / Service</span>
       </v-list-item>
 
-      <!-- Master T&C -->
       <v-list-item
         to="/admin/master/termcondition"
         class="side-nav-item"
@@ -165,7 +408,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Master T&C</span>
       </v-list-item>
 
-      <!-- Kas -->
       <v-list-item
         to="/admin/petty-cash"
         class="side-nav-item"
@@ -177,7 +419,6 @@ const logout = async () => {
         <span class="nav-title-flyout">Kas</span>
       </v-list-item>
 
-      <!-- Report Order -->
       <v-list-item
         to="/admin/report-order"
         class="side-nav-item"
@@ -195,9 +436,9 @@ const logout = async () => {
   <v-app-bar flat color="white" height="68" class="app-bar-border">
     <template #prepend>
       <div class="header-left">
-        <div class="logo-box" v-if="!mdAndUp">
+        <div v-if="!mdAndUp" class="logo-box">
           <img
-            src="/public/Logo-DRM.png"
+            src="/Logo-DRM.png"
             alt="PT. DUTA RAYA MARINE"
             class="logo-img"
           />
@@ -208,11 +449,9 @@ const logout = async () => {
             PT. DUTA RAYA MARINE
           </span>
 
-          <span class="company-name mobile-company">
-            PT. DUTA RAYA MARINE
-          </span>
+          <span class="company-name mobile-company"> PT. DRM </span>
 
-          <span class="company-subtitle"> Enterprise Management System </span>
+          <span class="company-subtitle"> Enterprise Management </span>
         </div>
 
         <v-chip
@@ -221,19 +460,54 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          v1.1
+          V 1.1
         </v-chip>
 
+        <!-- Home Button (Desktop) -->
         <v-btn
           variant="outlined"
           color="primary"
           size="small"
           prepend-icon="mdi-home-outline"
           to="/admin"
-          class="text-capitalize font-weight-bold ml-2"
+          class="text-capitalize font-weight-bold ml-2 d-none d-md-flex"
         >
           Home
         </v-btn>
+
+        <!-- Quotation Flow (Desktop) -->
+        <v-tooltip text="Lihat alur Quotation" location="top">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              variant="outlined"
+              color="grey"
+              size="x-small"
+              prepend-icon="mdi-help-circle-outline"
+              @click="openQuotationFlow"
+              class="text-capitalize font-weight-bold ml-1 d-none d-sm-flex"
+            >
+              Quotation Flow
+            </v-btn>
+          </template>
+        </v-tooltip>
+
+        <!-- Invoice Flow (Desktop) -->
+        <v-tooltip text="Lihat alur Invoice" location="top">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              variant="outlined"
+              color="grey"
+              size="x-small"
+              prepend-icon="mdi-help-circle-outline"
+              @click="openInvoiceFlow"
+              class="text-capitalize font-weight-bold d-none d-sm-flex"
+            >
+              Invoice Flow
+            </v-btn>
+          </template>
+        </v-tooltip>
       </div>
     </template>
 
@@ -241,19 +515,40 @@ const logout = async () => {
 
     <template #append>
       <div class="header-right">
+        <!-- Flow Buttons for Mobile Only -->
+        <v-btn
+          icon="mdi-file-document-outline"
+          variant="tonal"
+          color="primary"
+          size="x-small"
+          class="d-flex d-sm-none mr-1"
+          title="Quotation Flow"
+          @click="openQuotationFlow"
+        />
+
+        <v-btn
+          icon="mdi-receipt-outline"
+          variant="tonal"
+          color="primary"
+          size="x-small"
+          class="d-flex d-sm-none mr-1"
+          title="Invoice Flow"
+          @click="openInvoiceFlow"
+        />
+
         <v-btn
           icon
           variant="text"
           size="small"
           color="slate-600"
-          class="notification-btn"
+          class="notification-btn d-none d-sm-flex"
         >
           <v-badge dot color="error" offset-x="-2" offset-y="-2">
             <v-icon size="20"> mdi-bell-outline </v-icon>
           </v-badge>
         </v-btn>
 
-        <v-divider vertical inset class="header-divider" />
+        <v-divider vertical inset class="header-divider d-none d-sm-flex" />
 
         <v-menu
           rounded="xl"
@@ -268,13 +563,13 @@ const logout = async () => {
               class="user-profile-btn"
               height="48"
             >
-              <v-avatar size="36" class="avatar-shadow">
+              <v-avatar size="32" class="avatar-shadow">
                 <div class="avatar-placeholder text-uppercase font-weight-bold">
                   {{ displayname[0] }}
                 </div>
               </v-avatar>
 
-              <div class="user-info">
+              <div class="user-info d-none d-md-block">
                 <p class="user-name">
                   {{ displayname }}
                 </p>
@@ -284,7 +579,7 @@ const logout = async () => {
                 </p>
               </div>
 
-              <v-icon size="18" class="profile-chevron">
+              <v-icon size="18" class="profile-chevron d-none d-md-block">
                 mdi-chevron-down
               </v-icon>
             </v-btn>
@@ -361,12 +656,148 @@ const logout = async () => {
 
 <style scoped>
 /* =========================================================
+   OVERLAY Z-INDEX FIX
+========================================================= */
+:deep(.v-overlay-container) {
+  z-index: 99999 !important;
+}
+
+/* =========================================================
+   QUOTATION FLOW DIALOG
+========================================================= */
+
+.quotation-flow-card {
+  border-radius: 20px !important;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.quotation-flow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 16px 20px !important;
+}
+
+.quotation-flow-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.quotation-flow-step {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.quotation-flow-content {
+  min-height: 400px;
+  padding: 36px 48px 28px !important;
+}
+
+.quotation-flow-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.quotation-flow-image {
+  width: 100%;
+  max-width: 650px;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  transition: all 0.25s ease;
+}
+
+.quotation-flow-description {
+  max-width: 650px;
+  margin: 24px auto 0;
+  text-align: center;
+}
+
+.quotation-flow-description h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.quotation-flow-description p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+.quotation-flow-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.quotation-flow-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quotation-flow-dot:hover {
+  background: #94a3b8;
+}
+
+.quotation-flow-dot--active {
+  width: 24px;
+  background: #2563eb;
+}
+
+.quotation-flow-actions {
+  min-height: 72px;
+  padding: 12px 20px !important;
+}
+
+@media (max-width: 600px) {
+  .quotation-flow-content {
+    min-height: 340px;
+    padding: 28px 20px 24px !important;
+  }
+
+  .quotation-flow-image {
+    max-height: 200px;
+  }
+
+  .quotation-flow-description h3 {
+    font-size: 19px;
+  }
+
+  .quotation-flow-description p {
+    font-size: 13px;
+  }
+
+  .quotation-flow-actions {
+    padding: 10px 12px !important;
+  }
+}
+
+/* =========================================================
    CORPORATE MINIMALIST SIDE NAVIGATION DRAWER
 ========================================================= */
 
 .desktop-side-menu {
   border-right: 1px solid #e2e8f0 !important;
-  background-color: #0f172a !important; /* Corporate Slate Dark Theme */
+  background-color: #0f172a !important;
   overflow: visible !important;
 }
 
@@ -376,7 +807,6 @@ const logout = async () => {
   flex-direction: column;
 }
 
-/* BRAND LOGO HEADER */
 .side-brand-header {
   display: flex;
   align-items: center;
@@ -408,7 +838,6 @@ const logout = async () => {
   object-fit: contain;
 }
 
-/* NAVIGATION LIST & ITEMS */
 .side-nav-list {
   display: flex;
   flex-direction: column;
@@ -428,7 +857,6 @@ const logout = async () => {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Reset Inner Elements Vuetify agar Rata Tengah Presisi */
 .side-nav-item :deep(.v-list-item__content) {
   width: 100% !important;
   height: 100% !important;
@@ -444,7 +872,6 @@ const logout = async () => {
   border-radius: 10px !important;
 }
 
-/* Wrapper Ikon Center */
 .nav-icon-wrapper {
   width: 100%;
   height: 100%;
@@ -455,10 +882,11 @@ const logout = async () => {
 
 .nav-icon-wrapper .v-icon {
   color: #94a3b8;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* TOOLTIP / FLYOUT TEXT HOVER */
 .nav-title-flyout {
   position: absolute;
   left: 56px;
@@ -472,8 +900,9 @@ const logout = async () => {
   font-weight: 600;
   letter-spacing: 0.2px;
   white-space: nowrap;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
-              0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -4px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.12);
   opacity: 0;
   visibility: hidden;
@@ -482,7 +911,6 @@ const logout = async () => {
   z-index: 999;
 }
 
-/* Hover States */
 .side-nav-item:hover {
   background-color: rgba(255, 255, 255, 0.06) !important;
   color: #ffffff !important;
@@ -499,7 +927,6 @@ const logout = async () => {
   left: 62px;
 }
 
-/* Active State (Red DRM Accent) */
 .side-nav-item--active {
   background-color: rgba(220, 38, 38, 0.12) !important;
 }
@@ -533,13 +960,13 @@ const logout = async () => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 }
 
 .logo-box {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -547,8 +974,8 @@ const logout = async () => {
 }
 
 .logo-img {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
 }
 
@@ -560,16 +987,16 @@ const logout = async () => {
 }
 
 .company-name {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
 .company-subtitle {
   margin-top: 1px;
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
   white-space: nowrap;
 }
@@ -597,7 +1024,7 @@ const logout = async () => {
 .user-profile-btn {
   text-transform: none !important;
   border-radius: 12px !important;
-  padding: 4px 8px !important;
+  padding: 4px 6px !important;
   min-width: auto !important;
   transition: background-color 0.2s ease;
 }
@@ -608,7 +1035,7 @@ const logout = async () => {
 
 .user-info {
   text-align: left;
-  margin-left: 10px;
+  margin-left: 8px;
   min-width: 0;
 }
 
@@ -617,7 +1044,7 @@ const logout = async () => {
   font-size: 13px;
   font-weight: 700;
   color: #0f172a;
-  max-width: 140px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -627,14 +1054,14 @@ const logout = async () => {
   margin: 1px 0 0;
   font-size: 11px;
   color: #64748b;
-  max-width: 140px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .profile-chevron {
-  margin-left: 6px;
+  margin-left: 4px;
   color: #94a3b8;
 }
 
@@ -695,25 +1122,6 @@ const logout = async () => {
   display: none;
 }
 
-@media (max-width: 800px) {
-  .header-left {
-    gap: 8px;
-  }
-
-  .company-name {
-    font-size: 12.5px;
-  }
-
-  .version-chip {
-    display: none;
-  }
-
-  .user-name,
-  .user-role {
-    max-width: 100px;
-  }
-}
-
 @media (max-width: 600px) {
   .desktop-company {
     display: none;
@@ -723,18 +1131,18 @@ const logout = async () => {
     display: inline;
   }
 
-  .version-chip,
-  .notification-btn,
-  .header-divider,
-  .user-info,
-  .profile-chevron {
+  .company-subtitle {
+    display: none;
+  }
+
+  .version-chip {
     display: none;
   }
 
   .user-profile-btn {
-    padding: 4px !important;
-    min-width: 42px !important;
-    width: 42px !important;
+    padding: 2px !important;
+    min-width: 36px !important;
+    width: 36px !important;
   }
 }
 </style>
