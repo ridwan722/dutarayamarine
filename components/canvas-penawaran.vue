@@ -164,6 +164,12 @@
                 props.detailpenawaran.vessel || "-"
               }}</span>
             </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ t.location }}</span>
+              <span class="sep">:</span>
+              <span class="val bold-navy">Batam</span>
+            </div>
           </div>
         </div>
 
@@ -639,6 +645,15 @@ const formatTanggal = (tanggal: string) => {
 const rubahtanggalpenawaran = (tgl: any) => formatTanggal(tgl);
 const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
 
+const loadWatermarkImage = (): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = "/Logo-DRM.png";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+  });
+};
+
 const handlePrint = async () => {
   const offerElement = document.getElementById("offer-to-print");
   const letterheadElement = offerElement?.querySelector(".letterhead");
@@ -647,6 +662,7 @@ const handlePrint = async () => {
   if (!letterheadElement || !contentElement || !footerElement) return;
 
   const { default: html2canvas } = await import("html2canvas");
+  const watermarkImage = await loadWatermarkImage();
   const canvasOptions = {
     scale: 2,
     useCORS: true,
@@ -699,6 +715,7 @@ const handlePrint = async () => {
 
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, pageWidth, pageHeight);
+
     context.drawImage(
       letterheadCanvas,
       sideMargin,
@@ -724,6 +741,21 @@ const handlePrint = async () => {
       contentWidth,
       (sliceHeight * contentWidth) / contentCanvas.width,
     );
+    // Watermark transparan di belakang konten setiap halaman print
+    const watermarkWidth = 540;
+    const watermarkHeight =
+      (watermarkImage.height / watermarkImage.width) * watermarkWidth;
+    context.save();
+    context.globalAlpha = 0.105;
+    context.drawImage(
+      watermarkImage,
+      (pageWidth - watermarkWidth) / 2,
+      (pageHeight - watermarkHeight) / 2,
+      watermarkWidth,
+      watermarkHeight,
+    );
+    context.restore();
+
     pages.push(pageCanvas.toDataURL("image/png"));
   }
 
@@ -786,6 +818,20 @@ const handleSavePdf = async () => {
       html2canvas(contentElement as HTMLElement, canvasOptions),
       html2canvas(footerElement as HTMLElement, canvasOptions),
     ]);
+    const watermarkImage = await loadWatermarkImage();
+    const watermarkCanvas = document.createElement("canvas");
+    watermarkCanvas.width = 600;
+    watermarkCanvas.height = Math.round(
+      (watermarkImage.height / watermarkImage.width) * watermarkCanvas.width,
+    );
+    const watermarkContext = watermarkCanvas.getContext("2d");
+    if (watermarkContext) {
+      watermarkContext.globalAlpha = 0.105;
+      watermarkContext.drawImage(
+        watermarkImage, 0, 0, watermarkCanvas.width, watermarkCanvas.height,
+      );
+    }
+
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -857,6 +903,19 @@ const handleSavePdf = async () => {
         sliceHeight / pixelsPerMm,
       );
 
+      // Watermark ditambahkan lebih dahulu agar berada di belakang konten
+      const watermarkWidthMm = 105;
+      const watermarkHeightMm =
+        (watermarkCanvas.height / watermarkCanvas.width) * watermarkWidthMm;
+      pdf.addImage(
+        watermarkCanvas.toDataURL("image/png"),
+        "PNG",
+        (pageWidth - watermarkWidthMm) / 2,
+        (pageHeight - watermarkHeightMm) / 2,
+        watermarkWidthMm,
+        watermarkHeightMm,
+      );
+
       sourceY += sliceHeight;
       pageNumber++;
     }
@@ -899,12 +958,12 @@ const handleSavePdf = async () => {
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.105;
-  width: 440px;
+  width: 540px;
   z-index: 0;
   pointer-events: none;
 }
 .watermark img {
-  width: 100%;
+  width: 540px;
 }
 
 .header-section {

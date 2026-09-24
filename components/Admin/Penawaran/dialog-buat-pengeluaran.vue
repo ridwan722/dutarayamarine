@@ -134,6 +134,13 @@
             </div>
           </div>
         </div>
+          <a-select-new
+            v-model="form.status_pengeluaran"
+            :items="['Hutang', 'Lunas']"
+            label="Status"
+            :disabled="saving"
+            class="mt-2"
+          />
       </div>
 
 
@@ -185,6 +192,7 @@ const emptyForm = (): pengeluaranM => ({
   doc_pengeluaran: [],
   no_telp_vendor: "",
   lokasi_vendor: "",
+  status_pengeluaran: "Hutang",
   tanggal_pengeluaran: moment().format("YYYY-MM-DD"),
 });
 const form = ref<pengeluaranM>(emptyForm());

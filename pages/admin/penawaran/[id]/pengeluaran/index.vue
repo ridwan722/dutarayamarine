@@ -49,6 +49,7 @@ const editForm = reactive<pengeluaranM>({
   lokasi_vendor: "",
   dikeluarkan_oleh: "",
   doc_pengeluaran: [],
+  status_pengeluaran: ""
 });
 
 /* =====================================================
@@ -73,6 +74,11 @@ const headers = [
     minWidth: "220px",
   },
   {
+    title: "Dikeluarkan oleh",
+    key: "dikeluarkan_oleh",
+    width: "50px"
+  },
+  {
     title: "NOMINAL",
     key: "nominal",
     align: "end",
@@ -88,26 +94,17 @@ const headers = [
     key: "nama_vendor",
     minWidth: "180px",
   },
-  {
-    title: "TELEPON",
-    key: "no_telp_vendor",
-    minWidth: "120px",
-  },
-  {
-    title: "LOKASI",
-    key: "lokasi_vendor",
-    minWidth: "100px",
-  },
-  {
-    title: "Dikeluarkan oleh",
-    key: "dikeluarkan_oleh",
-    minWidth: "100px",
-  },
 
   {
     title: "Lampiran",
     key: "bukti",
-    minWidth: "150px",
+    minWidth: "100px",
+  },
+
+  {
+    title: "Status",
+    key: "status_pengeluaran",
+    minWidth: "50px",
   },
   {
     title: "AKSI",
@@ -169,6 +166,7 @@ const openEdit = (item: any, index: number) => {
   editForm.lokasi_vendor = item.lokasi_vendor || "";
   editForm.dikeluarkan_oleh = item.dikeluarkan_oleh || "";
   editForm.doc_pengeluaran = [...(item.doc_pengeluaran || [])];
+  editForm.status_pengeluaran = item.status_pengeluaran || "";
   editFiles.value = [];
 
   editDialog.value = true;
@@ -286,6 +284,7 @@ const saveEdit = async () => {
       no_telp_vendor: editForm.no_telp_vendor,
       lokasi_vendor: editForm.lokasi_vendor,
       dikeluarkan_oleh: editForm.dikeluarkan_oleh,
+      status_pengeluaran: editForm.status_pengeluaran,
       doc_pengeluaran,
     };
 
@@ -564,7 +563,7 @@ const previewImage = (dataUrl: string) => {
           <!-- VENDOR -->
 
           <template #item.nama_vendor="{ item }">
-            <div class="vendor-cell">
+            <div class="vendor-cell mt-2">
               <div class="vendor-icon">
                 <v-icon icon="mdi-store-outline" size="15" />
               </div>
@@ -572,34 +571,28 @@ const previewImage = (dataUrl: string) => {
               <span>
                 {{ item.nama_vendor || "-" }}
               </span>
+              
             </div>
-          </template>
+             <div class="vendor-cell mt-2 ml-1">
+              <div >
+                <v-icon icon="mdi-phone-outline" size="15" />
+              </div>
 
-          <!-- TELEPON -->
+              <span>
+                {{ item.no_telp_vendor || "-" }}
+              </span>
+              
+            </div>
 
-          <template #item.no_telp_vendor="{ item }">
-            <a
-              v-if="item.no_telp_vendor"
-              :href="`tel:${item.no_telp_vendor}`"
-              class="phone-link"
-            >
-              <v-icon icon="mdi-phone-outline" size="14" class="mr-1" />
-
-              {{ item.no_telp_vendor }}
-            </a>
-
-            <span v-else class="text-disabled"> - </span>
-          </template>
-
-          <!-- LOKASI -->
-
-          <template #item.lokasi_vendor="{ item }">
-            <div class="location-cell">
-              <v-icon icon="mdi-map-marker-outline" size="15" class="mr-1" />
+            <div class="vendor-cell mt-2 mb-4 ml-1">
+              <div>
+                <v-icon icon="mdi-store-outline" size="15" />
+              </div>
 
               <span>
                 {{ item.lokasi_vendor || "-" }}
               </span>
+              
             </div>
           </template>
 
@@ -631,6 +624,30 @@ const previewImage = (dataUrl: string) => {
               {{ item.dikeluarkan_oleh || "-" }}
             </div>
           </template>
+          
+          <template #item.status_pengeluaran="{ item }">
+  <div
+    class="issued-by-cell"
+    :style="{
+      color: item.status_pengeluaran === 'Hutang'
+        ? '#f44336'
+        : item.status_pengeluaran === 'Lunas'
+          ? '#4caf50'
+          : '',
+      backgroundColor: item.status_pengeluaran === 'Hutang'
+        ? '#ffebee'
+        : item.status_pengeluaran === 'Lunas'
+          ? '#e8f5e9'
+          : '',
+      padding: '4px 10px',
+      borderRadius: '6px',
+      display: 'inline-block',
+      fontWeight: '500'
+    }"
+  >
+    {{ item.status_pengeluaran || "-" }}
+  </div>
+</template>
 
           <!-- AKSI -->
 
@@ -805,6 +822,13 @@ const previewImage = (dataUrl: string) => {
               </div>
             </div>
           </div>
+           <a-select-new
+            v-model="editForm.status_pengeluaran"
+            :items="['Hutang', 'Lunas']"
+            label="Status"
+            :disabled="savingEdit"
+            class="mt-2"
+          />
         </div>
 
         <div class="edit-modal-footer">

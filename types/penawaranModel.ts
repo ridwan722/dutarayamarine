@@ -56,6 +56,8 @@ export interface pengeluaranM {
   satuan: string;
   qty: number;
 
+  status_pengeluaran: string,
+
   doc_pengeluaran: buktiPengeluaranM[];
   nama_vendor: string;
   no_telp_vendor: string;
