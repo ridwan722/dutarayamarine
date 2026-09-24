@@ -477,7 +477,7 @@
             prepend-icon="mdi-database-export"
             @click="getallinvoice()"
           >
-            Get All Invoice
+            Tarik Semua Status Invoice
           </v-btn>
 
           <v-btn
@@ -655,9 +655,9 @@ const data = reactive({
     { title: "Tanggal", value: "tanggal", sortable: true },
     { title: "No. Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
-    { title: "Subject", value: "perihal", sortable: true },
     { title: "Client", value: "nama_customer", sortable: true },
-    { title: "Total", value: "grandtotal_invoice", sortable: true },
+    { title: "Subject", value: "perihal", sortable: true },
+    { title: "Total", value: "grandtotal_invoice", sortable: true, width: "140px" },
     { title: "Status Inv", value: "status", sortable: true },
     { title: "Aksi", align: "center" as const, value: "aksi", width: "100px" },
   ],
@@ -861,7 +861,7 @@ async function getallinvoice() {
     sessionStorage.removeItem("invoice");
     await invoiceStore.tarikDataInvoiceAct();
     data.showAllInvoice = true;
-    notificationStore.showSuccess("Semua invoice berhasil dimuat");
+    notificationStore.showSuccess("Semua invoice (all status) berhasil dimuat");
   } catch (error) {
     console.error("Gagal memuat semua invoice:", error);
     notificationStore.showError("Gagal memuat semua invoice");

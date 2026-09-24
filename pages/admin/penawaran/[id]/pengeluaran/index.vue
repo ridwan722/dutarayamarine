@@ -24,7 +24,14 @@ const detailPenawaran = computed(
   () => penawaran.value as penawaranM | undefined,
 );
 
-const pengeluaran = computed(() => detailPenawaran.value?.pengeluaran ?? []);
+const pengeluaran = computed(() => {
+  return [...(detailPenawaran.value?.pengeluaran ?? [])].sort((a, b) => {
+    return (
+      new Date(b.tanggal_pengeluaran).getTime() -
+      new Date(a.tanggal_pengeluaran).getTime()
+    );
+  });
+});
 
 /* =====================================================
    EDIT
@@ -76,7 +83,7 @@ const headers = [
   {
     title: "Dikeluarkan oleh",
     key: "dikeluarkan_oleh",
-    width: "50px"
+    maxWidth: "100px"
   },
   {
     title: "NOMINAL",
@@ -353,7 +360,6 @@ const previewImage = (dataUrl: string) => {
         />
 
         <div>
-          <div class="page-eyebrow">PROJECT EXPENSE</div>
 
           <h1 class="page-title">Pengeluaran Project</h1>
         </div>
@@ -378,7 +384,7 @@ const previewImage = (dataUrl: string) => {
           </div>
 
           <div class="project-reference">
-            <div class="reference-label">NO. REFERENSI</div>
+            <div class="reference-label">QUOTATION NO.</div>
 
             <div class="reference-number">
               {{ detailPenawaran?.no_penawaran || idPenawaran }}
@@ -620,7 +626,7 @@ const previewImage = (dataUrl: string) => {
           <!-- DIKELUARKAN OLEH -->
 
           <template #item.dikeluarkan_oleh="{ item }">
-            <div class="issued-by-cell">
+            <div >
               {{ item.dikeluarkan_oleh || "-" }}
             </div>
           </template>

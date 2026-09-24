@@ -159,7 +159,7 @@ async function opendialogaddpengeluaran() {
                 </div>
               </div>
 
-              <div class="info-field">
+              <!-- <div class="info-field">
                 <div class="field-label">PIC</div>
                 <div class="contact-row">
                   <div class="contact-icon">
@@ -172,16 +172,25 @@ async function opendialogaddpengeluaran() {
                   </div>
                   <span>{{ detailpenawaran.no_telp || "-" }}</span>
                 </div>
-              </div>
+              </div> -->
             </div>
 
             <div class="info-card-footer text-center">
+               <div
+                v-if="detailpenawaran.status == 'INVOICE'"
+                class="text-left mb-2"
+              >
+                <v-icon size="15" color="grey">mdi-information-outline</v-icon>
+                <span class="text-grey text-caption ml-1"
+                  >Invoice telah dibuat</span
+                >
+              </div>
               <v-btn
                 block
                 color="orange"
                 variant="flat"
                 size="small"
-                prepend-icon="mdi-file-document-plus-outline"
+                append-icon="mdi-file-document-plus-outline"
                 class="invoice-button"
                 @click="opendialogaddinv"
               >
@@ -189,22 +198,12 @@ async function opendialogaddpengeluaran() {
               </v-btn>
               <!-- :disabled="detailpenawaran.status == 'INVOICE'" -->
 
-              <div
-                v-if="detailpenawaran.status == 'INVOICE'"
-                class="d-flex align-center justify-center mt-2"
-              >
-                <v-icon size="15" color="red">mdi-information-outline</v-icon>
-                <span class="text-red text-caption ml-1"
-                  >Invoice telah dibuat</span
-                >
-              </div>
-
               <v-btn
                 block
                 color="primary"
                 variant="flat"
                 size="small"
-                prepend-icon="mdi-export"
+                append-icon="mdi-pencil-outline"
                 class="invoice-button mb-3 mt-3"
                 @click="opendialogaddpengeluaran"
               >

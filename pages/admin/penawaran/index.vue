@@ -436,7 +436,7 @@
       </template>
 
       <template v-slot:item.grand_total="{ item }">
-        Rp {{ rupiah(item.grand_total_penawaran) }}
+        <strong>Rp {{ rupiah(item.grand_total_penawaran) }}</strong>
       </template>
 
       <template v-slot:item.status="{ item }">
