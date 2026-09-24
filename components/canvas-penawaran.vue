@@ -67,7 +67,7 @@
   <div>
     <div id="offer-to-print" class="offer-card">
       <div class="watermark">
-        <img src="/Logo-DRM.png" alt="Logo Watermark" />
+        <img src="/logokopsurat.png" alt="Logo Watermark" />
       </div>
 
       <div class="letterhead">
@@ -648,7 +648,7 @@ const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
 const loadWatermarkImage = (): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = "/Logo-DRM.png";
+    img.src = "/logokopsurat.png";
     img.onload = () => resolve(img);
     img.onerror = reject;
   });

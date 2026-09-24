@@ -460,7 +460,7 @@ const logout = async () => {
           variant="outlined"
           class="version-chip"
         >
-          V 1.1
+          V 1.2
         </v-chip>
 
         <!-- Home Button (Desktop) -->
