@@ -1,4 +1,3 @@
-```vue
 <template>
   <div>
     <ConfirmationDialog ref="confirmationDialog" />
@@ -13,7 +12,6 @@
     >
       Kembali
     </v-btn>
-
 
     <v-dialog v-model="dialogDikirim" max-width="500" persistent>
       <v-card class="rounded-lg">
@@ -44,187 +42,163 @@
       </v-card>
     </v-dialog>
 
-   <v-dialog
-  v-model="data.dialogSelesai"
-  max-width="700"
-  scrollable
-  :persistent="readingBuktiBayar"
->
-  <v-card class="finish-invoice-dialog" rounded="xl">
-    <!-- HEADER -->
-    <div class="finish-dialog-header">
-      <div class="finish-header-icon">
-        <v-icon icon="mdi-check-circle-outline" size="28" />
-      </div>
+    <v-dialog
+      v-model="data.dialogSelesai"
+      max-width="700"
+      scrollable
+      :persistent="readingBuktiBayar"
+    >
+      <v-card class="finish-invoice-dialog" rounded="xl">
+        <!-- HEADER -->
+        <div class="finish-dialog-header">
+          <div class="finish-header-icon">
+            <v-icon icon="mdi-check-circle-outline" size="28" />
+          </div>
 
-      <div>
-        <div class="finish-header-title">Selesaikan Invoice</div>
-        <div class="finish-header-subtitle">
-          Lengkapi tanggal pembayaran dan bukti pembayaran
-        </div>
-      </div>
-    </div>
-
-    <v-divider />
-
-    <v-card-text class="pa-6">
-      <!-- TANGGAL PEMBAYARAN -->
-      <div class="form-section">
-        <div class="section-title">
-          <v-icon
-            icon="mdi-calendar-check-outline"
-            size="19"
-            class="mr-2"
-          />
-          Informasi Pembayaran
+          <div>
+            <div class="finish-header-title">Selesaikan Invoice</div>
+            <div class="finish-header-subtitle">
+              Lengkapi tanggal pembayaran dan bukti pembayaran
+            </div>
+          </div>
         </div>
 
-        <a-date-picker-new
-          label="Tanggal Dibayar"
-          v-model="invoiceDetail.tanggal_bayar"
-        />
-      </div>
+        <v-divider />
 
-      <!-- UPLOAD BUKTI BAYAR -->
-      <div class="form-section mt-6">
-        <div class="section-title">
-          <v-icon
-            icon="mdi-file-document-outline"
-            size="19"
-            class="mr-2"
-          />
-          Bukti Pembayaran
-        </div>
-
-        <div class="upload-card">
-          <label for="upload-po" class="upload-area">
-            <input
-              id="upload-po"
-              type="file"
-              multiple
-              class="po-file-input"
-              :disabled="readingBuktiBayar"
-              @change="addfile"
-            />
-
-            <div class="upload-icon-wrapper">
+        <v-card-text class="pa-6">
+          <!-- TANGGAL PEMBAYARAN -->
+          <div class="form-section">
+            <div class="section-title">
               <v-icon
-                icon="mdi-cloud-upload-outline"
-                size="30"
+                icon="mdi-calendar-check-outline"
+                size="19"
+                class="mr-2"
               />
+              Informasi Pembayaran
             </div>
 
-            <div class="upload-content">
-              <div class="upload-title">
-                Klik untuk memilih file
-              </div>
-
-              <div class="upload-description">
-                Upload bukti pembayaran invoice
-              </div>
-
-              <div class="upload-limit">
-                Maksimal ukuran file 650 KB
-              </div>
-            </div>
-          </label>
-
-          <!-- LOADING -->
-          <div
-            v-if="readingBuktiBayar"
-            class="upload-loading"
-          >
-            <v-progress-circular
-              indeterminate
-              size="20"
-              width="2"
-              class="mr-2"
+            <a-date-picker-new
+              label="Tanggal Dibayar"
+              v-model="invoiceDetail.tanggal_bayar"
             />
-            Membaca file...
-          </div>
-        </div>
-
-        <!-- FILE TERPILIH -->
-        <div v-if="poFiles.length" class="selected-files mt-4">
-          <div class="selected-files-header">
-            <div class="selected-files-title">
-              File Terpilih
-            </div>
-
-            <div class="file-count">
-              {{ poFiles.length }} file
-            </div>
           </div>
 
-          <div class="po-file-list">
-            <div
-              v-for="(file, index) in poFiles"
-              :key="index"
-              class="po-file-item"
-            >
-              <div class="file-left">
-                <div class="file-icon">
-                  <v-icon
-                    icon="mdi-file-check-outline"
-                    size="20"
-                  />
+          <!-- UPLOAD BUKTI BAYAR -->
+          <div class="form-section mt-6">
+            <div class="section-title">
+              <v-icon icon="mdi-file-document-outline" size="19" class="mr-2" />
+              Bukti Pembayaran
+            </div>
+
+            <div class="upload-card">
+              <label for="upload-po" class="upload-area">
+                <input
+                  id="upload-po"
+                  type="file"
+                  multiple
+                  class="po-file-input"
+                  :disabled="readingBuktiBayar"
+                  @change="addfile"
+                />
+
+                <div class="upload-icon-wrapper">
+                  <v-icon icon="mdi-cloud-upload-outline" size="30" />
                 </div>
 
-                <div class="file-info">
-                  <div class="po-file-name">
-                    {{ file.name }}
+                <div class="upload-content">
+                  <div class="upload-title">Klik untuk memilih file</div>
+
+                  <div class="upload-description">
+                    Upload bukti pembayaran invoice
                   </div>
 
-                  <div class="file-size">
-                    {{ Math.ceil(file.size / 1024) }} KB
-                  </div>
+                  <div class="upload-limit">Maksimal ukuran file 650 KB</div>
                 </div>
+              </label>
+
+              <!-- LOADING -->
+              <div v-if="readingBuktiBayar" class="upload-loading">
+                <v-progress-circular
+                  indeterminate
+                  size="20"
+                  width="2"
+                  class="mr-2"
+                />
+                Membaca file...
+              </div>
+            </div>
+
+            <!-- FILE TERPILIH -->
+            <div v-if="poFiles.length" class="selected-files mt-4">
+              <div class="selected-files-header">
+                <div class="selected-files-title">File Terpilih</div>
+
+                <div class="file-count">{{ poFiles.length }} file</div>
               </div>
 
-              <button
-                type="button"
-                class="po-file-remove"
-                :disabled="readingBuktiBayar"
-                @click="poFiles.splice(index, 1)"
-              >
-                <v-icon
-                  icon="mdi-close"
-                  size="18"
-                />
-              </button>
+              <div class="po-file-list">
+                <div
+                  v-for="(file, index) in poFiles"
+                  :key="index"
+                  class="po-file-item"
+                >
+                  <div class="file-left">
+                    <div class="file-icon">
+                      <v-icon icon="mdi-file-check-outline" size="20" />
+                    </div>
+
+                    <div class="file-info">
+                      <div class="po-file-name">
+                        {{ file.name }}
+                      </div>
+
+                      <div class="file-size">
+                        {{ Math.ceil(file.size / 1024) }} KB
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="po-file-remove"
+                    :disabled="readingBuktiBayar"
+                    @click="poFiles.splice(index, 1)"
+                  >
+                    <v-icon icon="mdi-close" size="18" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </v-card-text>
+        </v-card-text>
 
-    <!-- FOOTER -->
-    <v-divider />
+        <!-- FOOTER -->
+        <v-divider />
 
-    <v-card-actions class="dialog-footer">
-      <v-btn
-        variant="text"
-        color="grey-darken-1"
-        :disabled="readingBuktiBayar || savingInvoice"
-        @click="data.dialogSelesai = false"
-      >
-        Batal
-      </v-btn>
+        <v-card-actions class="dialog-footer">
+          <v-btn
+            variant="text"
+            color="grey-darken-1"
+            :disabled="readingBuktiBayar || savingInvoice"
+            @click="data.dialogSelesai = false"
+          >
+            Batal
+          </v-btn>
 
-      <v-btn
-        color="primary"
-        variant="flat"
-        rounded="lg"
-        prepend-icon="mdi-check-circle-outline"
-        :loading="savingInvoice"
-        :disabled="readingBuktiBayar || savingInvoice"
-        @click="ubahStatusSelesai"
-      >
-        Simpan Bukti Bayar
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+          <v-btn
+            color="primary"
+            variant="flat"
+            rounded="lg"
+            prepend-icon="mdi-check-circle-outline"
+            :loading="savingInvoice"
+            :disabled="readingBuktiBayar || savingInvoice"
+            @click="ubahStatusSelesai"
+          >
+            Simpan Bukti Bayar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <a-icon-success v-if="invoiceDetail.status == 'Selesai'" />
 
@@ -248,9 +222,7 @@
             </div>
 
             <div class="invoice-heading">
-              <div class="invoice-eyebrow">
-                INVOICE
-              </div>
+              <div class="invoice-eyebrow">INVOICE</div>
 
               <div class="invoice-number">
                 #INV/DRM/2026/{{ invoiceDetail.id }}
@@ -269,8 +241,9 @@
               <div class="text-caption">
                 {{ invoiceDetail.perihal }}
               </div>
-              <div class="text-caption font-weight-bold" style="display: flex;">
-                <v-icon color="#1e3a5f" class="mr-1">mdi-domain</v-icon>{{ invoiceDetail.nama_customer }}
+              <div class="text-caption font-weight-bold" style="display: flex">
+                <v-icon color="#1e3a5f" class="mr-1">mdi-domain</v-icon
+                >{{ invoiceDetail.nama_customer }}
               </div>
             </div>
           </div>
@@ -278,12 +251,7 @@
           <!-- RIGHT -->
           <div class="invoice-meta">
             <div class="invoice-status-row">
-              <v-chip
-                size="small"
-                variant="flat"
-                class="invoice-status"
-                label
-              >
+              <v-chip size="small" variant="flat" class="invoice-status" label>
                 {{ invoiceDetail.status }}
               </v-chip>
 
@@ -331,9 +299,7 @@
         <div class="reference-grid">
           <!-- INVOICE BASED ON -->
           <div class="reference-block reference-left">
-            <div class="reference-label">
-              INVOICE BASED ON
-            </div>
+            <div class="reference-label">INVOICE BASED ON</div>
 
             <div class="reference-value">
               {{ invoiceDetail.no_preorder || "-" }}
@@ -342,14 +308,9 @@
 
           <!-- PURCHASE ORDER -->
           <div class="reference-block reference-right">
-            <div class="reference-label">
-              PURCHASE ORDER DOCUMENT
-            </div>
+            <div class="reference-label">PURCHASE ORDER DOCUMENT</div>
 
-            <div
-              v-if="invoiceDetail.doc_preorder?.length"
-              class="po-list"
-            >
+            <div v-if="invoiceDetail.doc_preorder?.length" class="po-list">
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_preorder"
                 :key="index"
@@ -370,12 +331,7 @@
               </v-chip>
             </div>
 
-            <div
-              v-else
-              class="reference-empty"
-            >
-              No document attached
-            </div>
+            <div v-else class="reference-empty">No document attached</div>
           </div>
 
           <!-- DIVIDER -->
@@ -383,9 +339,7 @@
 
           <!-- TANGGAL BAYAR -->
           <div class="reference-block reference-left payment-block">
-            <div class="reference-label">
-              TANGGAL BAYAR
-            </div>
+            <div class="reference-label">TANGGAL BAYAR</div>
 
             <div class="reference-value">
               {{ invoiceDetail.tanggal_bayar || "-" }}
@@ -394,14 +348,9 @@
 
           <!-- BUKTI BAYAR -->
           <div class="reference-block reference-right payment-block">
-            <div class="reference-label">
-              DOC. BUKTI BAYAR
-            </div>
+            <div class="reference-label">DOC. BUKTI BAYAR</div>
 
-            <div
-              v-if="invoiceDetail.doc_bukti_bayar?.length"
-              class="po-list"
-            >
+            <div v-if="invoiceDetail.doc_bukti_bayar?.length" class="po-list">
               <v-chip
                 v-for="(item, index) in invoiceDetail.doc_bukti_bayar"
                 :key="index"
@@ -422,12 +371,7 @@
               </v-chip>
             </div>
 
-            <div
-              v-else
-              class="reference-empty"
-            >
-              No document attached
-            </div>
+            <div v-else class="reference-empty">No document attached</div>
           </div>
         </div>
       </v-card>
@@ -440,32 +384,49 @@
     <div class="preview-container d-flex justify-center">
       <div ref="printArea" class="invoice-paper-wrapper">
         <v-card width="850" class="pa-10 invoice-paper elevation-2">
-
-          <div class="d-flex justify-space-between align-start mb-4">
-            <div>
-              <img
-                src="/public/Logo-DRM.png"
-                class="logo-header"
-                alt="Logo SNS"
-              />
-
-              <div class="company-address">
-                <strong>PT. DUTA RAYA MARINE</strong><br />
-                Cipta Grand City G-8, Sagulung, Kota Batam, <br>
-
-Kepulauan Riau 29425
-                <br />
-                Hp. +62853 6201 8099
+          <div class="letterhead">
+            <div class="header-section">
+              <div class="logo-wrapper">
+                <img src="/logokopsurat.png" alt="Logo Header" />
               </div>
+
+              <div class="letterhead-info">
+                <h1 class="company-name">PT. DUTA RAYA MARINE</h1>
+                <p class="address-line">
+                  Cipta Grand City G-8, Sagulung, Kota Batam, <br />
+                  Kepulauan Riau 29425
+                </p>
+                <p class="phone-line">
+                  E-mail: sales@dutarayamarine.com, HP : (+62) 853 6201 8099
+                  <br />
+                  Website: www.dutarayamarine.com
+                </p>
+              </div>
+
+              <div class="header-spacer" aria-hidden="true"></div>
             </div>
 
-            <div class="invoice-title">INVOICE</div>
+            <div class="header-divider">
+              <div class="accent-bar"></div>
+              <div class="secondary-bar"></div>
+            </div>
+          </div>
+          <div class="text-center my-3 font-weight-bold">
+            <span class="font-weight-bold" style="font-size: 23px;">INVOICE</span>
           </div>
 
           <div class="info-grid mb-4">
             <div class="info-box-left">
               <table class="w-100">
                 <tbody>
+                  <tr>
+                    <td style="vertical-align: top">Subject</td>
+                    <td style="vertical-align: top">:</td>
+                    <td style="vertical-align: top">
+                      {{ invoiceDetail.perihal }}
+                    </td>
+                  </tr>
+
                   <tr>
                     <td width="80">Customer</td>
                     <td width="10">:</td>
@@ -475,7 +436,7 @@ Kepulauan Riau 29425
                   </tr>
 
                   <tr>
-                    <td style="vertical-align: top">Location</td>
+                    <td style="vertical-align: top">Address</td>
                     <td style="vertical-align: top">:</td>
                     <td style="vertical-align: top">
                       {{ invoiceDetail.alamat_customer }}
@@ -486,7 +447,7 @@ Kepulauan Riau 29425
                     <td width="80">Attn</td>
                     <td width="10">:</td>
                     <td>
-                      <span>{{ invoiceDetail.pic }}</span>
+                      <span>Ms. Meegan</span>
                     </td>
                   </tr>
                 </tbody>
@@ -497,11 +458,37 @@ Kepulauan Riau 29425
               <table class="w-100">
                 <tbody>
                   <tr>
-                    <td width="110">Invoice No</td>
+                    <td width="110">Quotation No</td>
                     <td width="10">:</td>
                     <td>
-                      INV/DRM/2026/{{ invoiceDetail.no_inv }}
+                      {{ invoiceDetail.no_penawaran }}
                     </td>
+                  </tr>
+
+                  <tr>
+                    <td width="110">Quotation Date</td>
+                    <td width="10"></td>
+                    <td>17-09-2026</td>
+                  </tr>
+
+                  <tr>
+                    <td width="110">PO NO</td>
+                    <td width="10">:</td>
+                    <td>
+                      {{ invoiceDetail.no_preorder }}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td width="110">PO Date</td>
+                    <td width="10">:</td>
+                    <td>20-09-2026</td>
+                  </tr>
+
+                  <tr>
+                    <td width="110">Invoice No</td>
+                    <td width="10">:</td>
+                    <td>INV/DRM/2026/{{ invoiceDetail.no_inv }}</td>
                   </tr>
 
                   <tr>
@@ -537,13 +524,13 @@ Kepulauan Riau 29425
                 :key="index"
               >
                 <td class="no-cell v-align-middle">
-                  <div class="text-center font-weight-bold">
+                  <div class="text-center">
                     <span>{{ index + 1 }}.</span>
                   </div>
                 </td>
 
                 <td class="desc-cell">
-                  <div class="font-weight-bold">
+                  <div>
                     <span style="white-space: pre-line">
                       {{ item.nama }}
                     </span>
@@ -570,7 +557,7 @@ Kepulauan Riau 29425
                 </td>
               </tr>
 
-              <tr>
+              <!-- <tr>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -585,7 +572,7 @@ Kepulauan Riau 29425
                     <span>{{ rupiah(invoiceDetail.subtotal_invoice) }}</span>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
 
               <tr v-if="invoiceDetail.pakai_ppn == true">
                 <td></td>
@@ -610,11 +597,11 @@ Kepulauan Riau 29425
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>TOTAL</strong>
+                  <span>TOTAL</span>
                 </td>
 
                 <td class="footer-value">
-                  <div class="d-flex justify-space-between font-weight-bold">
+                  <div class="d-flex justify-space-between">
                     <span>Rp</span>
                     <span>
                       {{ rupiah(invoiceDetail.grandtotal_invoice) }}
@@ -622,17 +609,37 @@ Kepulauan Riau 29425
                   </div>
                 </td>
               </tr>
+
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+
+                <td class="footer-label">
+                  <strong>DP 50%</strong>
+                </td>
+
+                <td class="footer-value">
+                  <div class="d-flex justify-space-between font-weight-bold">
+                    <span>Rp</span>
+                    <span> 325.000.000 </span>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <div class="terbilang-strip">
-            <strong>
+            <!-- <strong>
               Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
               Rupiah.
-            </strong>
+            </strong> -->
+            <span>
+              In Words: Three Hundred Twenty-Five Million Rupiah.
+            </span>
           </div>
 
-          <table class="w-100">
+          <table class="w-100" v-if="invoiceDetail.termCondition?.length > 0">
             <tbody>
               <tr>
                 <td class="remark-cell">
@@ -641,10 +648,7 @@ Kepulauan Riau 29425
                       TERMS & CONDITIONS :
                     </strong>
 
-                    <ul
-                      class="remark-list-style"
-                      style="list-style: none"
-                    >
+                    <ul class="remark-list-style" style="list-style: none">
                       <li
                         v-for="(item, index) in invoiceDetail.termCondition"
                         :key="index"
@@ -665,19 +669,19 @@ Kepulauan Riau 29425
                   <table class="bank-table">
                     <tbody>
                       <tr>
-                        <td>BANK</td>
+                        <td>BANK NAME</td>
                         <td>:</td>
                         <td>BCA</td>
                       </tr>
 
                       <tr>
-                        <td>NO. REKENING</td>
+                        <td>ACCOUNT NUMBER</td>
                         <td>:</td>
-                        <td>8691 8096 92</td>
+                        <td>8550 7530 23</td>
                       </tr>
 
                       <tr>
-                        <td>NAMA PENERIMA</td>
+                        <td>BENEFICIARY NAME</td>
                         <td>:</td>
                         <td>Leo Adiatmaja Sembiring</td>
                       </tr>
@@ -687,20 +691,17 @@ Kepulauan Riau 29425
               </div>
             </div>
 
-            <div class="text-center signature-area">
+          </div>
+
+          <div class="mt-8 signature-area">
               <span class="font-italic">Your sincerely,</span><br />
 
               <strong>PT. DUTA RAYA MARINE</strong>
 
-              <v-img
-                src="/public/ttd_ridwan.png"
-                width="120"
-                class="ml-11"
-              ></v-img>
+              <v-img src="/public/ttd-leo.png" width="150" class="ml-3"></v-img>
 
               <strong>( Leo Adiatmaja Sembiring )</strong>
             </div>
-          </div>
         </v-card>
       </div>
     </div>
@@ -713,7 +714,6 @@ Kepulauan Riau 29425
         variant="elevated"
         :loading="isSavingPdf"
         @click="handleSavePdf"
-
         class="mr-2"
       >
         Save PDF Invoice
@@ -724,7 +724,6 @@ Kepulauan Riau 29425
         color="indigo"
         variant="elevated"
         @click="printInvoice"
-
       >
         Print Invoice
       </v-btn>
@@ -754,8 +753,9 @@ const notificationStore = useNotificationStore();
 const userStore = useUserStore();
 const route = useRoute();
 
-const confirmationDialog =
-  ref<InstanceType<typeof ConfirmationDialog> | null>(null);
+const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
+  null,
+);
 
 const dialogDikirim = ref(false);
 const isSavingPdf = ref(false);
@@ -799,8 +799,7 @@ async function tambahDokumenBb(event: Event) {
 
   input.value = "";
 
-  if (!files.length || readingBuktiBayar.value || savingInvoice.value)
-    return;
+  if (!files.length || readingBuktiBayar.value || savingInvoice.value) return;
 
   const draft = invoiceDetail.value;
 
@@ -850,15 +849,11 @@ async function tambahDokumenBb(event: Event) {
       });
     }
 
-    const doc_bukti_bayar = [
-      ...(draft.doc_bukti_bayar || []),
-      ...documents,
-    ];
+    const doc_bukti_bayar = [...(draft.doc_bukti_bayar || []), ...documents];
 
     if (
-      new TextEncoder().encode(
-        JSON.stringify({ ...draft, doc_bukti_bayar }),
-      ).byteLength > MAX_INVOICE_BYTES
+      new TextEncoder().encode(JSON.stringify({ ...draft, doc_bukti_bayar }))
+        .byteLength > MAX_INVOICE_BYTES
     ) {
       return notificationStore.showError(
         "Ukuran invoice beserta dokumen PO terlalu besar. Kurangi ukuran atau jumlah file.",
@@ -893,9 +888,8 @@ function bukaDokumenPo(document: invoiceBuktiBayarM) {
           throw new Error("Format dokumen PO tidak valid");
         }
 
-        const bytes = Uint8Array.from(
-          atob(url.slice(separator + 1)),
-          (char) => char.charCodeAt(0),
+        const bytes = Uint8Array.from(atob(url.slice(separator + 1)), (char) =>
+          char.charCodeAt(0),
         );
 
         const contentType =
@@ -940,9 +934,7 @@ function tutupDialogDikirim() {
 async function ubahStatusDikirim() {
   const id = route.params.id as string;
 
-  const invoice = JSON.parse(
-    JSON.stringify(invoiceDetail.value),
-  ) as invoiceM;
+  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
 
   invoice.status = "Dikirim";
   invoice.dokumen_dikirim = uploadStoreInstance.getUrlRef;
@@ -974,8 +966,7 @@ function readPoFile(file: File): Promise<string> {
     reader.onerror = () =>
       reject(reader.error || new Error("File PO tidak dapat dibaca"));
 
-    reader.onabort = () =>
-      reject(new Error("Pembacaan file PO dibatalkan"));
+    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
 
     reader.readAsDataURL(file);
   });
@@ -985,10 +976,7 @@ function addfile(event: Event) {
   const target = event.target as HTMLInputElement;
 
   if (target.files && target.files.length > 0) {
-    poFiles.value = [
-      ...poFiles.value,
-      ...Array.from(target.files),
-    ];
+    poFiles.value = [...poFiles.value, ...Array.from(target.files)];
   }
 
   target.value = "";
@@ -1009,9 +997,7 @@ async function ubahStatusSelesai() {
 
   const id = route.params.id as string;
 
-  const invoice = JSON.parse(
-    JSON.stringify(invoiceDetail.value),
-  ) as invoiceM;
+  const invoice = JSON.parse(JSON.stringify(invoiceDetail.value)) as invoiceM;
 
   const newDocuments: invoiceBuktiBayarM[] = [];
 
@@ -1119,11 +1105,10 @@ const handleSavePdf = async () => {
   isSavingPdf.value = true;
 
   try {
-    const [{ default: html2canvas }, { jsPDF }] =
-      await Promise.all([
-        import("html2canvas"),
-        import("jspdf"),
-      ]);
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
 
     const fullCanvas = await html2canvas(targetElement, {
       scale: 2,
@@ -1155,16 +1140,13 @@ const handleSavePdf = async () => {
     const marginTopSecondPageMm = 12;
     const marginBottomMm = 10;
 
-    const containerRect =
-      targetElement.getBoundingClientRect();
+    const containerRect = targetElement.getBoundingClientRect();
 
-    const scaleY =
-      fullCanvas.height / containerRect.height;
+    const scaleY = fullCanvas.height / containerRect.height;
 
-    const breakableElements =
-      targetElement.querySelectorAll(
-        ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
-      );
+    const breakableElements = targetElement.querySelectorAll(
+      ".main-table tr, .terbilang-strip, .remark-border-box, .page-break-section, .info-grid",
+    );
 
     const avoidPositionsPx: {
       top: number;
@@ -1174,11 +1156,9 @@ const handleSavePdf = async () => {
     breakableElements.forEach((el) => {
       const rect = el.getBoundingClientRect();
 
-      const topPx =
-        (rect.top - containerRect.top) * scaleY;
+      const topPx = (rect.top - containerRect.top) * scaleY;
 
-      const bottomPx =
-        (rect.bottom - containerRect.top) * scaleY;
+      const bottomPx = (rect.bottom - containerRect.top) * scaleY;
 
       avoidPositionsPx.push({
         top: topPx,
@@ -1194,49 +1174,34 @@ const handleSavePdf = async () => {
         pdf.addPage();
       }
 
-      const currentTopMarginMm =
-        pageCount > 0 ? marginTopSecondPageMm : 0;
+      const currentTopMarginMm = pageCount > 0 ? marginTopSecondPageMm : 0;
 
       const currentBottomMarginMm =
         pageCount > 0 ? marginBottomMm : footerGapMm;
 
       const maxUsablePdfHeightMm =
-        pdfHeight -
-        currentTopMarginMm -
-        currentBottomMarginMm;
+        pdfHeight - currentTopMarginMm - currentBottomMarginMm;
 
       let targetSliceHeightPx =
-        (maxUsablePdfHeightMm * fullCanvas.width) /
-        pdfWidth;
+        (maxUsablePdfHeightMm * fullCanvas.width) / pdfWidth;
 
-      const remainingCanvasHeightPx =
-        fullCanvas.height - currentCanvasY;
+      const remainingCanvasHeightPx = fullCanvas.height - currentCanvasY;
 
       if (remainingCanvasHeightPx > targetSliceHeightPx) {
-        const theoreticalCutY =
-          currentCanvasY + targetSliceHeightPx;
+        const theoreticalCutY = currentCanvasY + targetSliceHeightPx;
 
-        const conflictingElement =
-          avoidPositionsPx.find(
-            (pos) =>
-              theoreticalCutY > pos.top &&
-              theoreticalCutY < pos.bottom,
-          );
+        const conflictingElement = avoidPositionsPx.find(
+          (pos) => theoreticalCutY > pos.top && theoreticalCutY < pos.bottom,
+        );
 
-        if (
-          conflictingElement &&
-          conflictingElement.top > currentCanvasY
-        ) {
-          targetSliceHeightPx =
-            conflictingElement.top - currentCanvasY;
+        if (conflictingElement && conflictingElement.top > currentCanvasY) {
+          targetSliceHeightPx = conflictingElement.top - currentCanvasY;
         }
       } else {
-        targetSliceHeightPx =
-          remainingCanvasHeightPx;
+        targetSliceHeightPx = remainingCanvasHeightPx;
       }
 
-      const pageCanvas =
-        document.createElement("canvas");
+      const pageCanvas = document.createElement("canvas");
 
       pageCanvas.width = fullCanvas.width;
       pageCanvas.height = targetSliceHeightPx;
@@ -1246,12 +1211,7 @@ const handleSavePdf = async () => {
       if (ctx) {
         ctx.fillStyle = "#ffffff";
 
-        ctx.fillRect(
-          0,
-          0,
-          pageCanvas.width,
-          pageCanvas.height,
-        );
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
 
         ctx.drawImage(
           fullCanvas,
@@ -1266,12 +1226,10 @@ const handleSavePdf = async () => {
         );
       }
 
-      const imgData =
-        pageCanvas.toDataURL("image/png");
+      const imgData = pageCanvas.toDataURL("image/png");
 
       const slicePdfHeightMm =
-        (targetSliceHeightPx * pdfWidth) /
-        fullCanvas.width;
+        (targetSliceHeightPx * pdfWidth) / fullCanvas.width;
 
       pdf.addImage(
         imgData,
@@ -1287,8 +1245,7 @@ const handleSavePdf = async () => {
     }
 
     const year = new Date().getFullYear();
-    const invoiceId =
-      invoiceDetail.value?.id || route.params.id;
+    const invoiceId = invoiceDetail.value?.id || route.params.id;
 
     pdf.save(`INV-DRM-${year}-${invoiceId}.pdf`);
   } catch (error) {
@@ -1516,7 +1473,7 @@ const handleSavePdf = async () => {
    ============================================================ */
 
 .logo-header {
-  max-width: 100px;
+  max-width: 140px;
   height: auto;
   object-fit: contain;
   display: block;
@@ -1613,8 +1570,8 @@ const handleSavePdf = async () => {
 }
 
 .bank-table td:first-child {
-  width: 130px;
-  font-weight: bold;
+  width: 160px;
+
 }
 
 .desc-cell {
@@ -1878,11 +1835,7 @@ const handleSavePdf = async () => {
   align-items: center;
   gap: 14px;
   padding: 22px 24px;
-  background: linear-gradient(
-    135deg,
-    #f8fafc 0%,
-    #ffffff 100%
-  );
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
 }
 
 .finish-header-icon {
@@ -2153,5 +2106,59 @@ const handleSavePdf = async () => {
     max-width: 250px;
   }
 }
-</style>
 
+.header-section {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 130px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 2px 0 8px;
+}
+
+.logo-wrapper img {
+  width: 205px;
+  height: auto;
+}
+
+.letterhead-info {
+  text-align: center;
+}
+
+.company-name {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f2b48;
+  letter-spacing: 0.3px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.address-line,
+.phone-line {
+  font-size: 11.5px;
+  line-height: 1.4;
+  margin: 1px 0 0;
+}
+
+.header-divider {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.accent-bar {
+  height: 4px;
+  width: 100%;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.secondary-bar {
+  height: 2px;
+  width: 100%;
+  background-color: #032752;
+}
+</style>

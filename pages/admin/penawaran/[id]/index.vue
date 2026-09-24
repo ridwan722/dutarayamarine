@@ -177,7 +177,6 @@ async function opendialogaddpengeluaran() {
 
             <div class="info-card-footer text-center">
               <v-btn
-                :disabled="detailpenawaran.status == 'INVOICE'"
                 block
                 color="orange"
                 variant="flat"
@@ -188,6 +187,7 @@ async function opendialogaddpengeluaran() {
               >
                 Buat Invoice
               </v-btn>
+              <!-- :disabled="detailpenawaran.status == 'INVOICE'" -->
 
               <div
                 v-if="detailpenawaran.status == 'INVOICE'"

@@ -103,6 +103,12 @@ const headers = [
     key: "dikeluarkan_oleh",
     minWidth: "150px",
   },
+
+  {
+    title: "Lampiran",
+    key: "bukti",
+    minWidth: "150px",
+  },
   {
     title: "AKSI",
     key: "actions",
@@ -295,6 +301,8 @@ const saveEdit = async () => {
     savingEdit.value = false;
   }
 };
+
+const previewImage = (dataUrl: string) => { if (!dataUrl) return; window.open(dataUrl, "_blank"); };
 </script>
 
 <template>
@@ -564,6 +572,29 @@ const saveEdit = async () => {
             </div>
           </template>
 
+
+<template #item.bukti="{ item }">
+  <v-tooltip
+    v-if="item.doc_pengeluaran?.length"
+    text="Pratinjau Gambar"
+    location="top"
+  >
+    <template #activator="{ props }">
+      <button
+        v-bind="props"
+        type="button"
+        class="btn-image-preview"
+        @click="previewImage(item.doc_pengeluaran[0].dataUrl)"
+      >
+        <v-icon size="20">mdi-image-outline</v-icon>
+      </button>
+    </template>
+  </v-tooltip>
+
+  <span v-else class="text-disabled">-</span>
+</template>
+
+
           <!-- DIKELUARKAN OLEH -->
 
           <template #item.dikeluarkan_oleh="{ item }">
@@ -613,49 +644,134 @@ const saveEdit = async () => {
       <div class="edit-modal-card">
         <div class="edit-modal-header">
           <div class="edit-title-group">
-            <v-icon color="primary" size="18">mdi-file-document-edit-outline</v-icon>
+            <v-icon color="primary" size="18"
+              >mdi-file-document-edit-outline</v-icon
+            >
             <span class="edit-modal-title">Edit Pengeluaran</span>
           </div>
-          <button class="edit-btn-close" :disabled="savingEdit" @click="closeEdit">&times;</button>
+          <button
+            class="edit-btn-close"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          >
+            &times;
+          </button>
         </div>
 
         <div class="edit-modal-body">
-          <a-date-picker-new v-model="editForm.tanggal_pengeluaran" label="Tanggal Pengeluaran" :disabled="savingEdit" class="mb-2" />
-          <a-text-field-new v-model="editForm.dikeluarkan_oleh" label="Dikeluarkan Oleh" placeholder="Nama" :disabled="savingEdit" class="my-2" />
-          <a-textarea-new v-model="editForm.keterangan" label="Keterangan" :disabled="savingEdit" />
+          <a-date-picker-new
+            v-model="editForm.tanggal_pengeluaran"
+            label="Tanggal Pengeluaran"
+            :disabled="savingEdit"
+            class="mb-2"
+          />
+          <a-text-field-new
+            v-model="editForm.dikeluarkan_oleh"
+            label="Dikeluarkan Oleh"
+            placeholder="Nama"
+            :disabled="savingEdit"
+            class="my-2"
+          />
+          <a-textarea-new
+            v-model="editForm.keterangan"
+            label="Keterangan"
+            :disabled="savingEdit"
+          />
           <div class="edit-form-grid">
-            <a-text-field-new v-model="editForm.qty" label="Qty" :disabled="savingEdit" />
-            <a-select-new v-model="editForm.satuan" label="Satuan" :disabled="savingEdit" :items="['Unit', 'Pcs', 'Kg']" />
-            <a-field-number-new v-model="editForm.nominal" label="Nominal" :disabled="savingEdit" />
+            <a-text-field-new
+              v-model="editForm.qty"
+              label="Qty"
+              :disabled="savingEdit"
+            />
+            <a-select-new
+              v-model="editForm.satuan"
+              label="Satuan"
+              :disabled="savingEdit"
+              :items="['Unit', 'Pcs', 'Kg']"
+            />
+            <a-field-number-new
+              v-model="editForm.nominal"
+              label="Nominal"
+              :disabled="savingEdit"
+            />
           </div>
 
           <div class="edit-section-title mt-3">Informasi Vendor</div>
           <div class="edit-form-grid">
-            <a-text-field-new v-model="editForm.nama_vendor" label="Nama Vendor" :disabled="savingEdit" />
-            <a-text-field-new v-model="editForm.no_telp_vendor" label="No. Telepon Vendor" :disabled="savingEdit" />
-            <a-text-field-new v-model="editForm.lokasi_vendor" label="Lokasi Vendor" :disabled="savingEdit" />
+            <a-text-field-new
+              v-model="editForm.nama_vendor"
+              label="Nama Vendor"
+              :disabled="savingEdit"
+            />
+            <a-text-field-new
+              v-model="editForm.no_telp_vendor"
+              label="No. Telepon Vendor"
+              :disabled="savingEdit"
+            />
+            <a-text-field-new
+              v-model="editForm.lokasi_vendor"
+              label="Lokasi Vendor"
+              :disabled="savingEdit"
+            />
           </div>
 
           <v-divider class="my-2" />
           <div class="edit-upload-row">
             <div class="edit-upload-wrapper">
-              <label for="edit-upload-bukti" class="edit-upload-label">Bill Upload</label>
+              <label for="edit-upload-bukti" class="edit-upload-label"
+                >Bill Upload</label
+              >
               <div class="edit-upload-box">
-                <input id="edit-upload-bukti" type="file" multiple class="edit-file-input" :disabled="savingEdit" @change="addEditFile" />
+                <input
+                  id="edit-upload-bukti"
+                  type="file"
+                  multiple
+                  class="edit-file-input"
+                  :disabled="savingEdit"
+                  @change="addEditFile"
+                />
                 <div class="edit-upload-icon">↑</div>
-                <div><div class="edit-upload-title">Pilih File</div><div class="edit-upload-info">Maks. 650 KB</div></div>
+                <div>
+                  <div class="edit-upload-title">Pilih File</div>
+                  <div class="edit-upload-info">Maks. 650 KB</div>
+                </div>
               </div>
             </div>
-            <div v-if="editForm.doc_pengeluaran.length || editFiles.length" class="edit-files-wrapper">
+            <div
+              v-if="editForm.doc_pengeluaran.length || editFiles.length"
+              class="edit-files-wrapper"
+            >
               <div class="edit-upload-label">File Terpilih</div>
               <div class="edit-file-list">
-                <div v-for="(file, index) in editForm.doc_pengeluaran" :key="`${file.name}-${index}`" class="edit-file-item">
+                <div
+                  v-for="(file, index) in editForm.doc_pengeluaran"
+                  :key="`${file.name}-${index}`"
+                  class="edit-file-item"
+                >
                   <div class="edit-file-name">📄 {{ file.name }}</div>
-                  <button type="button" class="edit-file-remove" :disabled="savingEdit" @click="editForm.doc_pengeluaran.splice(index, 1)">&times;</button>
+                  <button
+                    type="button"
+                    class="edit-file-remove"
+                    :disabled="savingEdit"
+                    @click="editForm.doc_pengeluaran.splice(index, 1)"
+                  >
+                    &times;
+                  </button>
                 </div>
-                <div v-for="(file, index) in editFiles" :key="`${file.name}-${file.lastModified}-${index}`" class="edit-file-item">
+                <div
+                  v-for="(file, index) in editFiles"
+                  :key="`${file.name}-${file.lastModified}-${index}`"
+                  class="edit-file-item"
+                >
                   <div class="edit-file-name">📄 {{ file.name }}</div>
-                  <button type="button" class="edit-file-remove" :disabled="savingEdit" @click="editFiles.splice(index, 1)">&times;</button>
+                  <button
+                    type="button"
+                    class="edit-file-remove"
+                    :disabled="savingEdit"
+                    @click="editFiles.splice(index, 1)"
+                  >
+                    &times;
+                  </button>
                 </div>
               </div>
             </div>
@@ -663,8 +779,18 @@ const saveEdit = async () => {
         </div>
 
         <div class="edit-modal-footer">
-          <button class="edit-btn edit-btn-secondary" :disabled="savingEdit" @click="closeEdit">Batal</button>
-          <button class="edit-btn edit-btn-primary" :disabled="savingEdit" @click="saveEdit">
+          <button
+            class="edit-btn edit-btn-secondary"
+            :disabled="savingEdit"
+            @click="closeEdit"
+          >
+            Batal
+          </button>
+          <button
+            class="edit-btn edit-btn-primary"
+            :disabled="savingEdit"
+            @click="saveEdit"
+          >
             {{ savingEdit ? "Memproses..." : "Simpan Pengeluaran" }}
           </button>
         </div>
@@ -1121,9 +1247,19 @@ const saveEdit = async () => {
   background: #f8f9fa;
 }
 
-.edit-modal-header { border-bottom: 1px solid #e9ecef; }
-.edit-modal-footer { justify-content: flex-end; gap: 8px; border-top: 1px solid #e9ecef; }
-.edit-title-group { display: flex; align-items: center; gap: 8px; }
+.edit-modal-header {
+  border-bottom: 1px solid #e9ecef;
+}
+.edit-modal-footer {
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #e9ecef;
+}
+.edit-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .edit-modal-title {
   font-size: 14px;
   font-weight: 700;
@@ -1136,33 +1272,160 @@ const saveEdit = async () => {
   background: transparent;
   cursor: pointer;
 }
-.edit-btn-close { color: #6c757d; font-size: 20px; line-height: 1; }
-.edit-modal-body { padding: 12px 16px; overflow-y: auto; }
-.edit-section-title { margin-bottom: 6px; color: #6c757d; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
-.edit-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.edit-upload-row { display: flex; align-items: flex-start; gap: 24px; width: 100%; }
-.edit-upload-wrapper { flex-shrink: 0; }
-.edit-files-wrapper { flex: 1; min-width: 0; }
-.edit-upload-label { display: block; margin-bottom: 6px; color: #334155; font-size: 13px; font-weight: 600; }
-.edit-upload-box { position: relative; display: flex; align-items: center; justify-content: center; gap: 9px; width: 150px; height: 82px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; }
-.edit-file-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.edit-upload-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; color: #475569; font-size: 17px; }
-.edit-upload-title { color: #334155; font-size: 12px; font-weight: 600; }
-.edit-upload-info { margin-top: 2px; color: #94a3b8; font-size: 10px; }
-.edit-file-list { display: flex; flex-direction: column; gap: 6px; }
-.edit-file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 38px; padding: 6px 9px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; }
-.edit-file-name { min-width: 0; overflow: hidden; color: #475569; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.edit-file-remove { flex-shrink: 0; color: #94a3b8; font-size: 18px; line-height: 1; }
-.edit-file-remove:hover:not(:disabled) { color: #dc2626; }
-.edit-btn { padding: 5px 14px; border: 1px solid transparent; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.edit-btn-secondary { border-color: #ced4da; background: #fff; color: #495057; }
-.edit-btn-primary { background: #1976d2; color: #fff; }
-.edit-btn:disabled, .edit-btn-close:disabled, .edit-file-remove:disabled { opacity: .65; cursor: not-allowed; }
+.edit-btn-close {
+  color: #6c757d;
+  font-size: 20px;
+  line-height: 1;
+}
+.edit-modal-body {
+  padding: 12px 16px;
+  overflow-y: auto;
+}
+.edit-section-title {
+  margin-bottom: 6px;
+  color: #6c757d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.edit-upload-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+.edit-upload-wrapper {
+  flex-shrink: 0;
+}
+.edit-files-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+.edit-upload-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+.edit-upload-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 150px;
+  height: 82px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+.edit-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.edit-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  font-size: 17px;
+}
+.edit-upload-title {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+}
+.edit-upload-info {
+  margin-top: 2px;
+  color: #94a3b8;
+  font-size: 10px;
+}
+.edit-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.edit-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+.edit-file-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #475569;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.edit-file-remove {
+  flex-shrink: 0;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+}
+.edit-file-remove:hover:not(:disabled) {
+  color: #dc2626;
+}
+.edit-btn {
+  padding: 5px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.edit-btn-secondary {
+  border-color: #ced4da;
+  background: #fff;
+  color: #495057;
+}
+.edit-btn-primary {
+  background: #1976d2;
+  color: #fff;
+}
+.edit-btn:disabled,
+.edit-btn-close:disabled,
+.edit-file-remove:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
 
 @media (max-width: 600px) {
-  .edit-modal-card { max-height: 100vh; border-radius: 0; }
-  .edit-form-grid { grid-template-columns: 1fr; }
-  .edit-upload-row { flex-direction: column; gap: 12px; }
+  .edit-modal-card {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .edit-upload-row {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 /* =====================================================

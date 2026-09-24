@@ -38,25 +38,34 @@
           <a-text-field-new type="text" v-model="form.no_telp" disabled />
           <a-text-field-new type="text" v-model="form.email" disabled />
         </div>
+
         <a-textarea-new
           v-model="form.alamat_customer"
           disabled
-        ></a-textarea-new>
+        />
 
         <v-divider class="my-3" />
 
         <a-date-picker-new
           v-model="form.tanggal"
           label="Invoice Date"
-        ></a-date-picker-new>
+       />
+
+        <v-divider class="my-3" />
+
         <a-text-field-new
           class="mt-2"
           label="No. Pre Order (PO)"
           v-model="form.no_preorder"
-          placeholder="No PO"
-        ></a-text-field-new>
-        <v-divider class="my-2" />
-        <div class="po-upload-row">
+          placeholder="No Preorder"
+        />
+
+         <a-date-picker-new
+          v-model="form.tanggal_preorder"
+          label="Tanggal Pre Order (PO)"
+       />
+
+        <div class="po-upload-row mt-2">
           <!-- Upload -->
           <div class="po-upload-wrapper">
             <label for="upload-po" class="po-upload-label"> Upload PO </label>
@@ -105,11 +114,11 @@
           </div>
         </div>
         <v-divider class="my-2" />
-        <a-text-field-new
+        <a-textarea-new
           class="mt-2"
           label="Subject"
           v-model="form.perihal"
-        ></a-text-field-new>
+        />
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Description</div>
@@ -306,6 +315,7 @@ const emptyForm = (): invoiceM => ({
   createdBy: "",
   termCondition: [],
   no_preorder: "",
+  tanggal_preorder: "",
   doc_preorder: [],
   tanggal_bayar: "",
   doc_bukti_bayar: [],
@@ -424,6 +434,7 @@ async function save() {
     grandtotal_invoice: grandTotal.value,
     id_penawaran: props.penawaran.id,
     no_penawaran: props.penawaran.no_penawaran,
+    tanggal_penawaran: props.penawaran.tanggal_penawaran,
     createdAt: moment().unix(),
     createdBy: userStore.getEmail,
   };

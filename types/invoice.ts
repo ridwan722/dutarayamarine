@@ -27,17 +27,19 @@ export interface invoiceM {
   id?: string;
   id_invoice?: string;
   no_inv: string;
-  no_preorder?:string;
-  doc_preorder?: invoicePoDocumentM[];
+
   id_customer: string;
   nama_customer: string;
   alamat_customer: string;
   vessel: string;
-  id_penawaran?: string,
-  no_penawaran?: string,
   no_telp: string;
   email: string;
   pic: string,
+
+  id_penawaran?: string,
+  no_penawaran?: string,
+  tanggal_penawaran?: string,
+
   tanggal: string;
   perihal: string;
   item_pekerjaan: invoiceItemM[];
@@ -45,6 +47,7 @@ export interface invoiceM {
   subtotal_invoice: number;
   ppn: number;
   grandtotal_invoice: number;
+
   status: string;
   createdAt: number;
   createdBy: string;
@@ -52,7 +55,12 @@ export interface invoiceM {
   dikirimBy?: string;
   selesaiAt?: number;
   selesaiBy?: string;
+  
   termCondition: termconditionM[];
+
+  tanggal_preorder?: string;
+  no_preorder?:string;
+  doc_preorder?: invoicePoDocumentM[];
 
   // BUKTI BAYAR
   tanggal_bayar: string,
