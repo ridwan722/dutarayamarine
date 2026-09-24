@@ -86,22 +86,22 @@ const headers = [
   {
     title: "VENDOR",
     key: "nama_vendor",
-    minWidth: "160px",
+    minWidth: "180px",
   },
   {
     title: "TELEPON",
     key: "no_telp_vendor",
-    minWidth: "140px",
+    minWidth: "120px",
   },
   {
     title: "LOKASI",
     key: "lokasi_vendor",
-    minWidth: "170px",
+    minWidth: "100px",
   },
   {
     title: "Dikeluarkan oleh",
     key: "dikeluarkan_oleh",
-    minWidth: "150px",
+    minWidth: "100px",
   },
 
   {
