@@ -39,17 +39,11 @@
           <a-text-field-new type="text" v-model="form.email" disabled />
         </div>
 
-        <a-textarea-new
-          v-model="form.alamat_customer"
-          disabled
-        />
+        <a-textarea-new v-model="form.alamat_customer" disabled />
 
         <v-divider class="my-3" />
 
-        <a-date-picker-new
-          v-model="form.tanggal"
-          label="Invoice Date"
-       />
+        <a-date-picker-new v-model="form.tanggal" label="Invoice Date" />
 
         <v-divider class="my-3" />
 
@@ -60,10 +54,10 @@
           placeholder="No Preorder"
         />
 
-         <a-date-picker-new
+        <a-date-picker-new
           v-model="form.tanggal_preorder"
           label="Tanggal Pre Order (PO)"
-       />
+        />
 
         <div class="po-upload-row mt-2">
           <!-- Upload -->
@@ -114,11 +108,7 @@
           </div>
         </div>
         <v-divider class="my-2" />
-        <a-textarea-new
-          class="mt-2"
-          label="Subject"
-          v-model="form.perihal"
-        />
+        <a-textarea-new class="mt-2" label="Subject" v-model="form.perihal" />
 
         <!-- Items Table Section -->
         <div class="section-title mt-3">Description</div>
@@ -161,6 +151,26 @@
             <div class="summary-row">
               <span class="text-muted">Subtotal</span>
               <span class="font-medium">Rp {{ rupiah(subtotal) }}</span>
+            </div>
+
+            <div class="summary-row align-center">
+              <label class="checkbox-label">
+                <input type="checkbox" v-model="form.down_payment" />
+                <span>DP</span>
+              </label>
+
+              <a-text-field-new
+                v-if="form.down_payment"
+                v-model="form.dp_persen"
+                type="number"
+                placeholder="0"
+                suffix="%"
+                class="text-right"
+              />
+
+              <span v-if="form.down_payment" class="font-medium">
+                Rp {{ rupiah(dpNominal) }}
+              </span>
             </div>
 
             <div class="summary-row align-center">
@@ -319,6 +329,8 @@ const emptyForm = (): invoiceM => ({
   doc_preorder: [],
   tanggal_bayar: "",
   doc_bukti_bayar: [],
+  down_payment: false,
+  dp_persen: 0,
 });
 
 onMounted(async () => {
@@ -334,8 +346,9 @@ const subtotal = computed(() =>
 const ppn = computed(() =>
   form.value.pakai_ppn ? Math.round(subtotal.value * 0.11) : 0,
 );
-const grandTotal = computed(() => subtotal.value + ppn.value);
-
+const grandTotal = computed(() => {
+  return dpNominal.value + ppn.value;
+});
 watch(
   () => props.modelValue,
   (open) => {
@@ -373,6 +386,14 @@ watch(
     };
   },
 );
+
+const dpNominal = computed(() => {
+  if (!form.value.down_payment) return 0;
+
+  const persen = Number(form.value.dp_persen || 0);
+
+  return Math.round(subtotal.value * (persen / 100));
+});
 
 const sortedTermConditions = computed(() => {
   const terms = [...termconditionStore.getDataTermcondition];
@@ -434,6 +455,7 @@ async function save() {
     grandtotal_invoice: grandTotal.value,
     id_penawaran: props.penawaran.id,
     no_penawaran: props.penawaran.no_penawaran,
+    tanggal_preorder: form.value.tanggal_preorder,
     tanggal_penawaran: props.penawaran.tanggal_penawaran,
     createdAt: moment().unix(),
     createdBy: userStore.getEmail,

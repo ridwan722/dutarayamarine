@@ -468,7 +468,7 @@
                   <tr>
                     <td width="110">Quotation Date</td>
                     <td width="10"></td>
-                    <td>17-09-2026</td>
+                    <td>{{ invoiceDetail.tanggal_penawaran }}</td>
                   </tr>
 
                   <tr>
@@ -482,7 +482,7 @@
                   <tr>
                     <td width="110">PO Date</td>
                     <td width="10">:</td>
-                    <td>20-09-2026</td>
+                    <td>{{ invoiceDetail.tanggal_preorder }}</td>
                   </tr>
 
                   <tr>

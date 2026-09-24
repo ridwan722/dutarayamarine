@@ -55,14 +55,16 @@ export interface invoiceM {
   dikirimBy?: string;
   selesaiAt?: number;
   selesaiBy?: string;
-  
+
   termCondition: termconditionM[];
 
   tanggal_preorder?: string;
-  no_preorder?:string;
+  no_preorder?: string;
   doc_preorder?: invoicePoDocumentM[];
 
   // BUKTI BAYAR
   tanggal_bayar: string,
   doc_bukti_bayar: invoiceBuktiBayarM[]
+  down_payment: false,
+  dp_persen: 0,
 }
