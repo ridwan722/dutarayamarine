@@ -302,11 +302,42 @@ const saveEdit = async () => {
   }
 };
 
-const previewImage = (dataUrl: string) => { if (!dataUrl) return; window.open(dataUrl, "_blank"); };
+const imagePreviewDialog = ref(false);
+const imagePreviewUrl = ref("");
+
+const previewImage = (dataUrl: string) => {
+  if (!dataUrl) return;
+
+  imagePreviewUrl.value = dataUrl;
+  imagePreviewDialog.value = true;
+};
 </script>
 
 <template>
   <v-container fluid class="expense-page pa-4 pa-md-5">
+    <v-dialog v-model="imagePreviewDialog" max-width="900">
+      <v-card>
+        <v-card-title class="d-flex align-center justify-space-between">
+          Pratinjau Bukti
+
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="imagePreviewDialog = false"
+          />
+        </v-card-title>
+
+        <v-card-text class="pa-2">
+          <img
+            v-if="imagePreviewUrl"
+            :src="imagePreviewUrl"
+            alt="Bukti Pengeluaran"
+            class="w-100"
+            style="max-height: 75vh; object-fit: contain"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <!-- =================================================
          HEADER
     ================================================== -->
@@ -572,28 +603,26 @@ const previewImage = (dataUrl: string) => { if (!dataUrl) return; window.open(da
             </div>
           </template>
 
+          <template #item.bukti="{ item }">
+            <v-tooltip
+              v-if="item.doc_pengeluaran?.length"
+              text="Pratinjau Gambar"
+              location="top"
+            >
+              <template #activator="{ props }">
+                <button
+                  v-bind="props"
+                  type="button"
+                  class="btn-image-preview"
+                  @click="previewImage(item.doc_pengeluaran[0].dataUrl)"
+                >
+                  <v-icon size="20">mdi-image-outline</v-icon>
+                </button>
+              </template>
+            </v-tooltip>
 
-<template #item.bukti="{ item }">
-  <v-tooltip
-    v-if="item.doc_pengeluaran?.length"
-    text="Pratinjau Gambar"
-    location="top"
-  >
-    <template #activator="{ props }">
-      <button
-        v-bind="props"
-        type="button"
-        class="btn-image-preview"
-        @click="previewImage(item.doc_pengeluaran[0].dataUrl)"
-      >
-        <v-icon size="20">mdi-image-outline</v-icon>
-      </button>
-    </template>
-  </v-tooltip>
-
-  <span v-else class="text-disabled">-</span>
-</template>
-
+            <span v-else class="text-disabled">-</span>
+          </template>
 
           <!-- DIKELUARKAN OLEH -->
 
