@@ -154,48 +154,48 @@
             </div>
 
             <div
-  class="summary-row align-center"
-  style="display: flex; align-items: center; gap: 12px;"
->
-  <label
-    class="checkbox-label"
-    style="
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    "
-  >
-    <input
-      type="checkbox"
-      v-model="form.down_payment"
-      style="cursor: pointer;"
-    />
-    <span style="cursor: pointer;">DP</span>
-  </label>
+              class="summary-row align-center"
+              style="display: flex; align-items: center; gap: 12px"
+            >
+              <label
+                class="checkbox-label"
+                style="
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="checkbox"
+                  v-model="form.down_payment"
+                  style="cursor: pointer"
+                />
+                <span style="cursor: pointer">DP</span>
+              </label>
 
-  <div
-    v-if="form.down_payment"
-    style="display: flex; align-items: center; gap: 4px;"
-  >
-    <a-text-field-new
-      v-model="form.dp_persen"
-      type="number"
-      placeholder="50"
-      suffix="%"
-      class="text-right"
-      style="width: 70px;"
-    />
-  </div>
+              <div
+                v-if="form.down_payment"
+                style="display: flex; align-items: center; gap: 4px"
+              >
+                <a-text-field-new
+                  v-model="form.dp_persen"
+                  type="number"
+                  placeholder="50"
+                  suffix="%"
+                  class="text-right"
+                  style="width: 70px"
+                />
+              </div>
 
-  <span
-    v-if="form.down_payment"
-    class="font-medium"
-    style="white-space: nowrap;"
-  >
-    Rp {{ rupiah(dpNominal) }}
-  </span>
-</div>
+              <span
+                v-if="form.down_payment"
+                class="font-medium"
+                style="white-space: nowrap"
+              >
+                Rp {{ rupiah(dpNominal) }}
+              </span>
+            </div>
 
             <div class="summary-row align-center">
               <label class="checkbox-label">
@@ -371,7 +371,11 @@ const ppn = computed(() =>
   form.value.pakai_ppn ? Math.round(subtotal.value * 0.11) : 0,
 );
 const grandTotal = computed(() => {
-  return dpNominal.value + ppn.value;
+  if (form.value.down_payment) {
+    return dpNominal.value + ppn.value;
+  }
+
+  return subtotal.value + ppn.value;
 });
 watch(
   () => props.modelValue,
