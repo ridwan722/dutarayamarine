@@ -447,7 +447,7 @@
                     <td width="80">Attn</td>
                     <td width="10">:</td>
                     <td>
-                      <span>Ms. Meegan</span>
+                      <span>{{ invoiceDetail.pic }}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -468,7 +468,7 @@
                   <tr>
                     <td width="110">Quotation Date</td>
                     <td width="10"></td>
-                    <td>{{ invoiceDetail.tanggal_penawaran }}</td>
+                    <td>{{ formatTanggal(invoiceDetail.tanggal_penawaran!) }}</td>
                   </tr>
 
                   <tr>
@@ -482,7 +482,7 @@
                   <tr>
                     <td width="110">PO Date</td>
                     <td width="10">:</td>
-                    <td>{{ invoiceDetail.tanggal_preorder }}</td>
+                    <td>{{ formatTanggal(invoiceDetail.tanggal_preorder!) }}</td>
                   </tr>
 
                   <tr>
@@ -557,13 +557,13 @@
                 </td>
               </tr>
 
-              <!-- <tr>
+              <tr>
                 <td></td>
                 <td></td>
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>SUB TOTAL</strong>
+                  <span>TOTAL</span>
                 </td>
 
                 <td class="footer-value">
@@ -572,7 +572,7 @@
                     <span>{{ rupiah(invoiceDetail.subtotal_invoice) }}</span>
                   </div>
                 </td>
-              </tr> -->
+              </tr>
 
               <tr v-if="invoiceDetail.pakai_ppn == true">
                 <td></td>
@@ -597,32 +597,13 @@
                 <td></td>
 
                 <td class="footer-label">
-                  <span>TOTAL</span>
+                  <strong>DP {{ invoiceDetail.dp_persen }} %</strong>
                 </td>
 
                 <td class="footer-value">
                   <div class="d-flex justify-space-between">
                     <span>Rp</span>
-                    <span>
-                      {{ rupiah(invoiceDetail.grandtotal_invoice) }}
-                    </span>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-
-                <td class="footer-label">
-                  <strong>DP 50%</strong>
-                </td>
-
-                <td class="footer-value">
-                  <div class="d-flex justify-space-between font-weight-bold">
-                    <span>Rp</span>
-                    <span> 325.000.000 </span>
+                    <strong>{{ rupiah(invoiceDetail.grandtotal_invoice) }}</strong>
                   </div>
                 </td>
               </tr>
@@ -630,12 +611,9 @@
           </table>
 
           <div class="terbilang-strip">
-            <!-- <strong>
+            <span>
               Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
               Rupiah.
-            </strong> -->
-            <span>
-              In Words: Three Hundred Twenty-Five Million Rupiah.
             </span>
           </div>
 
@@ -784,6 +762,7 @@ const formatTanggal = (tanggal: string) => {
     .format(date)
     .replace(/\//g, "-");
 };
+
 
 function openDialogSelesai() {
   data.dialogSelesai = true;

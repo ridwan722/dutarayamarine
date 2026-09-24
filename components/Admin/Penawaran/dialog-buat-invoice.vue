@@ -153,25 +153,49 @@
               <span class="font-medium">Rp {{ rupiah(subtotal) }}</span>
             </div>
 
-            <div class="summary-row align-center">
-              <label class="checkbox-label">
-                <input type="checkbox" v-model="form.down_payment" />
-                <span>DP</span>
-              </label>
+            <div
+  class="summary-row align-center"
+  style="display: flex; align-items: center; gap: 12px;"
+>
+  <label
+    class="checkbox-label"
+    style="
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    "
+  >
+    <input
+      type="checkbox"
+      v-model="form.down_payment"
+      style="cursor: pointer;"
+    />
+    <span style="cursor: pointer;">DP</span>
+  </label>
 
-              <a-text-field-new
-                v-if="form.down_payment"
-                v-model="form.dp_persen"
-                type="number"
-                placeholder="0"
-                suffix="%"
-                class="text-right"
-              />
+  <div
+    v-if="form.down_payment"
+    style="display: flex; align-items: center; gap: 4px;"
+  >
+    <a-text-field-new
+      v-model="form.dp_persen"
+      type="number"
+      placeholder="50"
+      suffix="%"
+      class="text-right"
+      style="width: 70px;"
+    />
+  </div>
 
-              <span v-if="form.down_payment" class="font-medium">
-                Rp {{ rupiah(dpNominal) }}
-              </span>
-            </div>
+  <span
+    v-if="form.down_payment"
+    class="font-medium"
+    style="white-space: nowrap;"
+  >
+    Rp {{ rupiah(dpNominal) }}
+  </span>
+</div>
 
             <div class="summary-row align-center">
               <label class="checkbox-label">
@@ -749,7 +773,7 @@ function addfile(event: Event) {
 }
 
 .summary-box {
-  width: 260px;
+  width: 300px;
   background: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 4px;
