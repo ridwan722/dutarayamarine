@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, nextTick, onMounted } from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -100,6 +100,18 @@ const inputRef = ref(null);
 const errorMessages = ref([]);
 const showError = ref(false);
 
+function resizeTextarea() {
+  const textarea = inputRef.value;
+
+  if (!textarea) return;
+
+  // Reset dulu supaya tinggi bisa mengecil ketika isi dihapus
+  textarea.style.height = "auto";
+
+  // Sesuaikan tinggi dengan isi
+  textarea.style.height = `${textarea.scrollHeight}px`;
+}
+
 function onInput(event) {
   if (props.disabled) return;
 
@@ -107,6 +119,10 @@ function onInput(event) {
 
   errorMessages.value = [];
   showError.value = false;
+
+  nextTick(() => {
+    resizeTextarea();
+  });
 }
 
 function validate() {
@@ -135,6 +151,12 @@ const firstErrorMessage = computed(() => {
   return hasError.value
     ? errorMessages.value[0]
     : "";
+});
+
+onMounted(() => {
+  nextTick(() => {
+    resizeTextarea();
+  });
 });
 
 defineExpose({
@@ -185,7 +207,12 @@ defineExpose({
 .textarea-field {
   min-height: 70px;
   line-height: 1.5;
-  resize: vertical;
+
+  /* Jangan pakai resize vertical */
+  resize: none;
+
+  /* Tinggi mengikuti isi */
+  overflow: hidden;
 }
 
 .input-field:focus {
