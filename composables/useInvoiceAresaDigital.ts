@@ -5,6 +5,7 @@ import moment from "moment";
 import { getAuth } from "firebase/auth";
 import _ from "lodash";
 import type { pengeluaranM } from "~/types/penawaranModel";
+import type { purchaseorderM } from "~/types/purchaseorderModel";
 
 
 export const createInvoicePenawaran = async (data: invoiceM) => {
@@ -118,3 +119,42 @@ export const createInvoice = async (data: invoiceM) => {
     return { ...setdata, id: id_invoice };
   });
 };
+
+
+export const createPurchaseorder = async (data: purchaseorderM) => {
+  const db = useFirestore();
+  const now = moment().unix();
+
+  return await runTransaction(db, async (transaction) => {
+    const nomorInvRef = doc(db, "penomoran", "nomor");
+    const getnomor = await transaction.get(nomorInvRef);
+
+    if (!getnomor.exists()) {
+      throw new Error("Dokumen penomoran/nomor tidak ditemukan");
+    }
+
+    const datanomor = getnomor.data();
+    const newnumber = datanomor!.no_penawaran;
+    const stringnewnumber = _.toString(newnumber).padStart(5, "0");
+    const year = moment().format("YYYY");
+    const no_purchaseorder = `PO/DRM/${year}/${stringnewnumber}`;;
+    const id_purchaseorder = `PO-DRM-${year}-${stringnewnumber}`;
+    const setdata: purchaseorderM = {
+      ...data,
+      no_purchaseorder, 
+      id_purchaseorder,
+      createdAt: now,
+    };
+
+    //Ref dokumen utama laporan
+
+    const purchaseorderRef = doc(db, "purchaseorder", id_purchaseorder);
+    const penawaranpurchaseorderRef = doc(db, "penawaran", data.id_penawaran!, "purchaseorder", id_purchaseorder);
+    // Simpan dokumen utama laporan
+    transaction.set(purchaseorderRef, setdata, { merge: true });
+    transaction.set(penawaranpurchaseorderRef, setdata, { merge: true });
+
+    return { ...setdata, id: id_purchaseorder };
+  });
+};
+

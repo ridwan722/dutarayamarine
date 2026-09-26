@@ -35,6 +35,7 @@ const data = reactive({
   pageKategori: 1,
   dialogPenawaran: false,
   dialogAddPengeluaran: false,
+  dialogPurchaseOrder: false,
 
   new_pemberkasan: {
     id_dokumen: "",
@@ -83,7 +84,10 @@ async function opendialogaddpengeluaran() {
     :penawaran="detailpenawaran"
   />
 
-  <admin-penawaran-dialog-purchaseorder />
+  <admin-penawaran-dialog-purchaseorder
+    v-model="data.dialogPurchaseOrder"
+    :penawaran="detailpenawaran"
+  />
 
   <div v-if="detailpenawaran" class="quotation-page">
     <!-- STICKY HEADER WRAPPER -->
@@ -193,6 +197,7 @@ async function opendialogaddpengeluaran() {
                   size="small"
                   append-icon="mdi-clipboard-text-outline"
                   class="corporate-btn btn-po"
+                  @click="data.dialogPurchaseOrder = true"
                 >
                   Buat Purchase Order (PO)
                 </v-btn>

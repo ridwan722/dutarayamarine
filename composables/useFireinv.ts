@@ -18,6 +18,7 @@ import type { invoiceM } from "~/types/invoice";
 import type { penawaranM } from "~/types/penawaranModel";
 import { arrayUnion } from "firebase/firestore";
 import type { CompanyInspectionReport } from "~/types/beritaAcaraModel";
+import type { purchaseorderM } from "~/types/purchaseorderModel";
 
 // export const setinvoice = async (data: invoiceM) => {
 //     const db = useFirestore();
@@ -1057,6 +1058,46 @@ export const setPenawaran = async (data: penawaranM) => {
                     createdBy: data.created_by || "-",
                 });
             }
+            transaction.update(nomorInvRef, { no_penawaran: newnumber });
+        }).then(() => {
+            return "ok";
+        });
+    } catch (error: any) {
+        console.error("Firestore transaction error:", error);
+        return error.message;
+    }
+};
+
+
+export const setPurchaseOrder = async (data: purchaseorderM) => {
+    console.log(data, "cek data composables");
+    const db = useFirestore();
+    // const auth = getAuth();
+    const now = moment().unix();
+    // Firebase Auth can still be restoring its session when this function runs.
+    // The form already supplies created_by from the user store, so use it as a
+    // fallback and never send an undefined value to Firestore.
+    // const email = auth.currentUser?.email || data.created_by || "-";
+
+    try {
+        return await runTransaction(db, async (transaction) => {
+            const nomorInvRef = doc(db, "penomoran", "nomor");
+            const getnomor = await transaction.get(nomorInvRef);
+
+            if (!getnomor.exists()) {
+                throw new Error("Dokumen penomoran/nomor tidak ditemukan");
+            }
+
+            const datanomor = getnomor.data();
+            const newnumber = datanomor!.no_penawaran + 1;
+            const stringnewnumber = _.toString(newnumber).padStart(5, "0");
+            const year = moment().format("YYYY");
+            const no_penawaran = `QT/DRM/${year}/${stringnewnumber}`;
+            const id_penawaran = `QT-DRM-${year}-${stringnewnumber}`;
+       
+
+            // 3️⃣ Ref dokumen utama laporan
+            const purchaseOrderRef = doc(db, "purchaseorder", id_penawaran);
             transaction.update(nomorInvRef, { no_penawaran: newnumber });
         }).then(() => {
             return "ok";

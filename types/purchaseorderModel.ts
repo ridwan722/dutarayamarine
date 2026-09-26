@@ -12,6 +12,12 @@ export interface purchaseorderItemM {
   price: number;
 }
 
+export interface purchaseorderSectionM {
+  title: string;
+  description: string;
+  items: purchaseorderItemM[];
+}
+
 export interface purchaseorderM {
   id_purchaseorder?: string; // PO/DRM/2026/00001
   no_purchaseorder?: string;
@@ -22,7 +28,7 @@ export interface purchaseorderM {
 
   perihal_purchaseorder: string;
 
-  item_purchaseorder: purchaseorderItemM[];
+  item_purchaseorder: purchaseorderSectionM[];
   subtotal_purchaseorder: number;
   diskon_purchaseorder: number;
   grandtotal_purchaseorder: number;
@@ -35,4 +41,6 @@ export interface purchaseorderM {
   no_telp_vendor: string;
   alamat_vendor: string;
   email_vendor: string;
+  createdAt?: number;
+  // createdBy: string;
 }
