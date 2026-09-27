@@ -85,17 +85,29 @@
       </v-card-title>
 
       <v-card-text class="po-content">
-        <!-- SECTIONS -->
 
-        <a-select
+        <a-text-field-new
+          v-model="perihal_purchaseorder"
+          label="Perihal Purchase Order"
+          class="mb-2"
+        />
+
+        <a-select-new
           v-model="selectedVendorId"
           :items="vendorOptions"
           item-title="nama_vendor"
           item-value="id_vendor"
           label="Pilih Vendor"
-          placeholder="Pilih vendor"
+          class="mb-2"
         />
 
+        <!-- <a-text-field-new v-model="selectedVendorId" disabled />
+
+        <a-text-field-new v-model="selectedVendorId" disabled />
+
+        <a-text-field-new v-model="selectedVendorId" disabled /> -->
+
+        <v-divider class="my-3"></v-divider>
         <div
           v-for="(section, sectionIndex) in form.sections"
           :key="sectionIndex"
@@ -350,7 +362,7 @@
       </v-card-text>
 
       <v-card-actions class="item-dialog-actions justify-end">
-        <v-btn color="grey" variant="text" size="small"> CANCEL </v-btn>
+        <v-btn color="grey" variant="text" size="small"  @click="isOpen = false;"> CANCEL </v-btn>
 
         <v-btn
           size="small"
@@ -385,6 +397,7 @@ const isOpen = computed({
 });
 
 const vendorStore = usevendorStore();
+const perihal_purchaseorder = ref("");
 const selectedVendorId = ref("");
 const vendorOptions = computed(() =>
   vendorStore.getDataVendor.map((vendor) => ({
@@ -552,7 +565,7 @@ async function addpurchaseorder() {
     id_penawaran: penawaran.id_penawaran,
     no_penawaran: penawaran.no_penawaran,
     tanggal_penawaran: penawaran.tanggal_penawaran,
-    perihal_purchaseorder: penawaran.perihal,
+    perihal_purchaseorder: perihal_purchaseorder.value.trim(),
     item_purchaseorder,
     subtotal_purchaseorder: subtotal_purchaseorder.value,
     diskon_purchaseorder: Number(form.value.diskon_purchaseorder) || 0,

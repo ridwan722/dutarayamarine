@@ -274,12 +274,7 @@ async function opendialogaddpengeluaran() {
 
           <canvas-penawaran :detailpenawaran="detailpenawaran" />
 
-          <div>
-            Masuk Data Pusrchase Order
-            <br>
-            Id nya :...
-            Perihal nya : ...
-          </div>
+          <canvas-purchaseorder :detailpenawaran="detailpenawaran" />
         </main>
       </div>
     </div>
