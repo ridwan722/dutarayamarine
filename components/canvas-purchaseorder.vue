@@ -100,72 +100,26 @@
         </div>
       </div>
 
-      <div>
-        <span style="font-size: 24px;">PURCHASE ORDER</span>
+      <div class="text-center">
+        <strong style="font-size: 20px;">PURCHASE ORDER</strong>
       </div>
 
       <div class="content-body">
         <div class="info-grid-card">
-          <div class="grid-col">
+          <section class="grid-col">
+            <h2 class="info-heading">{{ lang === 'id' ? 'Informasi Permintaan' : 'Request Information' }}</h2>
             <div class="meta-row">
-              <span class="lbl">{{ t.refNo }}</span>
+              <span class="lbl">{{ lang === 'id' ? 'Kode PO' : 'PO Code' }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
-                purchaseorder?.no_purchaseorder || props.detailpenawaran.no_penawaran
+                purchaseorder?.no_purchaseorder || purchaseorder?.id_purchaseorder || props.detailpenawaran.no_penawaran
               }}</span>
             </div>
-            <div class="meta-row">
-              <span class="lbl">{{ t.date }}</span>
-              <span class="sep">:</span>
-              <span class="val bold">
-  {{
-    props.detailpenawaran.tanggal_penawaran
-      ? moment(props.detailpenawaran.tanggal_penawaran).format("DD-MM-YYYY")
-      : "-"
-  }}
-</span>
-            </div>
-            <div class="meta-row">
-              <span class="lbl">{{ t.to }}</span>
-              <span class="sep">:</span>
-              <span class="val bold">{{
-                purchaseorder?.nama_vendor 
-              }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="lbl">{{ t.attn }}</span>
-              <span class="sep">:</span>
-              <span class="val">{{ purchaseorder?.pic_vendor }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="lbl">{{ t.email }}</span>
-              <span class="sep">:</span>
-              <span class="val">{{ purchaseorder?.email_vendor }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="lbl">{{ t.subject }}</span>
-              <span class="sep">:</span>
-              <span class="val bold-navy">{{
-                purchaseorder?.perihal_purchaseorder
-              }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="lbl">{{ t.address }}</span>
-              <span class="sep">:</span>
-              <span class="val bold-navy">{{
-                purchaseorder?.alamat_vendor
-              }}</span>
-            </div>
-
             <div class="meta-row">
               <span class="lbl">{{ t.vessel }}</span>
               <span class="sep">:</span>
               <span class="val bold-navy">{{
-                props.detailpenawaran.vessel || "-"
+                props.detailpenawaran.vessel
               }}</span>
             </div>
 
@@ -174,7 +128,25 @@
               <span class="sep">:</span>
               <span class="val bold-navy">Batam</span>
             </div>
-          </div>
+            <div class="meta-row">
+              <span class="lbl">{{ t.date }}</span>
+              <span class="sep">:</span>
+              <span class="val">{{ purchaseorder?.tanggal_penawaran ? moment(purchaseorder.tanggal_penawaran).format('DD MMMM YYYY') : (props.detailpenawaran.tanggal_penawaran ? moment(props.detailpenawaran.tanggal_penawaran).format('DD MMMM YYYY') : '-') }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="lbl">{{ lang === 'id' ? 'Pembayaran' : 'Payment' }}</span>
+              <span class="sep">:</span>
+              <span class="val">{{ purchaseorder?.perihal_purchaseorder}}</span>
+            </div>
+          </section>
+          <section class="grid-col">
+            <h2 class="info-heading">{{ lang === 'id' ? 'Informasi Vendor' : 'Vendor Information' }}</h2>
+            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'Nama Vendor' : 'Vendor Name' }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.nama_vendor }}</span></div>
+            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'No. Penawaran' : 'Quotation No' }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.no_penawaran || props.detailpenawaran.no_penawaran }}</span></div>
+            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'Mata Uang' : 'Currency' }}</span><span class="sep">:</span><span class="val">IDR</span></div>
+            <div class="meta-row"><span class="lbl">Email</span><span class="sep">:</span><span class="val">{{ purchaseorder?.email_vendor }}</span></div>
+            <div class="meta-row"><span class="lbl">{{ t.phone }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.no_telp_vendor }}</span></div>
+          </section>
         </div>
 
         <div class="text-salutation">
@@ -269,36 +241,31 @@
               </tr>
             </thead>
             <tbody ref="tableBodyRef">
-              <tr
-                v-for="(item, index) in purchaseorderRows"
-                :key="`${item.sectionIndex}-${index}`"
-                :class="{ 'zebra-row': index % 2 === 1 }"
-              >
-                <td class="text-center row-num drag-handle" width="36">
-                  <div style="display: flex; align-items: center">
-                    <v-icon size="12" class="drag-icon no-print mr-1"
-                      >mdi-drag-vertical</v-icon
-                    >
-                    <span>{{ index + 1 }}.</span>
-                  </div>
-                </td>
-
-                <td
-                  class="text-left text-slate-800"
-                  style="white-space: pre-line"
+              <template v-for="(section, sectionIndex) in purchaseorderSections" :key="`section-${sectionIndex}`">
+                <tr v-if="section.title || section.description" class="section-row">
+                  <td colspan="6">
+                    <strong v-if="section.title">{{ section.title }}</strong>
+                    <div v-if="section.description" class="section-description">{{ section.description }}</div>
+                  </td>
+                </tr>
+                <tr
+                  v-for="(item, itemIndex) in section.items"
+                  :key="item.id || `${sectionIndex}-${itemIndex}`"
+                  :class="{ 'zebra-row': (section.startIndex + itemIndex) % 2 === 1 }"
                 >
-                  {{ item.nama }}
-                </td>
-                <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
-                <td class="text-center">{{ item.qty }}</td>
-                <td class="text-center text-slate-500">{{ item.uom }}</td>
-                <td class="text-right text-slate-600">
-                  Rp {{ rupiah(item.price) }}
-                </td>
-                <td class="text-right text-navy">
-                  Rp {{ rupiah(item.price * item.qty) }}
-                </td>
-              </tr>
+                  <td class="text-center row-num drag-handle" width="36">
+                    <div style="display: flex; align-items: center">
+                      <v-icon size="12" class="drag-icon no-print mr-1">mdi-drag-vertical</v-icon>
+                      <span>{{ section.startIndex + itemIndex + 1 }}.</span>
+                    </div>
+                  </td>
+                  <td class="text-left text-slate-800" style="white-space: pre-line">{{ item.nama }}</td>
+                  <td class="text-center">{{ item.qty }}</td>
+                  <td class="text-center text-slate-500">{{ item.uom }}</td>
+                  <td class="text-right text-slate-600">Rp {{ rupiah(item.price) }}</td>
+                  <td class="text-right text-navy">Rp {{ rupiah(item.price * item.qty) }}</td>
+                </tr>
+              </template>
             </tbody>
 
             <tfoot v-if="showTotal">
@@ -450,11 +417,15 @@ const loadPurchaseorder = async () => {
 onMounted(loadPurchaseorder);
 watch(() => props.detailpenawaran?.id_penawaran, loadPurchaseorder);
 
-const purchaseorderRows = computed(() =>
-  (purchaseorder.value?.item_purchaseorder || []).flatMap((section, sectionIndex) =>
-    section.items.map((item) => ({ ...item, sectionIndex })),
-  ),
-);
+const purchaseorderSections = computed(() => {
+  let itemCount = 0;
+  return (purchaseorder.value?.item_purchaseorder || []).map((section) => {
+    const items = section.items || [];
+    const startIndex = itemCount;
+    itemCount += items.length;
+    return { ...section, items, startIndex };
+  });
+});
 
 const lang = ref<"id" | "en">("en");
 
@@ -1085,31 +1056,42 @@ const handleSavePdf = async () => {
 
 .info-grid-card {
   display: grid;
-  gap: 16px;
-
-  border-radius: 8px;
-  padding: 10px 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  padding: 14px 0;
   margin-bottom: 14px;
+  color: #102744;
+}
+
+.info-heading {
+  margin: 0 0 9px;
+  color: #102744;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .meta-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   font-size: 10.5px;
-  margin-bottom: 0px;
+  line-height: 1.35;
+  margin-bottom: 3px;
 }
 .meta-row:last-child {
   margin-bottom: 0;
 }
 
 .meta-row .lbl {
-  width: 105px;
+  width: 100px;
   flex-shrink: 0;
 }
 
 .meta-row .sep {
   width: 12px;
+  flex-shrink: 0;
 }
+
+.meta-row .val { min-width: 0; }
 
 .text-salutation {
   font-size: 11px;
@@ -1162,6 +1144,19 @@ const handleSavePdf = async () => {
 
 .modern-table tbody tr.zebra-row {
   background-color: #f8fafc;
+}
+
+.modern-table tbody tr.section-row td {
+  padding: 8px 10px 4px;
+  color: #0f2b48;
+  background-color: #f8fafc;
+  border-bottom: 0;
+}
+
+.section-description {
+  margin-top: 2px;
+  color: #475569;
+  font-weight: 400;
 }
 
 .modern-table tbody tr:last-child td {
