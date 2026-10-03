@@ -10,6 +10,7 @@ import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-peng
 import { ref } from "vue";
 
 const activeTab = ref(0);
+const purchaseorderPreviewKey = ref(0);
 
 definePageMeta({ layout: "admin" });
 
@@ -87,6 +88,7 @@ async function opendialogaddpengeluaran() {
   <admin-penawaran-dialog-purchaseorder
     v-model="data.dialogPurchaseOrder"
     :penawaran="detailpenawaran"
+    @saved="purchaseorderPreviewKey++"
   />
 
   <div v-if="detailpenawaran" class="quotation-page">
@@ -199,7 +201,7 @@ async function opendialogaddpengeluaran() {
                   class="corporate-btn btn-po"
                   @click="data.dialogPurchaseOrder = true"
                 >
-                  Buat Purchase Order (PO)
+                  Buat / Edit Purchase Order (PO)
                 </v-btn>
 
                 <!-- Pengeluaran -->
@@ -273,8 +275,11 @@ async function opendialogaddpengeluaran() {
           </div>
 
           <canvas-penawaran :detailpenawaran="detailpenawaran" />
-
-          <canvas-purchaseorder :detailpenawaran="detailpenawaran" />
+          <v-divider opacity="100" thickness="2" class="mb-5"></v-divider>
+          <canvas-purchaseorder
+            :key="purchaseorderPreviewKey"
+            :detailpenawaran="detailpenawaran"
+          />
         </main>
       </div>
     </div>

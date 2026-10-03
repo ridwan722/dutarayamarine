@@ -296,6 +296,7 @@
         class="invoice-reference-card border rounded-lg mb-3 elevation-1"
         width="850"
       >
+      
         <div class="reference-grid">
           <!-- INVOICE BASED ON -->
           <div class="reference-block reference-left">
@@ -383,6 +384,16 @@
 
     <div class="preview-container d-flex justify-center">
       <div ref="printArea" class="invoice-paper-wrapper">
+         <v-btn
+              class="no-print text-center mx-auto mb-3"
+              size="x-small"
+color="primary"
+prepend-icon="mdi-translate-variant"
+              block
+              @click="invoiceLanguage = invoiceLanguage === 'en' ? 'id' : 'en'"
+            >
+              {{ invoiceLanguage === 'en' ? 'English' : 'Indonesia' }}
+            </v-btn>
         <v-card width="850" class="pa-10 invoice-paper elevation-2">
           <div class="letterhead">
             <div class="header-section">
@@ -420,7 +431,7 @@
               <table class="w-100">
                 <tbody>
                   <tr>
-                    <td style="vertical-align: top">Subject</td>
+                    <td style="vertical-align: top">{{ invoiceLanguage === 'id' ? 'Perihal' : 'Subject' }}</td>
                     <td style="vertical-align: top">:</td>
                     <td style="vertical-align: top">
                       {{ invoiceDetail.perihal }}
@@ -428,28 +439,45 @@
                   </tr>
 
                   <tr>
-                    <td width="80">Customer</td>
+                    <td width="80">{{ invoiceLanguage === 'id' ? 'Pelanggan' : 'Customer' }}</td>
                     <td width="10">:</td>
                     <td>
                       <span>{{ invoiceDetail.nama_customer }}</span>
                     </td>
                   </tr>
 
-                  <tr>
-                    <td style="vertical-align: top">Address</td>
+                   <tr>
+                    <td style="vertical-align: top">{{ invoiceLanguage === 'id' ? 'Alamat' : 'Address' }}</td>
                     <td style="vertical-align: top">:</td>
                     <td style="vertical-align: top">
                       {{ invoiceDetail.alamat_customer }}
                     </td>
                   </tr>
 
-                  <tr>
-                    <td width="80">Attn</td>
+                   <tr>
+                    <td width="80">{{ invoiceLanguage === 'id' ? 'PIC' : 'Attn' }}</td>
                     <td width="10">:</td>
                     <td>
                       <span>{{ invoiceDetail.pic }}</span>
                     </td>
                   </tr>
+
+                   <tr>
+                    <td width="80">{{ invoiceLanguage === 'id' ? 'Kapal' : 'Vessel' }}</td>
+                    <td width="10">:</td>
+                    <td>
+                      <span>{{ invoiceDetail.vessel }}</span>
+                    </td>
+                  </tr>
+
+                   <tr>
+                    <td width="80">{{ invoiceLanguage === 'id' ? 'Lokasi' : 'Location' }}</td>
+                    <td width="10">:</td>
+                    <td>
+                      <span>Batam</span>
+                    </td>
+                  </tr>
+
                 </tbody>
               </table>
             </div>
@@ -458,7 +486,7 @@
               <table class="w-100">
                 <tbody>
                   <tr>
-                    <td width="110">Quotation No</td>
+                    <td width="110">{{ invoiceLanguage === 'id' ? 'No. Penawaran' : 'Quotation No' }}</td>
                     <td width="10">:</td>
                     <td>
                       {{ invoiceDetail.no_penawaran }}
@@ -466,13 +494,13 @@
                   </tr>
 
                   <tr>
-                    <td width="110">Quotation Date</td>
+                    <td width="110">{{ invoiceLanguage === 'id' ? 'Tanggal Penawaran' : 'Quotation Date' }}</td>
                     <td width="10"></td>
                     <td>{{ formatTanggal(invoiceDetail.tanggal_penawaran!) }}</td>
                   </tr>
 
                   <tr>
-                    <td width="110">PO NO</td>
+                    <td width="110">{{ invoiceLanguage === 'id' ? 'No. PO' : 'PO No' }}</td>
                     <td width="10">:</td>
                     <td>
                       {{ invoiceDetail.no_preorder }}
@@ -480,25 +508,25 @@
                   </tr>
 
                   <tr>
-                    <td width="110">PO Date</td>
+                    <td width="110">{{ invoiceLanguage === 'id' ? 'Tanggal PO' : 'PO Date' }}</td>
                     <td width="10">:</td>
                     <td>{{ formatTanggal(invoiceDetail.tanggal_preorder!) }}</td>
                   </tr>
 
                   <tr>
-                    <td width="110">Invoice No</td>
+                    <td width="110">{{ invoiceLanguage === 'id' ? 'No. Invoice' : 'Invoice No' }}</td>
                     <td width="10">:</td>
                     <td>INV/DRM/2026/{{ invoiceDetail.no_inv }}</td>
                   </tr>
 
                   <tr>
-                    <td>Inv Date</td>
+                    <td>{{ invoiceLanguage === 'id' ? 'Tanggal Invoice' : 'Invoice Date' }}</td>
                     <td>:</td>
                     <td>{{ formatTanggal(invoiceDetail.tanggal) }}</td>
                   </tr>
 
                   <tr>
-                    <td>Currency</td>
+                    <td>{{ invoiceLanguage === 'id' ? 'Mata Uang' : 'Currency' }}</td>
                     <td>:</td>
                     <td>IDR – (Rupiah)</td>
                   </tr>
@@ -511,10 +539,10 @@
             <thead>
               <tr>
                 <th width="3%">NO.</th>
-                <th width="47%">DESCRIPTION</th>
+                <th width="47%">{{ invoiceLanguage === 'id' ? 'DESKRIPSI' : 'DESCRIPTION' }}</th>
                 <th width="5%">QTY</th>
-                <th width="5%">UOM</th>
-                <th width="35%">AMOUNT</th>
+                <th width="5%">{{ invoiceLanguage === 'id' ? 'SATUAN' : 'UOM' }}</th>
+                <th width="35%">{{ invoiceLanguage === 'id' ? 'JUMLAH' : 'AMOUNT' }}</th>
               </tr>
             </thead>
 
@@ -580,7 +608,7 @@
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>PPn 11%</strong>
+                  <strong>{{ invoiceLanguage === 'id' ? 'PPN 11%' : 'VAT 11%' }}</strong>
                 </td>
 
                 <td class="footer-value">
@@ -591,13 +619,13 @@
                 </td>
               </tr>
 
-              <tr>
+              <tr v-if="invoiceDetail.dp_persen > 0">
                 <td></td>
                 <td></td>
                 <td></td>
 
                 <td class="footer-label">
-                  <strong>DP {{ invoiceDetail.dp_persen }} %</strong>
+                  <strong>{{ invoiceLanguage === 'id' ? 'Uang Muka' : 'Down Payment' }} {{ invoiceDetail.dp_persen }} %</strong>
                 </td>
 
                 <td class="footer-value">
@@ -611,9 +639,11 @@
           </table>
 
           <div class="terbilang-strip">
-            <span>
-              Terbilang : #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }}
-              Rupiah.
+            <span v-if="invoiceLanguage === 'id'">
+              Terbilang: #{{ jadirupiah(invoiceDetail.grandtotal_invoice) }} Rupiah.
+            </span>
+            <span v-else>
+              Amount in words: #{{ numberToWordsEnglish(invoiceDetail.grandtotal_invoice) }} Rupiah.
             </span>
           </div>
 
@@ -623,7 +653,7 @@
                 <td class="remark-cell">
                   <div class="remark-border-box">
                     <strong class="text-body-2 font-weight-bold">
-                      TERMS & CONDITIONS :
+                      {{ invoiceLanguage === 'id' ? 'SYARAT & KETENTUAN :' : 'TERMS & CONDITIONS :' }}
                     </strong>
 
                     <ul class="remark-list-style" style="list-style: none">
@@ -647,19 +677,19 @@
                   <table class="bank-table">
                     <tbody>
                       <tr>
-                        <td>BANK NAME</td>
+                        <td>{{ invoiceLanguage === 'id' ? 'NAMA BANK' : 'BANK NAME' }}</td>
                         <td>:</td>
                         <td>BCA</td>
                       </tr>
 
                       <tr>
-                        <td>ACCOUNT NUMBER</td>
+                        <td>{{ invoiceLanguage === 'id' ? 'NOMOR REKENING' : 'ACCOUNT NUMBER' }}</td>
                         <td>:</td>
                         <td>8550 7530 23</td>
                       </tr>
 
                       <tr>
-                        <td>BENEFICIARY NAME</td>
+                        <td>{{ invoiceLanguage === 'id' ? 'ATAS NAMA' : 'BENEFICIARY NAME' }}</td>
                         <td>:</td>
                         <td>Leo Adiatmaja Sembiring</td>
                       </tr>
@@ -672,11 +702,11 @@
           </div>
 
           <div class="mt-8 signature-area">
-              <span class="font-italic">Your sincerely,</span><br />
+              <span class="font-italic">{{ invoiceLanguage === 'id' ? 'Hormat kami,' : 'Yours sincerely,' }}</span><br />
 
               <strong>PT. DUTA RAYA MARINE</strong>
 
-              <v-img src="/public/ttd-leo.png" width="150" class="ml-3"></v-img>
+              <v-img src="/public/ttd_leo.png" width="150" class="ml-3"></v-img>
 
               <strong>( Leo Adiatmaja Sembiring )</strong>
             </div>
@@ -738,6 +768,26 @@ const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
 const dialogDikirim = ref(false);
 const isSavingPdf = ref(false);
 const readingBuktiBayar = ref(false);
+const invoiceLanguage = ref<"id" | "en">("en");
+
+function numberToWordsEnglish(value: number): string {
+  const number = Math.floor(Math.abs(value || 0));
+  const units = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function convert(n: number): string {
+    if (n < 20) return units[n];
+    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? ` ${units[n % 10]}` : "");
+    if (n < 1000) return `${units[Math.floor(n / 100)]} Hundred${n % 100 ? ` ${convert(n % 100)}` : ""}`;
+    const scales = [[1_000_000_000, "Billion"], [1_000_000, "Million"], [1000, "Thousand"]] as const;
+    for (const [scale, name] of scales) {
+      if (n >= scale) return `${convert(Math.floor(n / scale))} ${name}${n % scale ? ` ${convert(n % scale)}` : ""}`;
+    }
+    return "";
+  }
+
+  return `${value < 0 ? "Minus " : ""}${convert(number)}`;
+}
 
 onMounted(async () => {
   useloadingStore().setLoading(true);

@@ -65,10 +65,10 @@
   </div>
 
   <div>
-    <div id="offer-to-print" class="offer-card">
-      <div class="watermark">
+    <div id="purchaseorder-to-print" class="offer-card">
+      <!-- <div class="watermark">
         <img src="/logowatermark.png" alt="Logo Watermark" />
-      </div>
+      </div> -->
 
       <div class="letterhead">
         <div class="header-section">
@@ -100,64 +100,115 @@
         </div>
       </div>
 
-      <div class="text-center">
-        <strong style="font-size: 20px;">PURCHASE ORDER</strong>
-      </div>
-
       <div class="content-body">
+        <div class="text-center po-document-title">
+          <strong style="font-size: 20px">PURCHASE ORDER</strong>
+        </div>
+
         <div class="info-grid-card">
           <section class="grid-col">
-            <h2 class="info-heading">{{ lang === 'id' ? 'Informasi Permintaan' : 'Request Information' }}</h2>
+            <h2 class="info-heading">
+              {{
+                lang === "id" ? "Informasi Permintaan" : "Request Information"
+              }}
+            </h2>
             <div class="meta-row">
-              <span class="lbl">{{ lang === 'id' ? 'Kode PO' : 'PO Code' }}</span>
+              <span class="lbl">{{ lang === "id" ? "No. PO" : "PO NO" }}</span>
               <span class="sep">:</span>
               <span class="val bold">{{
-                purchaseorder?.no_purchaseorder || purchaseorder?.id_purchaseorder || props.detailpenawaran.no_penawaran
-              }}</span>
-            </div>
-            <div class="meta-row">
-              <span class="lbl">{{ t.vessel }}</span>
-              <span class="sep">:</span>
-              <span class="val bold-navy">{{
-                props.detailpenawaran.vessel
+                purchaseorder?.no_purchaseorder || ""
               }}</span>
             </div>
 
-            <div class="meta-row">
-              <span class="lbl">{{ t.location }}</span>
-              <span class="sep">:</span>
-              <span class="val bold-navy">Batam</span>
-            </div>
             <div class="meta-row">
               <span class="lbl">{{ t.date }}</span>
               <span class="sep">:</span>
-              <span class="val">{{ purchaseorder?.tanggal_penawaran ? moment(purchaseorder.tanggal_penawaran).format('DD MMMM YYYY') : (props.detailpenawaran.tanggal_penawaran ? moment(props.detailpenawaran.tanggal_penawaran).format('DD MMMM YYYY') : '-') }}</span>
+
+              <span class="val">
+                {{
+                  purchaseorder?.tgl_purchaseorder
+                    ? purchaseorder.tgl_purchaseorder
+                        .split("-")
+                        .reverse()
+                        .join("-")
+                    : ""
+                }}
+              </span>
             </div>
+
             <div class="meta-row">
-              <span class="lbl">{{ lang === 'id' ? 'Pembayaran' : 'Payment' }}</span>
+              <span class="lbl">{{
+                lang === "id" ? "Pembayaran" : "Payment"
+              }}</span>
               <span class="sep">:</span>
-              <span class="val">{{ purchaseorder?.perihal_purchaseorder}}</span>
+              <span class="val">{{ purchaseorder?.payment }}</span>
+            </div>
+
+             <div class="meta-row">
+              <span class="lbl">{{
+                lang === "id" ? "Perihal" : "Subject"
+              }}</span>
+              <span class="sep">:</span>
+              <span class="val">{{
+                purchaseorder?.perihal_purchaseorder
+              }}</span>
             </div>
           </section>
           <section class="grid-col">
-            <h2 class="info-heading">{{ lang === 'id' ? 'Informasi Vendor' : 'Vendor Information' }}</h2>
-            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'Nama Vendor' : 'Vendor Name' }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.nama_vendor }}</span></div>
-            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'No. Penawaran' : 'Quotation No' }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.no_penawaran || props.detailpenawaran.no_penawaran }}</span></div>
-            <div class="meta-row"><span class="lbl">{{ lang === 'id' ? 'Mata Uang' : 'Currency' }}</span><span class="sep">:</span><span class="val">IDR</span></div>
-            <div class="meta-row"><span class="lbl">Email</span><span class="sep">:</span><span class="val">{{ purchaseorder?.email_vendor }}</span></div>
-            <div class="meta-row"><span class="lbl">{{ t.phone }}</span><span class="sep">:</span><span class="val">{{ purchaseorder?.no_telp_vendor }}</span></div>
+            <h2 class="info-heading">
+              {{ lang === "id" ? "Informasi Vendor" : "Vendor Information" }}
+            </h2>
+            <div class="meta-row">
+              <span class="lbl">{{
+                lang === "id" ? "Nama Vendor" : "Vendor Name"
+              }}</span
+              ><span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.nama_vendor }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{ lang === "id" ? "Alamat" : "Address" }}</span
+              ><span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.alamat_vendor }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="lbl">{{
+                lang === "id" ? "No. Penawaran" : "Quotation No"
+              }}</span
+              ><span class="sep">:</span
+              ><span class="val">{{
+                purchaseorder?.no_quotation_from_vendor
+              }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="lbl">Email</span><span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.email_vendor }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="lbl">{{ t.phone }}</span
+              ><span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.no_telp_vendor }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="lbl">{{
+                lang === "id" ? "Mata Uang" : "Currency"
+              }}</span>
+              <span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.currency }}</span>
+            </div>
           </section>
         </div>
 
-        <div class="text-salutation">
-          <!-- <p class="salutation-title">{{ t.salutationTitle }}</p> -->
+        <!-- <div class="text-salutation">
+          <p class="salutation-title">{{ t.salutationTitle }}</p>
           <p class="salutation-body" v-if="lang === 'id'">
             Bersama ini kami sampaikan penawaran harga sebagai berikut:
           </p>
           <p class="salutation-body" v-else>
             We are pleased to submit our quotation as follows:
           </p>
-        </div>
+        </div> -->
 
         <div class="table-container">
           <table class="modern-table">
@@ -241,75 +292,104 @@
               </tr>
             </thead>
             <tbody ref="tableBodyRef">
-              <template v-for="(section, sectionIndex) in purchaseorderSections" :key="`section-${sectionIndex}`">
-                <tr v-if="section.title || section.description" class="section-row">
+              <template
+                v-for="(section, sectionIndex) in purchaseorderSections"
+                :key="`section-${sectionIndex}`"
+              >
+                <!-- <tr v-if="section.title || section.description" class="section-row">
                   <td colspan="6">
                     <strong v-if="section.title">{{ section.title }}</strong>
                     <div v-if="section.description" class="section-description">{{ section.description }}</div>
                   </td>
-                </tr>
+                </tr> -->
                 <tr
                   v-for="(item, itemIndex) in section.items"
                   :key="item.id || `${sectionIndex}-${itemIndex}`"
-                  :class="{ 'zebra-row': (section.startIndex + itemIndex) % 2 === 1 }"
+                  :class="{
+                    'zebra-row': (section.startIndex + itemIndex) % 2 === 1,
+                  }"
                 >
                   <td class="text-center row-num drag-handle" width="36">
                     <div style="display: flex; align-items: center">
-                      <v-icon size="12" class="drag-icon no-print mr-1">mdi-drag-vertical</v-icon>
+                      <v-icon size="12" class="drag-icon no-print mr-1"
+                        >mdi-drag-vertical</v-icon
+                      >
                       <span>{{ section.startIndex + itemIndex + 1 }}.</span>
                     </div>
                   </td>
-                  <td class="text-left text-slate-800" style="white-space: pre-line">{{ item.nama }}</td>
+
+                  <td
+                    class="text-left text-slate-800"
+                    style="white-space: pre-line"
+                  >
+                    <strong v-if="section.title">{{ section.title }}</strong>
+                    <div v-if="section.description" class="section-description">
+                      {{ section.description }}
+                    </div>
+                    <br v-if="item.nama" />{{ item.nama }}
+                  </td>
                   <td class="text-center">{{ item.qty }}</td>
                   <td class="text-center text-slate-500">{{ item.uom }}</td>
-                  <td class="text-right text-slate-600">Rp {{ rupiah(item.price) }}</td>
-                  <td class="text-right text-navy">Rp {{ rupiah(item.price * item.qty) }}</td>
+                  <td class="text-right text-slate-600">
+                    {{ formatCurrency(item.price) }}
+                  </td>
+                  <td class="text-right text-navy">
+                    {{ formatCurrency(item.price * item.qty) }}
+                  </td>
                 </tr>
               </template>
             </tbody>
 
-            <tfoot v-if="showTotal">
+            <tfoot>
               <tr class="summary-row grand-total-row">
                 <td colspan="5" class="text-right font-weight-bold text-navy">
-                  {{ t.grandTotal }}
+                  Total
                 </td>
                 <td class="text-right font-weight-bold text-navy gt-text">
-                  Rp {{ rupiah(purchaseorder?.grandtotal_purchaseorder || 0) }}
+                  {{ formatCurrency(purchaseorder?.subtotal_purchaseorder || 0) }}
                 </td>
               </tr>
 
-              <tr class="terbilang-row">
+              <tr class="summary-row grand-total-row" v-if="purchaseorder?.diskon_purchaseorder > 0">
+                <td colspan="5" class="text-right font-weight-bold text-navy">
+                  {{ lang === "id" ? "Diskon" : "Discount" }} {{ rupiah(purchaseorder?.diskon_purchaseorder || 0) }} %
+                </td>
+                <td class="text-right font-weight-bold text-navy gt-text">
+                  {{ formatCurrency(((purchaseorder?.subtotal_purchaseorder || 0) * (purchaseorder?.diskon_purchaseorder || 0)) / 100) }}
+                </td>
+              </tr>
+
+              <tr class="summary-row grand-total-row">
+                <td colspan="5" class="text-right font-weight-bold text-navy">
+                  Grand Total
+                </td>
+                <td class="text-right font-weight-bold text-navy gt-text">
+                  {{ formatCurrency(purchaseorder?.grandtotal_purchaseorder || 0) }}
+                </td>
+              </tr>
+
+              <!-- <tr class="terbilang-row">
                 <td colspan="6">
                   <div class="terbilang-inner">
                     <span class="terbilang-lbl">{{ t.amountInWords }}:</span>
                     <span class="terbilang-val"
                       >#
-                      {{ teksTerbilang }}
+                      {{
+                        jadirupiah(purchaseorder?.grandtotal_purchaseorder || 0)
+                      }}
+                      Rupiah
                     </span>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
             </tfoot>
           </table>
-          <div class="text-center mx-auto no-print">
-            <v-chip
-              :prepend-icon="
-                showTotal ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
-              "
-              size="x-small"
-              class="my-1"
-              @click="showTotal = !showTotal"
-            >
-              {{
-                showTotal
-                  ? "Sembunyikan Rincian Harga"
-                  : "Tampilkan Rincian Harga"
-              }}
-            </v-chip>
-          </div>
         </div>
 
-        <div class="closing-paragraph" v-if="(detailpenawaran.termCondition?.length ?? 0) > 0" >
+        <!-- <div
+          class="closing-paragraph"
+          v-if="(detailpenawaran.termCondition?.length ?? 0) > 0"
+        >
           <p><strong>TERMS &amp; CONDITIONS:</strong></p>
           <ul class="ml-3" style="list-style: none; padding-left: 0">
             <li
@@ -319,22 +399,33 @@
               {{ index + 1 }}. {{ item.nama_term }}
             </li>
           </ul>
-        </div>
+        </div> -->
 
-        <div class="signatures-wrapper">
+        <!-- <div class="closing-paragraph">
+          <p><strong>TERMS &amp; CONDITIONS:</strong></p>
+          <ul class="ml-3" style="list-style: none; padding-left: 0">
+            <li>1. Cash in Advance</li>
+          </ul>
+        </div> -->
+
+       <div class="signatures-wrapper">
           <div class="sig-block">
             <p class="sig-header">{{ t.sigHeaderLeft }}</p>
             <p class="sig-sub">PT. DUTA RAYA MARINE</p>
             <div class="sig-img-container">
-              <img src="/ttd_ridwan.png" alt="Signature" class="sig-image" />
+              <img src="/ttd_ridwan.png" v-if="purchaseorder?.sign_po_by == 'Muhammad Ridwan'" alt="Signature" class="sig-image" />
+              <img src="/ttd_seilla.png" v-if="purchaseorder?.sign_po_by == 'Seilla Maryana'" alt="Signature" class="sig-image" />
+              <img src="/ttd_leo.png" v-if="purchaseorder?.sign_po_by == 'Leo Adiatmaja Sembiring'" alt="Signature" class="sig-image" />
             </div>
-            <p class="sig-person-name">Leo Adiatmaja Sembiring</p>
+            <p class="sig-person-name" v-if="purchaseorder?.sign_po_by == 'Muhammad Ridwan'">Muhammad Ridwan</p>
+            <p class="sig-person-name" v-if="purchaseorder?.sign_po_by == 'Seilla Maryana'">Seilla Maryana</p>
+             <p class="sig-person-name" v-if="purchaseorder?.sign_po_by == 'Leo Adiatmaja Sembiring'">Leo Adiatmaja Sembiring</p>
           </div>
 
           <div class="sig-block">
             <p class="sig-header">{{ t.sigHeaderRight }}</p>
             <p class="sig-sub">
-              {{ props.detailpenawaran.nama_perusahaan || "" }}
+              {{ purchaseorder?.nama_vendor || "" }}
             </p>
             <div class="sig-placeholder"></div>
             <p class="sig-person-name">
@@ -362,7 +453,7 @@
         class="quotation-action-btn text-capitalize font-weight-bold rounded-lg text-subtitle-2"
         @click="handlePrint"
       >
-        Print Quotation
+        Print Purchase Order (PO)
       </v-btn>
       <v-btn
         width="300"
@@ -375,7 +466,7 @@
         :disabled="isSavingPdf"
         @click="handleSavePdf"
       >
-        Save PDF
+        Save PDF Purchase Order (PO)
       </v-btn>
     </div>
   </div>
@@ -430,7 +521,6 @@ const purchaseorderSections = computed(() => {
 const lang = ref<"id" | "en">("en");
 
 const labelSubTotal = ref("TOTAL AMOUNT");
-const showTotal = ref(true);
 
 watch(lang, (newLang) => {
   labelSubTotal.value = newLang === "id" ? "TOTAL HARGA" : "TOTAL AMOUNT";
@@ -578,7 +668,7 @@ function numberToWordsEnglish(n: number): string {
     "",
     "Twenty",
     "Thirty",
-    "Forty",
+    "Fourty",
     "Fifty",
     "Sixty",
     "Seventy",
@@ -653,6 +743,17 @@ const formatTanggal = (tanggal: string) => {
 
 const rubahtanggalpenawaran = (tgl: any) => formatTanggal(tgl);
 const rupiah = (val: number) => new Intl.NumberFormat("id-ID").format(val || 0);
+const formatCurrency = (value: number) => {
+  const code = purchaseorder.value?.currency || "IDR";
+  const locale = code === "IDR" ? "id-ID" : code === "SGD" ? "en-SG" : "en-US";
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: code,
+    currencyDisplay: "code",
+    minimumFractionDigits: code === "IDR" ? 0 : 2,
+    maximumFractionDigits: code === "IDR" ? 0 : 2,
+  }).format(Number(value) || 0);
+};
 
 const loadWatermarkImage = (): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -664,7 +765,7 @@ const loadWatermarkImage = (): Promise<HTMLImageElement> => {
 };
 
 const handlePrint = async () => {
-  const offerElement = document.getElementById("offer-to-print");
+  const offerElement = document.getElementById("purchaseorder-to-print");
   const letterheadElement = offerElement?.querySelector(".letterhead");
   const contentElement = offerElement?.querySelector(".content-body");
   const footerElement = offerElement?.querySelector(".page-footer");
@@ -680,10 +781,14 @@ const handlePrint = async () => {
     onclone: (clonedDocument: Document) => {
       clonedDocument
         .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
-        .forEach((element) => ((element as HTMLElement).style.display = "none"));
+        .forEach(
+          (element) => ((element as HTMLElement).style.display = "none"),
+        );
       clonedDocument
         .querySelectorAll(".print-only-cell")
-        .forEach((element) => ((element as HTMLElement).style.display = "table-cell"));
+        .forEach(
+          (element) => ((element as HTMLElement).style.display = "table-cell"),
+        );
     },
   };
   const [letterheadCanvas, contentCanvas, footerCanvas] = await Promise.all([
@@ -711,7 +816,11 @@ const handlePrint = async () => {
   );
 
   const pages: string[] = [];
-  for (let sourceY = 0; sourceY < contentCanvas.height; sourceY += sourceSliceHeight) {
+  for (
+    let sourceY = 0;
+    sourceY < contentCanvas.height;
+    sourceY += sourceSliceHeight
+  ) {
     const sliceHeight = Math.min(
       sourceSliceHeight,
       contentCanvas.height - sourceY,
@@ -775,7 +884,7 @@ const handlePrint = async () => {
   if (!doc) return;
 
   doc.write(`
-    <html><head><title>Penawaran_${props.detailpenawaran?.no_penawaran || "DRM"}</title>
+    <html><head><title>Purchase_Order_${purchaseorder.value?.no_purchaseorder || props.detailpenawaran?.no_penawaran || "DRM"}</title>
     <style>@page { size: A4; margin: 0; } body { margin: 0; } .page { display: block; width: 210mm; height: 297mm; break-after: page; }</style>
     </head><body>${pages.map((page) => `<img class="page" src="${page}" />`).join("")}</body></html>
   `);
@@ -789,7 +898,7 @@ const handlePrint = async () => {
 };
 
 const handleSavePdf = async () => {
-  const offerElement = document.getElementById("offer-to-print");
+  const offerElement = document.getElementById("purchaseorder-to-print");
   if (!offerElement || isSavingPdf.value) return;
 
   const letterheadElement = offerElement.querySelector(".letterhead");
@@ -837,7 +946,11 @@ const handleSavePdf = async () => {
     if (watermarkContext) {
       watermarkContext.globalAlpha = 0.105;
       watermarkContext.drawImage(
-        watermarkImage, 0, 0, watermarkCanvas.width, watermarkCanvas.height,
+        watermarkImage,
+        0,
+        0,
+        watermarkCanvas.width,
+        watermarkCanvas.height,
       );
     }
 
@@ -929,12 +1042,12 @@ const handleSavePdf = async () => {
       pageNumber++;
     }
 
-    const number = props.detailpenawaran?.no_penawaran || "DRM";
-    const nama = props.detailpenawaran?.pic || "DRM";
-    const subject = props.detailpenawaran?.perihal || "";
-    const nomorQT = props.detailpenawaran?.id_penawaran;
-
-    pdf.save(`${nomorQT} (${props.detailpenawaran?.vessel}).pdf`);
+    const poNumber =
+      purchaseorder.value?.no_purchaseorder ||
+      purchaseorder.value?.id_purchaseorder ||
+      props.detailpenawaran?.no_penawaran ||
+      "DRM";
+    pdf.save(`${poNumber}.pdf`);
   } finally {
     isSavingPdf.value = false;
   }
@@ -985,7 +1098,6 @@ const handleSavePdf = async () => {
 }
 
 .logo-wrapper img {
-
   height: auto;
   display: block;
 }
@@ -1091,7 +1203,9 @@ const handleSavePdf = async () => {
   flex-shrink: 0;
 }
 
-.meta-row .val { min-width: 0; }
+.meta-row .val {
+  min-width: 0;
+}
 
 .text-salutation {
   font-size: 11px;
@@ -1245,7 +1359,7 @@ const handleSavePdf = async () => {
 }
 
 .sig-block {
-  width: 210px;
+  width: 260px;
   text-align: center;
 }
 

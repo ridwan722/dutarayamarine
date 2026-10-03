@@ -48,8 +48,15 @@
 
         <template v-if="activeItem.type === 'price'">
           <div class="form-group">
-            <label class="form-label">Harga Satuan (Rp)</label>
-            <a-field-number-new v-model="activeItem.price" placeholder="0" />
+            <label class="form-label"
+              >Harga Satuan ({{ currency || "IDR" }})</label
+            >
+            <a-field-number-new
+              v-model="activeItem.price"
+              placeholder="0"
+              :allow-decimal="currency !== 'IDR'"
+              :step="currency === 'IDR' ? 1 : 0.01"
+            />
           </div>
         </template>
       </v-card-text>
@@ -71,41 +78,81 @@
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="isOpen" max-width="960px" scrollable>
+  <v-dialog v-model="isOpen" max-width="960px" scrollable persistent>
     <v-card class="po-card">
       <!-- HEADER -->
       <v-card-title class="po-header">
         <div class="po-header-content">
           <v-icon size="30">mdi-human-dolly</v-icon>
           <div>
-            <div class="po-title">Keluarkan Purchaseorder (PO)</div>
+            <div class="po-title">
+              {{
+                isEditing
+                  ? "Edit Purchase Order (PO)"
+                  : "Keluarkan Purchase Order (PO)"
+              }}
+            </div>
             <div class="po-subtitle">Purchase Order (PO)</div>
           </div>
         </div>
       </v-card-title>
 
-      <v-card-text class="po-content">
+      <v-progress-linear
+        v-if="isLoadingPurchaseorder"
+        indeterminate
+        color="primary"
+      />
 
-        <a-text-field-new
-          v-model="perihal_purchaseorder"
-          label="Perihal Purchase Order"
-          class="mb-2"
+      <v-card-text class="po-content">
+        <a-date-picker-new
+          v-model="tgl_purchaseorder"
+          label="Tanggal PO"
+          class="mb-4"
         />
+
+        <v-row>
+          <v-col>
+            <a-text-field-new v-model="payment" label="Payment" class="mb-2" />
+
+            <a-text-field-new
+              v-model="perihal_purchaseorder"
+              label="Subject"
+              class="mb-2"
+            />
+          </v-col>
+          <v-col>
+            <a-select-new
+              v-model="selectedVendorId"
+              :items="vendorOptions"
+              item-title="nama_vendor"
+              item-value="id_vendor"
+              label="Pilih Vendor"
+              class="mb-2"
+            />
+            <a-text-field-new
+              v-model="no_quotation_from_vendor"
+              label="NO Quotation (vendor)"
+              class="mb-2"
+            />
+            <a-select-new
+              v-model="currency"
+              :items="['IDR', 'SGD', 'USD']"
+              label="Currency"
+              class="mb-2"
+            />
+          </v-col>
+        </v-row>
 
         <a-select-new
-          v-model="selectedVendorId"
-          :items="vendorOptions"
-          item-title="nama_vendor"
-          item-value="id_vendor"
-          label="Pilih Vendor"
+          v-model="sign_po_by"
+          :items="[
+            'Seilla Maryana',
+            'Leo Adiatmaja Sembiring',
+            'Muhammad Ridwan',
+          ]"
+          label="Sign Purchase Order By ?"
           class="mb-2"
         />
-
-        <!-- <a-text-field-new v-model="selectedVendorId" disabled />
-
-        <a-text-field-new v-model="selectedVendorId" disabled />
-
-        <a-text-field-new v-model="selectedVendorId" disabled /> -->
 
         <v-divider class="my-3"></v-divider>
         <div
@@ -149,7 +196,7 @@
                   <th class="col-item">Item</th>
                   <th class="col-qty">Qty</th>
                   <th class="col-unit">Unit</th>
-                  <th class="col-price">Harga</th>
+                  <th class="col-price">Harga ({{ currency || "IDR" }})</th>
                   <th class="col-total">Total</th>
                   <th class="col-action"></th>
                 </tr>
@@ -196,6 +243,8 @@
                         v-model="item.price"
                         placeholder="0"
                         class="table-number-input"
+                        :allow-decimal="currency !== 'IDR'"
+                        :step="currency === 'IDR' ? 1 : 0.01"
                       />
                     </template>
                     <span
@@ -208,11 +257,10 @@
                   <td class="item-cell text-right">
                     <template v-if="item.type === 'price'">
                       <div class="item-total">
-                        Rp
                         {{
-                          (
-                            (Number(item.qty) || 0) * (Number(item.price) || 0)
-                          ).toLocaleString("id-ID")
+                          formatCurrency(
+                            (Number(item.qty) || 0) * (Number(item.price) || 0),
+                          )
                         }}
                       </div>
                     </template>
@@ -251,8 +299,8 @@
                 </div>
                 <div class="mobile-item-sub">
                   <template v-if="item.type === 'price'">
-                    {{ item.qty || 0 }} {{ item.uom }} x Rp
-                    {{ (Number(item.price) || 0).toLocaleString("id-ID") }}
+                    {{ item.qty || 0 }} {{ item.uom }} x
+                    {{ formatCurrency(Number(item.price) || 0) }}
                   </template>
                   <template v-else-if="item.type === 'included'">
                     {{ item.qty || 0 }} {{ item.uom }} (Included)
@@ -264,11 +312,10 @@
               <div class="mobile-item-right">
                 <div class="mobile-item-total">
                   <template v-if="item.type === 'price'">
-                    Rp
                     {{
-                      (
-                        (Number(item.qty) || 0) * (Number(item.price) || 0)
-                      ).toLocaleString("id-ID")
+                      formatCurrency(
+                        (Number(item.qty) || 0) * (Number(item.price) || 0),
+                      )
                     }}
                   </template>
                   <template v-else-if="item.type === 'included'">
@@ -326,9 +373,9 @@
           <div class="summary">
             <div class="summary-row">
               <span class="summary-label">Subtotal</span>
-              <span class="summary-value"
-                >Rp {{ subtotal_purchaseorder.toLocaleString("id-ID") }}</span
-              >
+              <span class="summary-value">{{
+                formatCurrency(subtotal_purchaseorder)
+              }}</span>
             </div>
 
             <div class="summary-row discount-row">
@@ -347,30 +394,36 @@
                 </div>
               </div>
               <span class="discount-value"
-                >- Rp {{ discountAmount.toLocaleString("id-ID") }}</span
+                >- {{ formatCurrency(discountAmount) }}</span
               >
             </div>
 
             <div class="grand-total-row text-primary">
               <span>Grand Total</span>
-              <span class="grand-total-amount"
-                >Rp {{ grandtotal_purchaseorder.toLocaleString("id-ID") }}</span
-              >
+              <span class="grand-total-amount">{{
+                formatCurrency(grandtotal_purchaseorder)
+              }}</span>
             </div>
           </div>
         </div>
       </v-card-text>
 
       <v-card-actions class="item-dialog-actions justify-end">
-        <v-btn color="grey" variant="text" size="small"  @click="isOpen = false;"> CANCEL </v-btn>
+        <v-btn color="grey" variant="text" size="small" @click="isOpen = false">
+          CANCEL
+        </v-btn>
 
         <v-btn
           size="small"
           color="primary"
           variant="flat"
+          :loading="isSaving"
+          :disabled="
+            isLoadingPurchaseorder || isSaving || purchaseorderLoadFailed
+          "
           @click="addpurchaseorder"
         >
-          Simpan Purchaseorder (PO)
+          {{ isEditing ? "Simpan Perubahan PO" : "Simpan Purchase Order (PO)" }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -378,18 +431,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { onMounted } from "vue";
-import { createPurchaseorder } from "~/composables/useInvoiceAresaDigital";
+import { ref, computed, onMounted, watch } from "vue";
+import { collection, getDocs } from "firebase/firestore";
+import { useFirestore } from "vuefire";
+import {
+  createPurchaseorder,
+  updatePurchaseorder,
+} from "~/composables/useInvoiceAresaDigital";
+import type { penawaranM } from "~/types/penawaranModel";
 import type { vendorM } from "~/types/vendorModel";
 import type {
   purchaseorderM,
   purchaseorderSectionM,
 } from "~/types/purchaseorderModel";
+import moment from "moment";
 
-const props = defineProps<{ modelValue: boolean }>();
+const props = defineProps<{
+  modelValue: boolean;
+  penawaran: penawaranM;
+}>();
 const emit = defineEmits<{
   (event: "update:modelValue", value: boolean): void;
+  (event: "saved"): void;
 }>();
 const isOpen = computed({
   get: () => props.modelValue,
@@ -397,8 +460,32 @@ const isOpen = computed({
 });
 
 const vendorStore = usevendorStore();
+const db = useFirestore();
 const perihal_purchaseorder = ref("");
+const payment = ref("");
+const sign_po_by = ref("");
+const tgl_purchaseorder = ref("");
+const no_quotation_from_vendor = ref("");
+const currency = ref("IDR");
+const formatCurrency = (value: number) => {
+  const code = currency.value || "IDR";
+  const locale = code === "IDR" ? "id-ID" : code === "SGD" ? "en-SG" : "en-US";
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: code,
+    currencyDisplay: "code",
+    minimumFractionDigits: code === "IDR" ? 0 : 2,
+    maximumFractionDigits: code === "IDR" ? 0 : 2,
+  }).format(Number(value) || 0);
+};
 const selectedVendorId = ref("");
+const editingPurchaseorder = ref<purchaseorderM | null>(null);
+const isLoadingPurchaseorder = ref(false);
+const isSaving = ref(false);
+const purchaseorderLoadFailed = ref(false);
+const isEditing = computed(() =>
+  Boolean(editingPurchaseorder.value?.id_purchaseorder),
+);
 const vendorOptions = computed(() =>
   vendorStore.getDataVendor.map((vendor) => ({
     ...vendor,
@@ -416,6 +503,95 @@ onMounted(() => {
   if (!vendorStore.getDataVendor.length) {
     void vendorStore.tarikDataVendorAct();
   }
+});
+
+const resetForm = () => {
+  editingPurchaseorder.value = null;
+  perihal_purchaseorder.value = "";
+  payment.value = "";
+  sign_po_by.value = "Seilla Maryana";
+  tgl_purchaseorder.value = moment().format("YYYY-MM-DD");
+  no_quotation_from_vendor.value = "";
+  currency.value = "IDR";
+  selectedVendorId.value = "";
+  form.value = {
+    sections: [
+      {
+        title: "",
+        description: "",
+        diskon_purchaseorder: 0,
+        id_vendor: "",
+        nama_vendor: "",
+        items: [
+          { description: "", type: "price", qty: 1, uom: "Set", price: 0 },
+        ],
+      },
+    ],
+    diskon_purchaseorder: 0,
+  };
+};
+
+const loadPurchaseorder = async () => {
+  const idPenawaran = props.penawaran?.id_penawaran;
+  if (!idPenawaran) {
+    resetForm();
+    return;
+  }
+
+  isLoadingPurchaseorder.value = true;
+  purchaseorderLoadFailed.value = false;
+  try {
+    const snapshot = await getDocs(
+      collection(db, "penawaran", idPenawaran, "purchaseorder"),
+    );
+    const existingDoc = snapshot.docs[0];
+    if (!existingDoc) {
+      resetForm();
+      return;
+    }
+
+    const purchaseorder = {
+      ...existingDoc.data(),
+      id_purchaseorder: existingDoc.id,
+    } as purchaseorderM;
+    editingPurchaseorder.value = purchaseorder;
+    perihal_purchaseorder.value = purchaseorder.perihal_purchaseorder || "";
+    payment.value = purchaseorder.payment || "";
+    sign_po_by.value = purchaseorder.sign_po_by || "";
+    tgl_purchaseorder.value = purchaseorder.tgl_purchaseorder || "";
+    no_quotation_from_vendor.value =
+      purchaseorder.no_quotation_from_vendor || "";
+    currency.value = purchaseorder.currency || "IDR";
+    selectedVendorId.value = purchaseorder.id_vendor || "";
+    form.value = {
+      diskon_purchaseorder: Number(purchaseorder.diskon_purchaseorder) || 0,
+      sections: (purchaseorder.item_purchaseorder || []).map((section) => ({
+        title: section.title || "",
+        description: section.description || "",
+        diskon_purchaseorder: 0,
+        id_vendor: purchaseorder.id_vendor,
+        nama_vendor: purchaseorder.nama_vendor,
+        items: (section.items || []).map((item) => ({
+          description: item.nama || "",
+          type: item.type || "price",
+          qty: Number(item.qty) || 0,
+          uom: item.uom || "Set",
+          price: Number(item.price) || 0,
+        })),
+      })),
+    };
+    if (!form.value.sections.length) resetForm();
+  } catch (error) {
+    console.error("Gagal mengambil Purchase Order:", error);
+    purchaseorderLoadFailed.value = true;
+    useNotificationStore().showError("Gagal memuat Purchase Order");
+  } finally {
+    isLoadingPurchaseorder.value = false;
+  }
+};
+
+watch(isOpen, (opened) => {
+  if (opened) void loadPurchaseorder();
 });
 
 interface Item {
@@ -536,13 +712,13 @@ const grandtotal_purchaseorder = computed(() => {
 });
 
 async function addpurchaseorder() {
-  const penawaran = usePenawaranStore().getDetailPenawaran;
+  const penawaran = props.penawaran || usePenawaranStore().getDetailPenawaran;
   if (!penawaran.id_penawaran || !penawaran.no_penawaran) {
     useNotificationStore().showError("Data penawaran tidak ditemukan");
     return;
   }
   const vendor = selectedVendor.value;
-  if (!vendor?.id_vendor) {
+  if (!vendor?.id_vendor && !editingPurchaseorder.value?.id_vendor) {
     useNotificationStore().showError("Silakan pilih vendor");
     return;
   }
@@ -566,26 +742,46 @@ async function addpurchaseorder() {
     no_penawaran: penawaran.no_penawaran,
     tanggal_penawaran: penawaran.tanggal_penawaran,
     perihal_purchaseorder: perihal_purchaseorder.value.trim(),
+    payment: payment.value.trim(),
+    sign_po_by: sign_po_by.value.trim(),
+    tgl_purchaseorder: tgl_purchaseorder.value.trim(),
+    no_quotation_from_vendor: no_quotation_from_vendor.value.trim(),
+    currency: currency.value.trim(),
     item_purchaseorder,
     subtotal_purchaseorder: subtotal_purchaseorder.value,
     diskon_purchaseorder: Number(form.value.diskon_purchaseorder) || 0,
     grandtotal_purchaseorder: grandtotal_purchaseorder.value,
-    termCondition: [],
-    id_vendor: vendor.id_vendor,
-    nama_vendor: vendor.nama_vendor,
-    pic_vendor: vendor.pic_vendor,
-    no_telp_vendor: vendor.no_telp_vendor,
-    alamat_vendor: vendor.alamat_vendor,
-    email_vendor: vendor.email_vendor,
+    termCondition: editingPurchaseorder.value?.termCondition || [],
+    id_vendor: vendor?.id_vendor || editingPurchaseorder.value!.id_vendor,
+    nama_vendor: vendor?.nama_vendor || editingPurchaseorder.value!.nama_vendor,
+    pic_vendor: vendor?.pic_vendor || editingPurchaseorder.value!.pic_vendor,
+    no_telp_vendor:
+      vendor?.no_telp_vendor || editingPurchaseorder.value!.no_telp_vendor,
+    alamat_vendor:
+      vendor?.alamat_vendor || editingPurchaseorder.value!.alamat_vendor,
+    email_vendor:
+      vendor?.email_vendor || editingPurchaseorder.value!.email_vendor,
   };
 
   try {
-    await createPurchaseorder(dataPurchaseorder);
-    useNotificationStore().showSuccess("Purchase Order berhasil dibuat");
+    isSaving.value = true;
+    if (editingPurchaseorder.value?.id_purchaseorder) {
+      await updatePurchaseorder(
+        editingPurchaseorder.value.id_purchaseorder,
+        dataPurchaseorder,
+      );
+      useNotificationStore().showSuccess("Purchase Order berhasil diperbarui");
+    } else {
+      await createPurchaseorder(dataPurchaseorder);
+      useNotificationStore().showSuccess("Purchase Order berhasil dibuat");
+    }
+    emit("saved");
     isOpen.value = false;
   } catch (error) {
-    console.error("Gagal membuat Purchase Order:", error);
-    useNotificationStore().showError("Gagal membuat Purchase Order");
+    console.error("Gagal menyimpan Purchase Order:", error);
+    useNotificationStore().showError("Gagal menyimpan Purchase Order");
+  } finally {
+    isSaving.value = false;
   }
 }
 </script>

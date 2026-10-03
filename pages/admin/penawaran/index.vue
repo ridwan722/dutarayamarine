@@ -248,6 +248,107 @@
           </div>
         </v-card>
 
+        <v-card
+  class="sign-card mt-3 mx-auto"
+  elevation="0"
+>
+  <!-- Header -->
+  <div class="sign-card-header">
+    <div>
+      <div class="sign-card-title">
+        Sign By
+      </div>
+      <div class="sign-card-subtitle">
+        Yang Bertanda Tangan
+      </div>
+    </div>
+
+    <v-icon
+      size="20"
+      color="grey-darken-1"
+    >
+      mdi-draw-pen
+    </v-icon>
+  </div>
+
+  <v-divider />
+
+  <!-- Content -->
+  <v-card-text class="sign-card-content">
+    <a-select-new
+      v-model="newPenawaran.sign_by"
+      :items="[
+        'Seilla Maryana',
+        'Leo Adiatmaja Sembiring',
+        'Muhammad Ridwan',
+      ]"
+      class="sign-select"
+    />
+
+    <!-- Signature -->
+    <div
+      v-if="newPenawaran.sign_by"
+      class="signature-box"
+    >
+
+      <div
+        v-if="newPenawaran.sign_by == 'Leo Adiatmaja Sembiring'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_leo.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Leo Adiatmaja Sembiring
+        </div>
+      </div>
+
+      <div
+        v-if="newPenawaran.sign_by == 'Seilla Maryana'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_seilla.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Seilla Maryana
+        </div>
+      </div>
+
+      <div
+        v-if="newPenawaran.sign_by == 'Muhammad Ridwan'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_ridwan.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Muhammad Ridwan
+        </div>
+      </div>
+    </div>
+
+  </v-card-text>
+</v-card>
+
         <div class="mt-4">
           <span class="text-caption">
             <strong>TERMS &amp; CONDITIONS:</strong>
@@ -611,6 +712,7 @@ function emptyPenawaran(): penawaranM {
     tanggal_penawaran: moment().format("YYYY-MM-DD"),
     created_at: 0,
     created_by: "",
+    sign_by: "Seilla Maryana",
     status: "Draft",
     perihal: "",
     penawaran_item: [
@@ -926,5 +1028,89 @@ async function refreshData() {
 }
 .gap-2 {
   gap: 8px;
+}
+
+.sign-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border: 1px solid #e1e5ea;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sign-card-header {
+  min-height: 62px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sign-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.2px;
+}
+
+.sign-card-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #8a929d;
+}
+
+.sign-card-content {
+  padding: 18px;
+}
+
+.field-label {
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5f6874;
+  letter-spacing: 0.2px;
+}
+
+.sign-select {
+  margin-bottom: 14px;
+}
+
+/* Signature area */
+.signature-box {
+  margin-top: 8px;
+  padding: 16px 14px 14px;
+  background: #fafbfc;
+  border: 1px solid #e5e8ec;
+  border-radius: 8px;
+}
+
+.signature-label {
+  margin-bottom: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9aa1aa;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.signature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-line {
+  width: 180px;
+  border-bottom: 1px solid #737b86;
+  margin-top: -2px;
+}
+
+.signature-name {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #303740;
+  text-align: center;
 }
 </style>

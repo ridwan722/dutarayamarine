@@ -47,7 +47,7 @@ export interface invoiceM {
   subtotal_invoice: number;
   ppn: number;
   grandtotal_invoice: number;
-
+sign_by: string,
   status: string;
   createdAt: number;
   createdBy: string;

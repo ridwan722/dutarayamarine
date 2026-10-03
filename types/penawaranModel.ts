@@ -20,6 +20,8 @@ export interface penawaranM {
 
   tanggal_kirim_penawaran?: string;
 
+  sign_by?: string;
+
   terkirim_at?: number;
   terkirim_by?: string;
   grandtotal_pengeluaran?: number;

@@ -21,11 +21,18 @@ export interface purchaseorderSectionM {
 export interface purchaseorderM {
   id_purchaseorder?: string; // PO/DRM/2026/00001
   no_purchaseorder?: string;
+  tgl_purchaseorder?: string;
+  sign_po_by: string;
+
+  no_quotation_from_vendor: string;
+
+  currency: string;
 
   id_penawaran: string;
   no_penawaran: string; // QT/DRM/2026/00001
   tanggal_penawaran: string;
 
+  payment: string;
   perihal_purchaseorder: string;
 
   item_purchaseorder: purchaseorderSectionM[];
@@ -42,5 +49,6 @@ export interface purchaseorderM {
   alamat_vendor: string;
   email_vendor: string;
   createdAt?: number;
+  updatedAt?: number;
   // createdBy: string;
 }

@@ -145,8 +145,87 @@
           </table>
         </div>
 
-        <!-- Summary Section -->
-        <div class="summary-wrapper">
+        <!-- Summary and signer cards -->
+        <div class="summary-sign-row">
+          <v-card class="sign-card" elevation="0">
+
+            <!-- Content -->
+            <v-card-text class="sign-card-content">
+              <a-select-new
+                v-model="form.sign_by"
+                :items="[
+                  'Seilla Maryana',
+                  'Leo Adiatmaja Sembiring',
+                  'Muhammad Ridwan',
+                ]"
+                class="sign-select"
+                label="Sign By / Yang Bertanda Tangan ?"
+              />
+    <!-- Signature -->
+    <div
+      v-if="form.sign_by"
+      class="signature-box"
+    >
+
+      <div
+        v-if="form.sign_by == 'Leo Adiatmaja Sembiring'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_leo.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Leo Adiatmaja Sembiring
+        </div>
+      </div>
+
+      <div
+        v-if="form.sign_by == 'Seilla Maryana'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_seilla.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Seilla Maryana
+        </div>
+      </div>
+
+      <div
+        v-if="form.sign_by == 'Muhammad Ridwan'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_ridwan.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Muhammad Ridwan
+        </div>
+      </div>
+    </div>
+
+            </v-card-text>
+          </v-card>
+
+          <div class="summary-wrapper">
           <div class="summary-box">
             <div class="summary-row">
               <span class="text-muted">Subtotal</span>
@@ -212,6 +291,9 @@
               <span class="grand-total-val">Rp {{ rupiah(grandTotal) }}</span>
             </div>
           </div>
+        </div>
+
+
         </div>
 
         <div class="mt-4">
@@ -339,6 +421,7 @@ const emptyForm = (): invoiceM => ({
   pic: "",
   tanggal: "",
   perihal: "",
+  sign_by: "",
   item_pekerjaan: [],
   pakai_ppn: false,
   subtotal_invoice: 0,
@@ -394,6 +477,7 @@ watch(
       email: props.penawaran.email || "",
       vessel: props.penawaran.vessel || "",
       perihal: props.penawaran.perihal || "",
+      sign_by: props.penawaran.sign_by || "",
       pic: props.penawaran.pic,
       tanggal: moment().format("YYYY-MM-DD"),
       item_pekerjaan: (props.penawaran.penawaran_item || []).map((item) => ({
@@ -773,7 +857,28 @@ function addfile(event: Event) {
 .summary-wrapper {
   display: flex;
   justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.summary-sign-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .summary-sign-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sign-card,
+  .summary-box {
+    width: 100%;
+    max-width: none;
+  }
 }
 
 .summary-box {
@@ -980,5 +1085,91 @@ function addfile(event: Event) {
 
 .po-file-remove:hover:not(:disabled) {
   color: #dc2626;
+}
+
+.sign-card {
+  width: 100%;
+  max-width: 380px;
+  flex: 0 1 380px;
+  margin: 0;
+  background: #ffffff;
+  border: 1px solid #e1e5ea;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sign-card-header {
+  min-height: 62px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sign-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.2px;
+}
+
+.sign-card-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #8a929d;
+}
+
+.sign-card-content {
+  padding: 18px;
+}
+
+.field-label {
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5f6874;
+  letter-spacing: 0.2px;
+}
+
+.sign-select {
+  margin-bottom: 14px;
+}
+
+/* Signature area */
+.signature-box {
+  margin-top: 8px;
+  padding: 16px 14px 14px;
+  background: #fafbfc;
+  border: 1px solid #e5e8ec;
+  border-radius: 8px;
+}
+
+.signature-label {
+  margin-bottom: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #9aa1aa;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.signature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-line {
+  width: 180px;
+  border-bottom: 1px solid #737b86;
+  margin-top: -2px;
+}
+
+.signature-name {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #303740;
+  text-align: center;
 }
 </style>

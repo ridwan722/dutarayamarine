@@ -101,6 +101,9 @@
       </div>
 
       <div class="content-body">
+         <div class="text-center">
+          <strong style="font-size: 20px">QUOTATION</strong>
+        </div>
         <div class="info-grid-card">
           <div class="grid-col">
             <div class="meta-row">
@@ -283,7 +286,13 @@
                   class="text-left text-slate-800"
                   style="white-space: pre-line"
                 >
-                  {{ item.nama }}
+                  <div
+                    v-for="(line, lineIndex) in item.nama.split(/\r?\n/)"
+                    :key="lineIndex"
+                    class="description-line"
+                  >
+                    {{ line || " " }}
+                  </div>
                 </td>
                 <!-- <td class="text-center no-print">{{ item.kategori_item }}</td> -->
                 <td class="text-center">{{ item.qty }}</td>
@@ -302,7 +311,7 @@
                 <td colspan="5" class="text-right font-weight-bold text-navy">
                   {{ t.grandTotal }}
                 </td>
-                <td class="text-right font-weight-bold text-navy gt-text">
+                <td class="text-right font-weight-bold text-navy">
                   Rp {{ rupiah(props.detailpenawaran.grand_total_penawaran) }}
                 </td>
               </tr>
@@ -355,9 +364,13 @@
             <p class="sig-header">{{ t.sigHeaderLeft }}</p>
             <p class="sig-sub">PT. DUTA RAYA MARINE</p>
             <div class="sig-img-container">
-              <img src="/ttd_ridwan.png" alt="Signature" class="sig-image" />
+              <img src="/ttd_ridwan.png" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'" alt="Signature" class="sig-image" />
+              <img src="/ttd_seilla.png" v-if="detailpenawaran.sign_by == 'Seilla Maryana'" alt="Signature" class="sig-image" />
+              <img src="/ttd_leo.png" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'" alt="Signature" class="sig-image" />
             </div>
-            <p class="sig-person-name">Leo Adiatmaja Sembiring</p>
+            <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'">Muhammad Ridwan</p>
+            <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Seilla Maryana'">Seilla Maryana</p>
+             <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'">Leo Adiatmaja Sembiring</p>
           </div>
 
           <div class="sig-block">
@@ -414,6 +427,7 @@
 import { ref, computed, watch } from "vue";
 import type { penawaranM } from "~/types/penawaranModel";
 import moment from "moment";
+
 const props = defineProps<{
   detailpenawaran: penawaranM;
 }>();
@@ -569,7 +583,7 @@ function numberToWordsEnglish(n: number): string {
     "",
     "Twenty",
     "Thirty",
-    "Forty",
+    "Fourty",
     "Fifty",
     "Sixty",
     "Seventy",
@@ -654,219 +668,143 @@ const loadWatermarkImage = (): Promise<HTMLImageElement> => {
   });
 };
 
-const handlePrint = async () => {
+const createPaginatedQuotationPdf = async () => {
   const offerElement = document.getElementById("offer-to-print");
   const letterheadElement = offerElement?.querySelector(".letterhead");
   const contentElement = offerElement?.querySelector(".content-body");
   const footerElement = offerElement?.querySelector(".page-footer");
-  if (!letterheadElement || !contentElement || !footerElement) return;
+  if (!letterheadElement || !contentElement || !footerElement) return null;
 
-  const { default: html2canvas } = await import("html2canvas");
-  const watermarkImage = await loadWatermarkImage();
-  const canvasOptions = {
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import("html2canvas"),
+    import("jspdf"),
+  ]);
+  const preparePrintClone = (clonedDocument: Document) => {
+    clonedDocument
+      .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
+      .forEach((element) => {
+        (element as HTMLElement).style.display = "none";
+      });
+    clonedDocument
+      .querySelectorAll(".print-only-cell")
+      .forEach((element) => {
+        (element as HTMLElement).style.display = "table-cell";
+      });
+    clonedDocument
+      .querySelectorAll(".modern-table tbody tr")
+      .forEach((element) => {
+        (element as HTMLElement).style.breakInside = "avoid";
+        (element as HTMLElement).style.pageBreakInside = "avoid";
+      });
+    clonedDocument
+      .querySelectorAll(".modern-table tbody td")
+      .forEach((element) => {
+        (element as HTMLElement).style.verticalAlign = "top";
+      });
+  };
+  const captureOptions = {
     scale: 2,
     useCORS: true,
     backgroundColor: "#ffffff",
     logging: false,
-    onclone: (clonedDocument: Document) => {
-      clonedDocument
-        .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
-        .forEach((element) => ((element as HTMLElement).style.display = "none"));
-      clonedDocument
-        .querySelectorAll(".print-only-cell")
-        .forEach((element) => ((element as HTMLElement).style.display = "table-cell"));
-    },
+    onclone: preparePrintClone,
   };
-  const [letterheadCanvas, contentCanvas, footerCanvas] = await Promise.all([
-    html2canvas(letterheadElement as HTMLElement, canvasOptions),
-    html2canvas(contentElement as HTMLElement, canvasOptions),
-    html2canvas(footerElement as HTMLElement, canvasOptions),
-  ]);
+  const [letterheadCanvas, footerCanvas, contentCanvas, watermarkImage] =
+    await Promise.all([
+      html2canvas(letterheadElement as HTMLElement, captureOptions),
+      html2canvas(footerElement as HTMLElement, captureOptions),
+      html2canvas(contentElement as HTMLElement, captureOptions),
+      loadWatermarkImage(),
+    ]);
 
-  const pageWidth = 1240;
-  const pageHeight = 1754;
-  const sideMargin = 80;
-  const topMargin = 48;
-  const footerMargin = 48;
+  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const sideMargin = 12;
+  const topMargin = 8;
+  const footerMargin = 8;
   const contentWidth = pageWidth - sideMargin * 2;
-  const letterheadHeight = Math.round(
-    (letterheadCanvas.height * contentWidth) / letterheadCanvas.width,
-  );
-  const footerHeight = Math.round(
-    (footerCanvas.height * contentWidth) / footerCanvas.width,
-  );
-  const contentTop = topMargin + letterheadHeight + 36;
-  const contentBottom = pageHeight - footerMargin - footerHeight - 30;
-  const sourceSliceHeight = Math.floor(
-    ((contentBottom - contentTop) * contentCanvas.width) / contentWidth,
-  );
+  const letterheadHeight =
+    (letterheadCanvas.height * contentWidth) / letterheadCanvas.width;
+  const footerHeight = (footerCanvas.height * contentWidth) / footerCanvas.width;
+  const contentTop = topMargin + letterheadHeight + 6;
+  const contentBottom = pageHeight - footerMargin - footerHeight - 5;
+  const printableContentHeight = contentBottom - contentTop;
+  const pixelsPerMm = contentCanvas.width / contentWidth;
+  const pageSliceHeight = Math.floor(printableContentHeight * pixelsPerMm);
 
-  const pages: string[] = [];
-  for (let sourceY = 0; sourceY < contentCanvas.height; sourceY += sourceSliceHeight) {
-    const sliceHeight = Math.min(
-      sourceSliceHeight,
-      contentCanvas.height - sourceY,
-    );
-    const pageCanvas = document.createElement("canvas");
-    pageCanvas.width = pageWidth;
-    pageCanvas.height = pageHeight;
-    const context = pageCanvas.getContext("2d");
-    if (!context) return;
+  // Keep each rendered text line intact while allowing long items to continue on
+  // the next page instead of leaving the rest of the current page empty.
+  const contentRect = contentElement.getBoundingClientRect();
+  const canvasScale = contentCanvas.width / contentRect.width;
+  const safeBoundaries = new Set<number>();
+  contentElement
+    .querySelectorAll<HTMLElement>(".description-line")
+    .forEach((line) => {
+      const range = document.createRange();
+      range.selectNodeContents(line);
+      Array.from(range.getClientRects()).forEach((rect) => {
+        safeBoundaries.add(
+          Math.ceil((rect.bottom - contentRect.top) * canvasScale) + 2,
+        );
+      });
+      range.detach();
+    });
+  contentElement
+    .querySelectorAll(".modern-table tbody tr")
+    .forEach((row) => {
+      const rect = row.getBoundingClientRect();
+      safeBoundaries.add(
+        Math.ceil((rect.bottom - contentRect.top) * canvasScale) + 2,
+      );
+    });
+  const pageBreakBoundaries = Array.from(safeBoundaries)
+    .filter((boundary) => boundary > 0 && boundary < contentCanvas.height)
+    .sort((a, b) => a - b);
 
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, pageWidth, pageHeight);
-
-    context.drawImage(
-      letterheadCanvas,
-      sideMargin,
-      topMargin,
-      contentWidth,
-      letterheadHeight,
-    );
-    context.drawImage(
-      footerCanvas,
-      sideMargin,
-      pageHeight - footerMargin - footerHeight,
-      contentWidth,
-      footerHeight,
-    );
-    context.drawImage(
-      contentCanvas,
-      0,
-      sourceY,
-      contentCanvas.width,
-      sliceHeight,
-      sideMargin,
-      contentTop,
-      contentWidth,
-      (sliceHeight * contentWidth) / contentCanvas.width,
-    );
-    // Watermark transparan di belakang konten setiap halaman print
-    const watermarkWidth = 540;
-    const watermarkHeight =
-      (watermarkImage.height / watermarkImage.width) * watermarkWidth;
-    context.save();
-    context.globalAlpha = 0.105;
-    context.drawImage(
+  const watermarkCanvas = document.createElement("canvas");
+  watermarkCanvas.width = 600;
+  watermarkCanvas.height = Math.round(
+    (watermarkImage.height / watermarkImage.width) * watermarkCanvas.width,
+  );
+  const watermarkContext = watermarkCanvas.getContext("2d");
+  if (watermarkContext) {
+    watermarkContext.globalAlpha = 0.105;
+    watermarkContext.drawImage(
       watermarkImage,
-      (pageWidth - watermarkWidth) / 2,
-      (pageHeight - watermarkHeight) / 2,
-      watermarkWidth,
-      watermarkHeight,
+      0,
+      0,
+      watermarkCanvas.width,
+      watermarkCanvas.height,
     );
-    context.restore();
-
-    pages.push(pageCanvas.toDataURL("image/png"));
   }
 
-  const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:fixed; width:0; height:0; border:0;";
-  document.body.appendChild(iframe);
-  const doc = iframe.contentWindow?.document;
-  if (!doc) return;
+  const letterheadImage = letterheadCanvas.toDataURL("image/png");
+  const footerImage = footerCanvas.toDataURL("image/png");
+  const watermarkImageData = watermarkCanvas.toDataURL("image/png");
+  const watermarkWidth = 105;
+  const watermarkHeight =
+    (watermarkCanvas.height / watermarkCanvas.width) * watermarkWidth;
 
-  doc.write(`
-    <html><head><title>Penawaran_${props.detailpenawaran?.no_penawaran || "DRM"}</title>
-    <style>@page { size: A4; margin: 0; } body { margin: 0; } .page { display: block; width: 210mm; height: 297mm; break-after: page; }</style>
-    </head><body>${pages.map((page) => `<img class="page" src="${page}" />`).join("")}</body></html>
-  `);
-  doc.close();
-
-  setTimeout(() => {
-    iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
-    setTimeout(() => document.body.removeChild(iframe), 1000);
-  }, 600);
-};
-
-const handleSavePdf = async () => {
-  const offerElement = document.getElementById("offer-to-print");
-  if (!offerElement || isSavingPdf.value) return;
-
-  const letterheadElement = offerElement.querySelector(".letterhead");
-  const contentElement = offerElement.querySelector(".content-body");
-  const footerElement = offerElement.querySelector(".page-footer");
-  if (!letterheadElement || !contentElement || !footerElement) return;
-
-  isSavingPdf.value = true;
-
-  try {
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
-    ]);
-    const canvasOptions = {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-      logging: false,
-      onclone: (clonedDocument: Document) => {
-        clonedDocument
-          .querySelectorAll(".no-print, .no-print-cell, .drag-icon")
-          .forEach((element) => {
-            (element as HTMLElement).style.display = "none";
-          });
-        clonedDocument
-          .querySelectorAll(".print-only-cell")
-          .forEach((element) => {
-            (element as HTMLElement).style.display = "table-cell";
-          });
-      },
-    };
-    const [letterheadCanvas, contentCanvas, footerCanvas] = await Promise.all([
-      html2canvas(letterheadElement as HTMLElement, canvasOptions),
-      html2canvas(contentElement as HTMLElement, canvasOptions),
-      html2canvas(footerElement as HTMLElement, canvasOptions),
-    ]);
-    const watermarkImage = await loadWatermarkImage();
-    const watermarkCanvas = document.createElement("canvas");
-    watermarkCanvas.width = 600;
-    watermarkCanvas.height = Math.round(
-      (watermarkImage.height / watermarkImage.width) * watermarkCanvas.width,
-    );
-    const watermarkContext = watermarkCanvas.getContext("2d");
-    if (watermarkContext) {
-      watermarkContext.globalAlpha = 0.105;
-      watermarkContext.drawImage(
-        watermarkImage, 0, 0, watermarkCanvas.width, watermarkCanvas.height,
-      );
+  let sourceY = 0;
+  let pageIndex = 0;
+  while (sourceY < contentCanvas.height) {
+    let targetY = Math.min(sourceY + pageSliceHeight, contentCanvas.height);
+    if (targetY < contentCanvas.height) {
+      const safeBoundary = pageBreakBoundaries
+        .filter((boundary) => boundary > sourceY && boundary <= targetY)
+        .slice(-1)[0];
+      if (safeBoundary) targetY = safeBoundary;
     }
+    if (pageIndex > 0) pdf.addPage();
 
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const sideMargin = 12;
-    const topMargin = 8;
-    const footerMargin = 8;
-    const contentWidth = pageWidth - sideMargin * 2;
-    const letterheadHeight =
-      (letterheadCanvas.height * contentWidth) / letterheadCanvas.width;
-    const footerHeight =
-      (footerCanvas.height * contentWidth) / footerCanvas.width;
-    const contentTop = topMargin + letterheadHeight + 6;
-    const contentBottom = pageHeight - footerMargin - footerHeight - 5;
-    const printableContentHeight = contentBottom - contentTop;
-    const pixelsPerMm = contentCanvas.width / contentWidth;
-    const pageSliceHeight = Math.floor(printableContentHeight * pixelsPerMm);
-
-    let sourceY = 0;
-    let pageNumber = 0;
-    while (sourceY < contentCanvas.height) {
-      if (pageNumber > 0) pdf.addPage();
-
-      const sliceHeight = Math.min(
-        pageSliceHeight,
-        contentCanvas.height - sourceY,
-      );
-      const sliceCanvas = document.createElement("canvas");
-      sliceCanvas.width = contentCanvas.width;
-      sliceCanvas.height = sliceHeight;
-      const context = sliceCanvas.getContext("2d");
-      context?.drawImage(
+    const sliceHeight = targetY - sourceY;
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = contentCanvas.width;
+    sliceCanvas.height = sliceHeight;
+    sliceCanvas
+      .getContext("2d")
+      ?.drawImage(
         contentCanvas,
         0,
         sourceY,
@@ -878,54 +816,84 @@ const handleSavePdf = async () => {
         sliceHeight,
       );
 
-      pdf.addImage(
-        letterheadCanvas.toDataURL("image/png"),
-        "PNG",
-        sideMargin,
-        topMargin,
-        contentWidth,
-        letterheadHeight,
-      );
-      pdf.addImage(
-        footerCanvas.toDataURL("image/png"),
-        "PNG",
-        sideMargin,
-        pageHeight - footerMargin - footerHeight,
-        contentWidth,
-        footerHeight,
-      );
-      pdf.addImage(
-        sliceCanvas.toDataURL("image/png"),
-        "PNG",
-        sideMargin,
-        contentTop,
-        contentWidth,
-        sliceHeight / pixelsPerMm,
-      );
+    pdf.addImage(
+      watermarkImageData,
+      "PNG",
+      (pageWidth - watermarkWidth) / 2,
+      (pageHeight - watermarkHeight) / 2,
+      watermarkWidth,
+      watermarkHeight,
+    );
+    pdf.addImage(
+      letterheadImage,
+      "PNG",
+      sideMargin,
+      topMargin,
+      contentWidth,
+      letterheadHeight,
+    );
+    pdf.addImage(
+      footerImage,
+      "PNG",
+      sideMargin,
+      pageHeight - footerMargin - footerHeight,
+      contentWidth,
+      footerHeight,
+    );
+    pdf.addImage(
+      sliceCanvas.toDataURL("image/png"),
+      "PNG",
+      sideMargin,
+      contentTop,
+      contentWidth,
+      sliceHeight / pixelsPerMm,
+    );
 
-      // Watermark ditambahkan lebih dahulu agar berada di belakang konten
-      const watermarkWidthMm = 105;
-      const watermarkHeightMm =
-        (watermarkCanvas.height / watermarkCanvas.width) * watermarkWidthMm;
-      pdf.addImage(
-        watermarkCanvas.toDataURL("image/png"),
-        "PNG",
-        (pageWidth - watermarkWidthMm) / 2,
-        (pageHeight - watermarkHeightMm) / 2,
-        watermarkWidthMm,
-        watermarkHeightMm,
-      );
+    sourceY = targetY;
+    pageIndex++;
+  }
 
-      sourceY += sliceHeight;
-      pageNumber++;
-    }
+  return pdf;
+};
 
-    const number = props.detailpenawaran?.no_penawaran || "DRM";
-    const nama = props.detailpenawaran?.pic || "DRM";
-    const subject = props.detailpenawaran?.perihal || "";
-    const nomorQT = props.detailpenawaran?.id_penawaran;
+const handlePrint = async () => {
+  try {
+    const pdf = await createPaginatedQuotationPdf();
+    if (!pdf) return;
 
-    pdf.save(`${nomorQT} (${props.detailpenawaran?.vessel}).pdf`);
+    const pdfUrl = URL.createObjectURL(pdf.output("blob"));
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText =
+      "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    iframe.onload = () => {
+      setTimeout(() => iframe.contentWindow?.print(), 300);
+    };
+    iframe.src = pdfUrl;
+    document.body.appendChild(iframe);
+    setTimeout(() => {
+      URL.revokeObjectURL(pdfUrl);
+      iframe.remove();
+    }, 60_000);
+  } catch (error) {
+    console.error("Gagal menyiapkan print quotation:", error);
+    useNotificationStore().showError("Gagal menyiapkan print quotation");
+  }
+};
+
+const handleSavePdf = async () => {
+  if (isSavingPdf.value) return;
+  isSavingPdf.value = true;
+  try {
+    const pdf = await createPaginatedQuotationPdf();
+    if (!pdf) return;
+
+    const quotationId = props.detailpenawaran?.id_penawaran || "DRM";
+    pdf.save(
+      `${quotationId}.pdf`,
+    );
+  } catch (error) {
+    console.error("Gagal membuat PDF quotation:", error);
+    useNotificationStore().showError("Gagal membuat PDF quotation");
   } finally {
     isSavingPdf.value = false;
   }
@@ -1120,6 +1088,11 @@ const handleSavePdf = async () => {
   color: #334155;
   vertical-align: middle;
   border-bottom: 1px solid #f1f5f9;
+}
+
+.description-line {
+  min-height: 1.5em;
+  line-height: 1.5;
 }
 
 .modern-table tbody tr.zebra-row {

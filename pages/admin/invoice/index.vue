@@ -23,7 +23,7 @@
           {{ data.invoiceAddEdit === "add" ? "Create" : "Edit" }} Invoice
         </h4>
         <span class="text-body-2 text-grey"
-          ># tarik data penomoran invoice + 1</span
+          >{{ newInvoice.id }}</span
         >
       </v-card-item>
 
@@ -207,7 +207,7 @@
             </v-col>
             <v-col cols="3">
               <a-select-new
-                v-model="item.nama"
+                v-model="item.kategori_item"
                 label="Kategori"
                 :items="[
                   'Unit',
@@ -449,16 +449,16 @@
             style="max-width: 280px"
           />
         </v-col>
-        <v-col>
+        <!-- <v-col>
           <a-select-new
             v-model="data.filterStatus"
             label=""
             placeholder="Semua Status"
             :items="filterStatusOptions"
           />
-        </v-col>
+        </v-col> -->
         <v-col class="text-right">
-          <v-btn
+          <!-- <v-btn
             color="primary"
             variant="flat"
             size="small"
@@ -467,7 +467,7 @@
             @click="openDialogTambahInvoice"
           >
             Create Invoice
-          </v-btn>
+          </v-btn> -->
 
           <v-btn
             color="green"
@@ -511,13 +511,22 @@
         rubahtanggallengkap(item.tanggal)
       }}</template>
 
-      <template v-slot:item.no_inv="{ item }">
+      <!-- <template v-slot:item.no_inv="{ item }">
         <NuxtLink
           :to="'/admin/invoice/' + item.no_inv"
           class="penawaran-link font-weight-medium"
         >
           #INV/DRM/2026/{{ item.no_inv }}
         </NuxtLink>
+      </template> -->
+      <template v-slot:item.no_inv="{ item }">
+        <div class="text-center">
+          <NuxtLink :to="'/admin/invoice/' + item.no_inv" class="quotation-link">
+            <span class="quotation-badge">
+              #INV/DRM/2026/{{ item.no_inv }}
+            </span>
+          </NuxtLink>
+        </div>
       </template>
 
       <template v-slot:item.nama_customer="{ item }">
@@ -652,7 +661,7 @@ const data = reactive({
   showAllInvoice: false,
   headInvoice: [
     { title: "No", value: "no", width: "10px" },
-    { title: "Tanggal", value: "tanggal", sortable: true },
+    { title: "Tanggal", value: "tanggal", sortable: true, width: "150px" },
     { title: "No. Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
     { title: "Client", value: "nama_customer", sortable: true },
@@ -673,6 +682,7 @@ function emptyInvoice(): invoiceM {
     doc_preorder: [],
     vessel: "",
     no_telp: "",
+    sign_by: "",
     email: "",
     pic: "",
     tanggal: moment().format("YYYY-MM-DD"),
@@ -1018,6 +1028,29 @@ async function refreshData() {
 </script>
 
 <style scoped>
+.quotation-link {
+  text-decoration: none;
+}
+.quotation-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  border: 1px solid #dbeafe;
+  transition: all 0.1s ease;
+}
+
+.quotation-badge:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
 .penawaran-link {
   color: rgb(11, 66, 194);
   transition: color 0.2s ease;

@@ -158,3 +158,29 @@ export const createPurchaseorder = async (data: purchaseorderM) => {
   });
 };
 
+export const updatePurchaseorder = async (
+  idPurchaseorder: string,
+  data: purchaseorderM,
+) => {
+  const db = useFirestore();
+  const setdata: purchaseorderM = {
+    ...data,
+    id_purchaseorder: idPurchaseorder,
+    updatedAt: moment().unix(),
+  };
+
+  await runTransaction(db, async (transaction) => {
+    const purchaseorderRef = doc(db, "purchaseorder", idPurchaseorder);
+    const penawaranpurchaseorderRef = doc(
+      db,
+      "penawaran",
+      data.id_penawaran,
+      "purchaseorder",
+      idPurchaseorder,
+    );
+    transaction.set(purchaseorderRef, setdata, { merge: true });
+    transaction.set(penawaranpurchaseorderRef, setdata, { merge: true });
+  });
+
+  return setdata;
+};
