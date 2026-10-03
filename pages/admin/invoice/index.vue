@@ -662,7 +662,7 @@ const data = reactive({
   headInvoice: [
     { title: "No", value: "no", width: "10px" },
     { title: "Tanggal", value: "tanggal", sortable: true, width: "150px" },
-    { title: "No. Quotation", value: "no_penawaran", sortable: true },
+    { title: "Based On Quotation", value: "no_penawaran", sortable: true },
     { title: "No. Invoice", value: "no_inv", sortable: true },
     { title: "Client", value: "nama_customer", sortable: true },
     { title: "Subject", value: "perihal", sortable: true },

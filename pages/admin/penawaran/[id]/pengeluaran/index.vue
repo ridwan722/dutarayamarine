@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { doc, updateDoc } from "firebase/firestore";
-import { useDocument, useFirestore } from "vuefire";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { useCollection, useDocument, useFirestore } from "vuefire";
+import { persistPengeluaranDocuments } from "~/composables/useInvoiceAresaDigital";
 import type {
   buktiPengeluaranM,
   penawaranM,
@@ -17,20 +18,66 @@ const db = useFirestore();
 const idPenawaran = computed(() => String(route.params.id));
 
 const penawaranRef = computed(() => doc(db, "penawaran", idPenawaran.value));
+const pengeluaranFileChunksRef = computed(() =>
+  collection(db, "penawaran", idPenawaran.value, "pengeluaran_file_chunks"),
+);
 
 const { data: penawaran, pending, error } = useDocument(penawaranRef);
+const { data: pengeluaranFileChunks } = useCollection(
+  pengeluaranFileChunksRef,
+);
 
 const detailPenawaran = computed(
   () => penawaran.value as penawaranM | undefined,
 );
 
-const pengeluaran = computed(() => {
-  return [...(detailPenawaran.value?.pengeluaran ?? [])].sort((a, b) => {
-    return (
-      new Date(b.tanggal_pengeluaran).getTime() -
-      new Date(a.tanggal_pengeluaran).getTime()
+const fileDataUrls = computed(() => {
+  const groupedChunks = new Map<
+    string,
+    { index: number; data: string }[]
+  >();
+  for (const chunk of pengeluaranFileChunks.value ?? []) {
+    const fileId = chunk.fileId as string | undefined;
+    if (!fileId) continue;
+    const fileChunks = groupedChunks.get(fileId) ?? [];
+    fileChunks.push({
+      index: Number(chunk.index) || 0,
+      data: String(chunk.data || ""),
+    });
+    groupedChunks.set(fileId, fileChunks);
+  }
+
+  const dataUrls = new Map<string, string>();
+  for (const [fileId, chunks] of groupedChunks) {
+    dataUrls.set(
+      fileId,
+      chunks
+        .sort((a, b) => a.index - b.index)
+        .map((chunk) => chunk.data)
+        .join(""),
     );
-  });
+  }
+  return dataUrls;
+});
+
+const pengeluaran = computed(() => {
+  return (detailPenawaran.value?.pengeluaran ?? [])
+    .map((expense) => ({
+      ...expense,
+      doc_pengeluaran: (expense.doc_pengeluaran ?? []).map((document) => ({
+        ...document,
+        dataUrl:
+          document.dataUrl ||
+          (document.fileId ? fileDataUrls.value.get(document.fileId) : "") ||
+          "",
+      })),
+    }))
+    .sort((a, b) => {
+      return (
+        new Date(b.tanggal_pengeluaran).getTime() -
+        new Date(a.tanggal_pengeluaran).getTime()
+      );
+    });
 });
 
 /* =====================================================
@@ -39,9 +86,9 @@ const pengeluaran = computed(() => {
 
 const editDialog = ref(false);
 const savingEdit = ref(false);
+const deletingPengeluaranId = ref<string | null>(null);
 const editIndex = ref<number | null>(null);
 const editFiles = ref<File[]>([]);
-const MAX_INVOICE_BYTES = 900_000;
 const notificationStore = useNotificationStore();
 
 const editForm = reactive<pengeluaranM>({
@@ -116,7 +163,7 @@ const headers = [
   {
     title: "AKSI",
     key: "actions",
-    width: "80px",
+    width: "110px",
     sortable: false,
     align: "center",
   },
@@ -255,17 +302,6 @@ const saveEdit = async () => {
       return;
     }
 
-    const estimatedFileBytes = editFiles.value.reduce(
-      (total, file) => total + 4 * Math.ceil(file.size / 3),
-      0,
-    );
-    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
-      notificationStore.showError(
-        "Total file bukti terlalu besar. Kurangi ukuran atau jumlah file.",
-      );
-      return;
-    }
-
     const newDocuments: buktiPengeluaranM[] = [];
     for (const file of editFiles.value) {
       newDocuments.push({
@@ -275,7 +311,11 @@ const saveEdit = async () => {
         contentType: file.type || "application/octet-stream",
       });
     }
-    const doc_pengeluaran = [...editForm.doc_pengeluaran, ...newDocuments];
+    const doc_pengeluaran = await persistPengeluaranDocuments(
+      idPenawaran.value,
+      dataLama.id_pengeluaran,
+      [...editForm.doc_pengeluaran, ...newDocuments],
+    );
 
     pengeluaranBaru[index] = {
       ...dataLama,
@@ -305,6 +345,45 @@ const saveEdit = async () => {
     console.error("Gagal mengedit pengeluaran:", err);
   } finally {
     savingEdit.value = false;
+  }
+};
+
+const deletePengeluaran = async (item: any) => {
+  const idPengeluaran = item.id_pengeluaran;
+  if (!idPengeluaran || !detailPenawaran.value) return;
+  if (
+    !window.confirm(
+      `Hapus pengeluaran "${item.keterangan || "ini"}"? Tindakan ini tidak dapat dibatalkan.`,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    deletingPengeluaranId.value = idPengeluaran;
+    const pengeluaranBaru = (detailPenawaran.value.pengeluaran ?? []).filter(
+      (expense) => expense.id_pengeluaran !== idPengeluaran,
+    );
+    const grandtotalPengeluaran = pengeluaranBaru.reduce(
+      (total, expense) => total + (Number(expense.nominal) || 0),
+      0,
+    );
+
+    await updateDoc(doc(db, "penawaran", idPenawaran.value), {
+      pengeluaran: pengeluaranBaru,
+      grandtotal_pengeluaran: grandtotalPengeluaran,
+    });
+    try {
+      await persistPengeluaranDocuments(idPenawaran.value, idPengeluaran, []);
+    } catch (cleanupError) {
+      console.error("Gagal membersihkan lampiran pengeluaran:", cleanupError);
+    }
+    notificationStore.showSuccess("Pengeluaran berhasil dihapus");
+  } catch (err) {
+    console.error("Gagal menghapus pengeluaran:", err);
+    notificationStore.showError("Gagal menghapus pengeluaran");
+  } finally {
+    deletingPengeluaranId.value = null;
   }
 };
 
@@ -658,19 +737,36 @@ const previewImage = (dataUrl: string) => {
           <!-- AKSI -->
 
           <template #item.actions="{ item, index }">
-            <v-btn
-              icon="mdi-pencil-outline"
-              variant="text"
-              size="small"
-              color="grey-darken-1"
-              @click="openEdit(item, index)"
-            >
-              <v-icon size="18"> mdi-pencil-outline </v-icon>
+            <div class="d-flex align-center justify-center">
+              <v-btn
+                icon="mdi-pencil-outline"
+                variant="text"
+                size="small"
+                color="grey-darken-1"
+                :disabled="deletingPengeluaranId !== null"
+                @click="openEdit(item, index)"
+              >
+                <v-icon size="18">mdi-pencil-outline</v-icon>
+                <v-tooltip activator="parent" location="top">
+                  Edit Pengeluaran
+                </v-tooltip>
+              </v-btn>
 
-              <v-tooltip activator="parent" location="top">
-                Edit Pengeluaran
-              </v-tooltip>
-            </v-btn>
+              <v-btn
+                icon="mdi-delete-outline"
+                variant="text"
+                size="small"
+                color="error"
+                :loading="deletingPengeluaranId === item.id_pengeluaran"
+                :disabled="deletingPengeluaranId !== null"
+                @click="deletePengeluaran(item)"
+              >
+                <v-icon size="18">mdi-delete-outline</v-icon>
+                <v-tooltip activator="parent" location="top">
+                  Hapus Pengeluaran
+                </v-tooltip>
+              </v-btn>
+            </div>
           </template>
         </v-data-table>
       </div>
@@ -785,7 +881,7 @@ const previewImage = (dataUrl: string) => {
                 <div class="edit-upload-icon">↑</div>
                 <div>
                   <div class="edit-upload-title">Pilih File</div>
-                  <div class="edit-upload-info">Maks. 650 KB</div>
+                  <div class="edit-upload-info">Ukuran file bebas</div>
                 </div>
               </div>
             </div>

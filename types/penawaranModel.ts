@@ -72,6 +72,6 @@ export interface buktiPengeluaranM {
   dataUrl: string;
   size: number;
   contentType: string;
+  fileId?: string;
 }
-
 

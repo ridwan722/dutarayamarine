@@ -51,7 +51,7 @@
           :disabled="saving"
         />
         <div class="form-grid">
-          <a-text-field-new v-model="form.qty" label="Qty" :disabled="saving" />
+          <a-field-number-new v-model="form.qty" label="Qty" :disabled="saving" />
           <a-select-new
             v-model="form.satuan"
             label="Satuan"
@@ -105,7 +105,7 @@
 
               <div class="po-upload-text">
                 <div class="po-upload-title">Pilih File</div>
-                <div class="po-upload-info">Maks. 650 KB</div>
+                <div class="po-upload-info">Ukuran file bebas</div>
               </div>
             </div>
           </div>
@@ -165,9 +165,12 @@
 
 <script setup lang="ts">
 import moment from "moment";
-import type { penawaranM, pengeluaranM, buktiPengeluaranM } from "~/types/penawaranModel";
+import type {
+  buktiPengeluaranM,
+  penawaranM,
+  pengeluaranM,
+} from "~/types/penawaranModel";
 const billFiles = ref<File[]>([]);
-const MAX_INVOICE_BYTES = 900_000;
 const props = defineProps<{
   modelValue: boolean;
   penawaran: penawaranM;
@@ -236,16 +239,6 @@ async function save() {
 
   saving.value = true;
   try {
-    const estimatedFileBytes = billFiles.value.reduce(
-      (total, file) => total + 4 * Math.ceil(file.size / 3),
-      0,
-    );
-    if (estimatedFileBytes > MAX_INVOICE_BYTES) {
-      return notificationStore.showError(
-        "Total file PO terlalu besar. Kurangi ukuran atau jumlah file (maksimal sekitar 650 KB total).",
-      );
-    }
-
     const documents: buktiPengeluaranM[] = [];
     for (const file of billFiles.value) {
       documents.push({
@@ -256,15 +249,6 @@ async function save() {
       });
     }
     form.value.doc_pengeluaran = documents;
-
-    if (
-      new TextEncoder().encode(JSON.stringify(form.value)).byteLength >
-      MAX_INVOICE_BYTES
-    ) {
-      return notificationStore.showError(
-        "Ukuran invoice beserta file PO terlalu besar. Kurangi ukuran atau jumlah file PO.",
-      );
-    }
 
     await createPengeluaran(
       {
@@ -277,8 +261,14 @@ async function save() {
     emit("update:modelValue", false);
     emit("saved");
   } catch (error) {
-    notificationStore.showError("Gagal menyimpan pengeluaran");
-  } finally {
+  console.error("ERROR CREATE PENGELUARAN:", error);
+
+  notificationStore.showError(
+    error instanceof Error
+      ? error.message
+      : "Gagal menyimpan pengeluaran",
+  );
+} finally {
     saving.value = false;
   }
 }
@@ -288,14 +278,15 @@ function readBillFile(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") resolve(reader.result);
-      else reject(new Error("File PO tidak dapat dibaca"));
+      else reject(new Error("File bukti tidak dapat dibaca"));
     };
     reader.onerror = () =>
-      reject(reader.error || new Error("File PO tidak dapat dibaca"));
-    reader.onabort = () => reject(new Error("Pembacaan file PO dibatalkan"));
+      reject(reader.error || new Error("File bukti tidak dapat dibaca"));
+    reader.onabort = () => reject(new Error("Pembacaan file dibatalkan"));
     reader.readAsDataURL(file);
   });
 }
+
 </script>
 
 <style scoped>
