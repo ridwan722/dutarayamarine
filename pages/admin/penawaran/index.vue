@@ -164,7 +164,7 @@
                     'Set',
                     'Meter',
                     'Box',
-                    'Liter',
+                    'Liter','Jerigen',
                   ]"
                   v-model="item.uom"
                   label="UOM"
