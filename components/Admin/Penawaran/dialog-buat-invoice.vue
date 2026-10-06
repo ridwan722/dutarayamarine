@@ -157,6 +157,7 @@
                   'Seilla Maryana',
                   'Leo Adiatmaja Sembiring',
                   'Muhammad Ridwan',
+                  'Lilis Trisnawati',
                 ]"
                 class="sign-select"
                 label="Sign By / Yang Bertanda Tangan ?"
@@ -218,6 +219,25 @@
 
         <div class="signature-name">
           Muhammad Ridwan
+        </div>
+      </div>
+
+
+      <div
+        v-if="form.sign_by == 'Lilis Trisnawati'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          src="/ttd_ridwan.png"
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Lilis Trisnawati
         </div>
       </div>
     </div>

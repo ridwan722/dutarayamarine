@@ -885,6 +885,14 @@
               class="ml-3"
             />
 
+             <div
+              v-if="invoiceDetail.sign_by == 'Lilis Trisnawati'"
+              width="150"
+              class="ml-3 font-italic text-grey-lighten-1 text-caption"
+            >
+            No Signature Required
+          </div>
+
             <strong v-if="invoiceDetail.sign_by == 'Muhammad Ridwan'"
               >Muhammad Ridwan</strong
             >
@@ -893,6 +901,9 @@
             >
             <strong v-if="invoiceDetail.sign_by == 'Leo Adiatmaja Sembiring'"
               >Leo Adiatmaja Sembiring</strong
+            >
+            <strong v-if="invoiceDetail.sign_by == 'Lilis Trisnawati'"
+              >Lilis Trisnawati</strong
             >
           </div>
         </v-card>

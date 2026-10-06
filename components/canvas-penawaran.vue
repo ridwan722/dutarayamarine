@@ -367,10 +367,12 @@
               <img src="/ttd_ridwan.png" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'" alt="Signature" class="sig-image" />
               <img src="/ttd_seilla.png" v-if="detailpenawaran.sign_by == 'Seilla Maryana'" alt="Signature" class="sig-image" />
               <img src="/ttd_leo.png" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'" alt="Signature" class="sig-image" />
+              <div v-if="detailpenawaran.sign_by == 'Lilis Trisnawati'" class="sig-image font-italic text-grey-lighten-1 text-caption" >No Signature Required</div>
             </div>
             <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Muhammad Ridwan'">Muhammad Ridwan</p>
             <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Seilla Maryana'">Seilla Maryana</p>
              <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Leo Adiatmaja Sembiring'">Leo Adiatmaja Sembiring</p>
+              <p class="sig-person-name" v-if="detailpenawaran.sign_by == 'Lilis Trisnawati'">Lilis Trisnawati</p>
           </div>
 
           <div class="sig-block">

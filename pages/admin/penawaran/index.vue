@@ -281,6 +281,7 @@
         'Seilla Maryana',
         'Leo Adiatmaja Sembiring',
         'Muhammad Ridwan',
+        'Lilis Trisnawati',
       ]"
       class="sign-select"
     />
@@ -342,6 +343,24 @@
 
         <div class="signature-name">
           Muhammad Ridwan
+        </div>
+      </div>
+
+      <div
+        v-if="newPenawaran.sign_by == 'Lilis Trisnawati'"
+        class="signature-content"
+      >
+        <v-img
+          width="130"
+          height="65"
+          contain
+          
+        />
+
+        <div class="signature-line"></div>
+
+        <div class="signature-name">
+          Lilis Trisnawati
         </div>
       </div>
     </div>
