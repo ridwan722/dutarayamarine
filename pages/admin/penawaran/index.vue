@@ -51,46 +51,45 @@
         <a-textarea-new
           class="mt-2"
           v-model="newPenawaran.alamat_perusahaan"
-          label="Address"
+          placeholder="Address"
           disabled
-          placeholder="*Auto"
+          
         />
         <v-row no-gutters>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.pic"
-              label="PIC"
+              placeholder="PIC"
               disabled
-              placeholder="*Auto"
+              
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.no_telp"
-              label="Phone Number"
+              placeholder="Phone Number"
               disabled
-              placeholder="*Auto"
+              
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.email"
-              label="Email"
+              placeholder="Email"
               disabled
-              placeholder="@gmail.com"
             />
           </v-col>
           <v-col cols="6" md="3" class="pa-1">
             <a-text-field-new
               v-model="newPenawaran.vessel"
-              label="Vessel"
+              placeholder="Vessel"
               disabled
-              placeholder="*Auto"
+              
             />
           </v-col>
         </v-row>
 
-        <v-divider class="my-4 border-opacity-50" />
+        <v-divider class="my-2 border-opacity-50" />
 
         <a-textarea-new
           v-model="newPenawaran.perihal"
@@ -100,9 +99,9 @@
         />
 
         <!-- Section: Rincian Item -->
-        <div class="d-flex align-center justify-space-between mb-3">
+        <div class="d-flex align-center justify-space-between mb-3 mt-2">
           <span class="text-subtitle-2 font-weight-bold text-primary">
-            Rincian Item & Penawaran
+            Rincian Item
           </span>
         </div>
 
@@ -110,7 +109,7 @@
         <v-row
           v-for="(item, index) in newPenawaran.penawaran_item"
           :key="index"
-          class="bg-grey-lighten-5 rounded-lg pa-3 pa-sm-4 mb-4 border border-dashed position-relative"
+          class="bg-grey-lighten-5 rounded-lg pa-1 pa-sm-2 mb-4 border border-dashed position-relative"
         >
           <v-col cols="10" md="11">
             <div class="d-flex justify-space-between align-center mb-2">
@@ -119,22 +118,31 @@
               >
             </div>
 
-            <v-row no-gutters>
-              <v-col class="pa-2">
-                <a-textarea-new
-                  v-model="item.nama"
-                  label="Description"
-                  placeholder="Description"
-                />
-              </v-col>
-              <v-col cols="3" class="pa-2">
-                <a-select-new
-                  v-model="item.kategori_item"
-                  label="Kategori"
-                  :items="['Barang', 'Jasa', 'Barang & jasa']"
-                ></a-select-new>
-              </v-col>
-            </v-row>
+            <a-textarea-new
+              v-model="item.nama"
+              label="Description"
+              placeholder="Description"
+            />
+
+            <div class="d-flex align-center flex-wrap mb-2">
+              <a-checkbox
+                label="Barang"
+                :model-value="item.kategori_item === 'Barang'"
+                @update:model-value="setKategoriItem(item, 'Barang', $event)"
+              />
+              <a-checkbox
+                label="Jasa"
+                class="ml-2"
+                :model-value="item.kategori_item === 'Jasa'"
+                @update:model-value="setKategoriItem(item, 'Jasa', $event)"
+              />
+              <a-checkbox
+                label="Barang & Jasa"
+                class="ml-2"
+                :model-value="item.kategori_item === 'Barang & Jasa'"
+                @update:model-value="setKategoriItem(item, 'Barang & Jasa', $event)"
+              />
+            </div>
 
             <!-- KODE BARU (SOLUSI) -->
             <v-chip
@@ -164,7 +172,10 @@
                     'Set',
                     'Meter',
                     'Box',
-                    'Liter','Jerigen', 'Can', 'Pail'
+                    'Liter',
+                    'Jerigen',
+                    'Can',
+                    'Pail',
                   ]"
                   v-model="item.uom"
                   label="UOM"
@@ -232,10 +243,6 @@
 
         <v-divider class="my-4 border-opacity-50" />
 
-        <!-- Section: Ringkasan Biaya -->
-        <div class="text-subtitle-2 font-weight-bold text-primary mb-3">
-          Ringkasan Biaya
-        </div>
 
         <v-card variant="flat" class="bg-blue-grey-lighten-5 rounded-xl pa-4">
           <div class="d-flex justify-space-between align-center">
@@ -248,125 +255,80 @@
           </div>
         </v-card>
 
-        <v-card
-  class="sign-card mt-3 mx-auto"
-  elevation="0"
->
-  <!-- Header -->
-  <div class="sign-card-header">
-    <div>
-      <div class="sign-card-title">
-        Sign By
-      </div>
-      <div class="sign-card-subtitle">
-        Yang Bertanda Tangan
-      </div>
-    </div>
+        <v-card class="sign-card mt-3 mx-auto" elevation="0">
+          <!-- Header -->
+          <div class="sign-card-header">
+            <div>
+              <div class="sign-card-title">Sign By</div>
+              <div class="sign-card-subtitle">Yang Bertanda Tangan</div>
+            </div>
 
-    <v-icon
-      size="20"
-      color="grey-darken-1"
-    >
-      mdi-draw-pen
-    </v-icon>
-  </div>
+            <v-icon size="20" color="grey-darken-1"> mdi-draw-pen </v-icon>
+          </div>
 
-  <v-divider />
+          <v-divider />
 
-  <!-- Content -->
-  <v-card-text class="sign-card-content">
-    <a-select-new
-      v-model="newPenawaran.sign_by"
-      :items="[
-        'Seilla Maryana',
-        'Leo Adiatmaja Sembiring',
-        'Muhammad Ridwan',
-        'Lilis Trisnawati',
-      ]"
-      class="sign-select"
-    />
+          <!-- Content -->
+          <v-card-text class="sign-card-content">
+            <a-select-new
+              v-model="newPenawaran.sign_by"
+              :items="[
+                'Seilla Maryana',
+                'Leo Adiatmaja Sembiring',
+                'Muhammad Ridwan',
+                'Lilis Trisnawati',
+              ]"
+              class="sign-select"
+            />
 
-    <!-- Signature -->
-    <div
-      v-if="newPenawaran.sign_by"
-      class="signature-box"
-    >
+            <!-- Signature -->
+            <div v-if="newPenawaran.sign_by" class="signature-box">
+              <div
+                v-if="newPenawaran.sign_by == 'Leo Adiatmaja Sembiring'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_leo.png" />
 
-      <div
-        v-if="newPenawaran.sign_by == 'Leo Adiatmaja Sembiring'"
-        class="signature-content"
-      >
-        <v-img
-          width="130"
-          height="65"
-          contain
-          src="/ttd_leo.png"
-        />
+                <div class="signature-line"></div>
 
-        <div class="signature-line"></div>
+                <div class="signature-name">Leo Adiatmaja Sembiring</div>
+              </div>
 
-        <div class="signature-name">
-          Leo Adiatmaja Sembiring
-        </div>
-      </div>
+              <div
+                v-if="newPenawaran.sign_by == 'Seilla Maryana'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_seilla.png" />
 
-      <div
-        v-if="newPenawaran.sign_by == 'Seilla Maryana'"
-        class="signature-content"
-      >
-        <v-img
-          width="130"
-          height="65"
-          contain
-          src="/ttd_seilla.png"
-        />
+                <div class="signature-line"></div>
 
-        <div class="signature-line"></div>
+                <div class="signature-name">Seilla Maryana</div>
+              </div>
 
-        <div class="signature-name">
-          Seilla Maryana
-        </div>
-      </div>
+              <div
+                v-if="newPenawaran.sign_by == 'Muhammad Ridwan'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain src="/ttd_ridwan.png" />
 
-      <div
-        v-if="newPenawaran.sign_by == 'Muhammad Ridwan'"
-        class="signature-content"
-      >
-        <v-img
-          width="130"
-          height="65"
-          contain
-          src="/ttd_ridwan.png"
-        />
+                <div class="signature-line"></div>
 
-        <div class="signature-line"></div>
+                <div class="signature-name">Muhammad Ridwan</div>
+              </div>
 
-        <div class="signature-name">
-          Muhammad Ridwan
-        </div>
-      </div>
+              <div
+                v-if="newPenawaran.sign_by == 'Lilis Trisnawati'"
+                class="signature-content"
+              >
+                <v-img width="130" height="65" contain />
 
-      <div
-        v-if="newPenawaran.sign_by == 'Lilis Trisnawati'"
-        class="signature-content"
-      >
-        <v-img
-          width="130"
-          height="65"
-          contain
-          
-        />
+                <div class="signature-line"></div>
 
-        <div class="signature-line"></div>
-
-        <div class="signature-name">
-          Lilis Trisnawati
-        </div>
-      </div>
-    </div>
-
-  </v-card-text>
-</v-card>
+                <div class="signature-name">Lilis Trisnawati</div>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
 
         <div class="mt-4">
           <span class="text-caption">
@@ -888,10 +850,26 @@ function tambahBarisPenawaran() {
   });
 }
 
-function hapusBarisPenawaran(index: number) {
+function setKategoriItem(
+  item: { kategori_item: string },
+  kategori: string,
+  checked: boolean,
+) {
+  if (checked) item.kategori_item = kategori;
+}
+
+async function hapusBarisPenawaran(index: number) {
   if (newPenawaran.value.penawaran_item.length === 1) {
     return notificationStore.showError("Minimal harus ada 1 baris item");
   }
+
+  const confirmed = await confirmationDialog.value?.show(
+    "Konfirmasi Hapus Item",
+    `Yakin ingin menghapus item #${index + 1}?`,
+    { confirmText: "Hapus", variant: "danger" },
+  );
+  if (!confirmed) return;
+
   newPenawaran.value.penawaran_item.splice(index, 1);
 }
 

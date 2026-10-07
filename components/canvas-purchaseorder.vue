@@ -181,6 +181,10 @@
               }}</span>
             </div>
             <div class="meta-row">
+              <span class="lbl">PIC</span><span class="sep">:</span
+              ><span class="val">{{ purchaseorder?.pic_vendor }}</span>
+            </div>
+            <div class="meta-row">
               <span class="lbl">Email</span><span class="sep">:</span
               ><span class="val">{{ purchaseorder?.email_vendor }}</span>
             </div>
@@ -422,7 +426,7 @@
              <p class="sig-person-name" v-if="purchaseorder?.sign_po_by == 'Leo Adiatmaja Sembiring'">Leo Adiatmaja Sembiring</p>
           </div>
 
-          <div class="sig-block">
+          <!-- <div class="sig-block">
             <p class="sig-header">{{ t.sigHeaderRight }}</p>
             <p class="sig-sub">
               {{ purchaseorder?.nama_vendor || "" }}
@@ -432,7 +436,7 @@
               ( .................................... )
             </p>
             <p class="sig-person-role">{{ t.sigRoleRight }}</p>
-          </div>
+          </div> -->
         </div>
       </div>
 

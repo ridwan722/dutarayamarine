@@ -364,7 +364,7 @@ const logout = async () => {
         <span class="nav-title-flyout">Invoice Success</span>
       </v-list-item>
 
-      <v-list-item
+      <!-- <v-list-item
         to="/admin/berita-acara"
         class="side-nav-item"
         active-class="side-nav-item--active"
@@ -373,7 +373,7 @@ const logout = async () => {
           <v-icon size="20">mdi-file-certificate-outline</v-icon>
         </div>
         <span class="nav-title-flyout">Berita Acara</span>
-      </v-list-item>
+      </v-list-item> -->
 
       <v-list-item
         to="/admin/master/client"
@@ -440,6 +440,18 @@ const logout = async () => {
         </div>
         <span class="nav-title-flyout">Report Order</span>
       </v-list-item>
+
+       <v-list-item
+        to="/admin/legalitas"
+        class="side-nav-item"
+        active-class="side-nav-item--active"
+      >
+        <div class="nav-icon-wrapper">
+          <v-icon size="20">mdi-file-cloud</v-icon>
+        </div>
+        <span class="nav-title-flyout">Legalitas</span>
+      </v-list-item>
+
     </v-list>
   </v-navigation-drawer>
 

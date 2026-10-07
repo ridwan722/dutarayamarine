@@ -194,7 +194,7 @@ async function opendialogaddpengeluaran() {
                 <!-- PO -->
                 <v-btn
                   block
-                  color="green"
+                  color="primary"
                   variant="flat"
                   size="small"
                   append-icon="mdi-clipboard-text-outline"
@@ -204,10 +204,10 @@ async function opendialogaddpengeluaran() {
                   Buat / Edit Purchase Order (PO)
                 </v-btn>
 
-                <!-- Pengeluaran -->
+                <!-- Pengeluaran
                 <v-btn
                   block
-                  color="primary"
+                  color="green"
                   variant="flat"
                   size="small"
                   append-icon="mdi-pencil-outline"
@@ -215,7 +215,7 @@ async function opendialogaddpengeluaran() {
                   @click="opendialogaddpengeluaran"
                 >
                   Buat Catatan Pengeluaran
-                </v-btn>
+                </v-btn> -->
 
                 <!-- Lihat Pengeluaran -->
                 <v-btn
@@ -783,16 +783,6 @@ async function opendialogaddpengeluaran() {
 
 .btn-invoice:hover {
   background: #d97706 !important;
-}
-
-/* PO */
-.btn-po {
-  background: #16a34a !important;
-  color: #fff !important;
-}
-
-.btn-po:hover {
-  background: #15803d !important;
 }
 
 /* Pengeluaran */

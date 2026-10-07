@@ -105,11 +105,11 @@ function resizeTextarea() {
 
   if (!textarea) return;
 
-  // Reset dulu supaya tinggi bisa mengecil ketika isi dihapus
-  textarea.style.height = "auto";
+  // Reset dulu
+  textarea.style.height = "48px";
 
-  // Sesuaikan tinggi dengan isi
-  textarea.style.height = `${textarea.scrollHeight}px`;
+  // Kalau isi lebih tinggi dari 2 baris, ikuti isi
+  textarea.style.height = `${Math.max(48, textarea.scrollHeight)}px`;
 }
 
 function onInput(event) {
@@ -205,7 +205,7 @@ defineExpose({
 }
 
 .textarea-field {
-  min-height: 70px;
+  min-height: 48px;
   line-height: 1.5;
 
   /* Jangan pakai resize vertical */

@@ -2,6 +2,7 @@
 import { collection, doc, updateDoc } from "firebase/firestore";
 import { useCollection, useDocument, useFirestore } from "vuefire";
 import { persistPengeluaranDocuments } from "~/composables/useInvoiceAresaDigital";
+import dialogBuatPengeluaran from "~/components/Admin/Penawaran/dialog-buat-pengeluaran.vue";
 import type {
   buktiPengeluaranM,
   penawaranM,
@@ -16,6 +17,7 @@ const route = useRoute();
 const db = useFirestore();
 
 const idPenawaran = computed(() => String(route.params.id));
+const addPengeluaranDialog = ref(false);
 
 const penawaranRef = computed(() => doc(db, "penawaran", idPenawaran.value));
 const pengeluaranFileChunksRef = computed(() =>
@@ -399,6 +401,13 @@ const previewImage = (dataUrl: string) => {
 </script>
 
 <template>
+  <dialog-buat-pengeluaran
+    v-if="detailPenawaran"
+    v-model="addPengeluaranDialog"
+    :id-penawaran="idPenawaran"
+    :penawaran="detailPenawaran"
+  />
+
   <v-container fluid class="expense-page pa-4 pa-md-5">
     <v-dialog v-model="imagePreviewDialog" max-width="900">
       <v-card>
@@ -555,14 +564,25 @@ const previewImage = (dataUrl: string) => {
           </div>
         </div>
 
-        <v-chip
-          variant="tonal"
-          size="small"
-          prepend-icon="mdi-format-list-bulleted"
-          class="transaction-chip"
-        >
-          {{ pengeluaran.length }} transaksi
-        </v-chip>
+        <div class="d-flex align-center ga-2">
+          <v-chip
+            variant="tonal"
+            size="small"
+            prepend-icon="mdi-format-list-bulleted"
+            class="transaction-chip"
+          >
+            {{ pengeluaran.length }} transaksi
+          </v-chip>
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            size="small"
+            :disabled="!detailPenawaran"
+            @click="addPengeluaranDialog = true"
+          >
+            Tambah Pengeluaran
+          </v-btn>
+        </div>
       </div>
 
       <v-divider />
