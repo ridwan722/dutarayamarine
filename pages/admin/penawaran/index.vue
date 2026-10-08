@@ -20,13 +20,13 @@
     fullscreen-sm-and-down
   >
     <v-card class="rounded-xl-md overflow-hidden elevation-3 border-0">
-      <v-card-item class="bg-grey-lighten-4 pa-4 text-center">
-        <h4 class="font-weight-bold text-grey-darken-3 text-h6 text-sm-h5">
+      <v-card-item class="pa-2 bg-primary text-center">
+        <h4 class="font-weight-bold  text-h6 text-sm-h5">
           {{ data.penawaranAddEdit === "add" ? "Create" : "Edit" }} Quotation
         </h4>
-        <p class="text-caption text-grey-darken-1 m-0">
+        <!-- <p class="text-caption text-grey-darken-1 m-0">
           Lengkapi rincian penawaran harga dan item pekerjaan di bawah ini.
-        </p>
+        </p> -->
       </v-card-item>
 
       <v-card-text class="pa-4 pa-sm-6">
@@ -109,7 +109,7 @@
         <v-row
           v-for="(item, index) in newPenawaran.penawaran_item"
           :key="index"
-          class="bg-grey-lighten-5 rounded-lg pa-1 pa-sm-2 mb-4 border border-dashed position-relative"
+          class="bg-grey-lighten-5 rounded-lg pa-1 pa-sm-1 mb-4 border border-dashed position-relative"
         >
           <v-col cols="10" md="11">
             <div class="d-flex justify-space-between align-center mb-2">
@@ -149,7 +149,7 @@
               v-for="(barang, idxBarang) in barangStore.getDataBarang"
               :key="barang.id ?? idxBarang"
               size="x-small"
-              class="mr-1 mb-1"
+              class="mr-1 mb-1 text-grey"
             >
               {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
             </v-chip>
@@ -247,7 +247,7 @@
         <v-card variant="flat" class="bg-blue-grey-lighten-5 rounded-xl pa-4">
           <div class="d-flex justify-space-between align-center">
             <span class="text-subtitle-1 font-weight-bold text-grey-darken-4"
-              >Total</span
+              >Total Quotation :</span
             >
             <span class="text-h6 text-sm-h5 font-weight-black text-primary">
               Rp {{ rupiah(subtotalPenawaran) }}
@@ -629,6 +629,7 @@ import { useRouter } from "vue-router";
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
 import type { penawaranM } from "~/types/penawaranModel";
+import type { barangM } from "~/types/barangModel";
 
 definePageMeta({
   layout: "admin",
@@ -873,6 +874,35 @@ async function hapusBarisPenawaran(index: number) {
   newPenawaran.value.penawaran_item.splice(index, 1);
 }
 
+async function sinkronkanBarangDariPenawaran() {
+  for (const item of newPenawaran.value.penawaran_item) {
+    const namaBarang = item.nama?.trim();
+    const hargaHpp = Number(item.harga_hpp) || 0;
+    if (!namaBarang || hargaHpp <= 0) continue;
+
+    const barangLama = barangStore.getDataBarang.find(
+      (barang) =>
+        barang.nama_barang.trim().toLocaleLowerCase() ===
+        namaBarang.toLocaleLowerCase(),
+    );
+
+    if (barangLama) {
+      if (Number(barangLama.harga_hpp) !== hargaHpp) {
+        await barangStore.updateBarangAct({ ...barangLama, harga_hpp: hargaHpp });
+      }
+      continue;
+    }
+
+    const barangBaru: barangM = {
+      nama_barang: namaBarang,
+      harga_hpp: hargaHpp,
+      createdAt: moment().unix(),
+      createdBy: userStore.getEmail,
+    };
+    await barangStore.addBarangAct(barangBaru);
+  }
+}
+
 async function simpanPenawaranDialog() {
   if (!newPenawaran.value.id_perusahaan) {
     return notificationStore.showError("Client belum dipilih");
@@ -900,6 +930,8 @@ async function simpanPenawaranDialog() {
   newPenawaran.value.subtotal_penawaran = subtotalPenawaran.value;
   newPenawaran.value.grand_total_penawaran = subtotalPenawaran.value;
   newPenawaran.value.terbilang = terbilang(subtotalPenawaran.value);
+
+  await sinkronkanBarangDariPenawaran();
 
   if (data.penawaranAddEdit === "add") {
     newPenawaran.value.no_penawaran ||= generateNoPenawaran();
