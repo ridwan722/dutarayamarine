@@ -73,7 +73,7 @@
 import { reactive, ref } from "vue";
 import type { leadsM } from "~/types/leadsM";
 
-const whatsappNumber = "6282199988670";
+const whatsappNumber = "6281315148873";
 const isOpen = ref(false);
 const isSaving = ref(false);
 const submitError = ref("");
