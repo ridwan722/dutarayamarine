@@ -3,63 +3,83 @@ definePageMeta({
   layout: "blank",
 });
 
-const pinDialog = ref(false);
-const pin = ref("");
-const pinError = ref("");
-const isSubmitting = ref(false);
-
-function openPinDialog() {
-  pin.value = "";
-  pinError.value = "";
-  pinDialog.value = true;
-}
-
-async function verifyPin() {
-  if (!/^\d{6}$/.test(pin.value)) {
-    pinError.value = "PIN must be 6 digits.";
-    return;
-  }
-
-  isSubmitting.value = true;
-  pinError.value = "";
-
-  try {
-    await $fetch("/api/admin-access", {
-      method: "POST",
-      body: { pin: pin.value },
-    });
-    pinDialog.value = false;
-    await navigateTo("/admin");
-  } catch {
-    pin.value = "";
-    pinError.value = "Invalid PIN. Please try again.";
-  } finally {
-    isSubmitting.value = false;
-  }
-}
-
-const services = [
+// Data Produk Utama
+const products = [
   {
-    icon: "mdi-cog-box",
-    title: "High-Grade Equipment Supply",
-    desc: "Supply of high-quality equipment and critical spare parts to ensure maximum operational reliability for your fleet."
+    icon: "mdi-package-variant-closed",
+    title: "Marine Consumables & Ship Supplies",
+    desc: "Marine paint & coating, welding consumables, gaskets, seals, lubricants, chemicals, filters, PPE & safety equipment, ropes, valves, and deck & engine room consumables.",
+    tags: ["Paint & Coating", "Safety/PPE", "Valves & Fittings"]
   },
   {
-    icon: "mdi-ferry",
-    title: "Vessel Provisioning",
-    desc: "Comprehensive and timely provisioning services to support smooth vessel operations and marine logistics."
+    icon: "mdi-engine",
+    title: "Engine & Machinery Spare Parts",
+    desc: "Main & auxiliary engine spare parts, overhaul kits, pistons, bearings, cylinder heads, fuel pumps, turbochargers, pumps, radiators, and heat exchangers.",
+    tags: ["MAN B&W", "Wärtsilä", "Caterpillar", "Yanmar"]
   },
   {
-    icon: "mdi-wrench-clock",
-    title: "Multidisciplinary Technical Engineering",
-    desc: "Responsive technical assistance and integrated engineering solutions for shipowners, shipyards, and offshore platforms."
+    icon: "mdi-lightning-bolt",
+    title: "Automation & Electrical Components",
+    desc: "PLC & HMI, VFD/inverter, control panels, sensors, transmitters, relays, contactors, circuit breakers, and marine alarm & monitoring systems.",
+    tags: ["PLC & HMI", "Sensors", "VFD Drive"]
+  },
+  {
+    icon: "mdi-snowflake",
+    title: "Compressor & Refrigeration Equipment",
+    desc: "Marine & industrial compressors, overhaul kits, valves, pistons, bearings, gaskets, and filter driers for refrigeration & climate control systems.",
+    tags: ["Bitzer", "Carrier", "Daikin", "Copeland"]
   }
 ];
 
+// Data Layanan Teknis
+const services = [
+  {
+    icon: "mdi-cog-sync",
+    title: "Mechanical Services & Engine Overhaul",
+    desc: "Main & auxiliary engine overhauls (top & major), pump overhauls, hydraulic repairs, turbocharger maintenance, shaft alignment, and radiator/heat exchanger retubing."
+  },
+  {
+    icon: "mdi-air-conditioner",
+    title: "HVAC & Refrigeration Services",
+    desc: "Marine climate control, accommodation A/C servicing, AHU/FCU maintenance, chiller overhaul, compressor repair, leak testing, and refrigerant re-charging."
+  },
+  {
+    icon: "mdi-tune-vertical",
+    title: "Automation & Control Services",
+    desc: "PLC & HMI troubleshooting, control panel rewiring, sensor calibration, VFD maintenance, alarm system service, and 24/7 rapid onboard repair."
+  },
+  {
+    icon: "mdi-hammer-wrench",
+    title: "Carpentry, Marine Interior & Deck Services",
+    desc: "Crew cabin renovation, joinery works, marine-grade flooring/insulation, crane & winch inspection, hydraulic servicing, and deck machinery maintenance."
+  }
+];
+
+// Data Core Values
 const values = [
-  { title: "Safety First", desc: "Prioritizing workplace safety in every aspect of our product and service delivery.", icon: "mdi-shield-check" },
-  { title: "Quality & Precision", desc: "Ensuring high standards of quality and technical accuracy across all marine components.", icon: "mdi-check-decagram" },
-  { title: "Timely Delivery", desc: "Fast logistics and time efficiency to maintain uninterrupted offshore operations.", icon: "mdi-clock-fast" }
+  {
+    title: "Safety First (QHSE)",
+    desc: "Strictly enforcing zero-accident policies and environmental responsibility across all workshop activities and shipboard assignments.",
+    icon: "mdi-shield-check-outline"
+  },
+  {
+    title: "Technical Precision & Quality",
+    desc: "Delivering high-grade, certified components and technical execution that strictly adhere to international marine industry standards.",
+    icon: "mdi-check-decagram-outline"
+  },
+  {
+    title: "Timely Delivery & Operational Efficiency",
+    desc: "Controlled logistics delivery directly to anchorage, berth, or shipyard slipway with 24/7 rapid response capability.",
+    icon: "mdi-clock-fast"
+  }
+];
+
+// Alur Proses Kerja
+const workflowSteps = [
+  { num: "01", title: "Inquiry & Assessment", desc: "Quick technical evaluation of required spare parts, specifications, or repair scope." },
+  { num: "02", title: "Precision Sourcing & Quotation", desc: "Prompt competitive proposals detailing certified components and lead times." },
+  { num: "03", title: "On-Site Execution / Delivery", desc: "Direct logistics delivery to anchorage, berth, or shipyard with certified execution." },
+  { num: "04", title: "Commissioning & Handover", desc: "Joint inspection and sign-off with the Chief Engineer or superintendent." }
 ];
 </script>
 
@@ -71,25 +91,15 @@ const values = [
     <header class="navbar">
       <div class="nav-container">
         <div class="brand-logo">
-          <img src="/public/Logo-DRM.png" alt="DUTA RAYA MARINE" class="logo-img" />
+          <img src="/public/logo-header.png" alt="DUTA RAYA MARINE" class="logo-img" />
         </div>
         <nav class="nav-menu">
-          <a href="#about">About Us</a>
+          <a href="#about">About</a>
+          <a href="#products">Products</a>
           <a href="#services">Services</a>
           <a href="#values">Core Values</a>
           <a href="#contact">Contact</a>
         </nav>
-        <v-btn
-          color="navy"
-          variant="outlined"
-          class="btn-admin"
-          rounded="lg"
-          size="small"
-          @click="openPinDialog"
-        >
-          <v-icon start icon="mdi-shield-lock-outline" />
-          Admin Access
-        </v-btn>
       </div>
     </header>
 
@@ -99,21 +109,21 @@ const values = [
       <section class="hero-section">
         <div class="hero-header-badge">
           <div class="red-line"></div>
-          <span class="badge-text">BATAM, INDONESIA</span>
+          <span class="badge-text">BATAM & JAKARTA, INDONESIA</span>
         </div>
         
         <h1 class="hero-title">
-          INTEGRATED MARINE & <br />
-          <span class="title-red">OFFSHORE SOLUTIONS</span>
+          DUTA RAYA <br />
+          <span class="title-red">MARINE</span>
         </h1>
         <p class="hero-subtitle">
-          Your trusted partner for marine equipment supply, vessel provisioning, and technical engineering services.
+          High-grade equipment supply, vessel provisioning, and multidisciplinary technical engineering services for global marine operations.
         </p>
 
         <!-- Banner Image Box -->
         <div class="hero-banner">
           <div class="banner-overlay"></div>
-          <img src="/public/Logo-DRM.png" alt="Marine Ship" class="banner-img" />
+          <img src="/public/Logo-DRM.png" alt="Duta Raya Marine Logo" class="banner-img" />
           <div class="banner-footer">
             <span class="domain-text">www.dutarayamarine.com</span>
           </div>
@@ -128,7 +138,7 @@ const values = [
             elevation="1"
             href="#about"
           >
-            Explore Profile
+            Explore Overview
             <v-icon end icon="mdi-arrow-down" />
           </v-btn>
         </div>
@@ -138,7 +148,10 @@ const values = [
       <section id="about" class="section-container">
         <div class="about-card">
           <div class="about-header">
-            <h2 class="section-title-dark">ABOUT <br /><span class="title-red">US</span></h2>
+            <div>
+              <div class="red-line mb-2"></div>
+              <h2 class="section-title-dark">ABOUT <span class="title-red">US</span></h2>
+            </div>
             <div class="about-logo">
               <img src="/public/Logo-DRM.png" alt="DRM Logo" class="mini-logo" />
             </div>
@@ -147,8 +160,34 @@ const values = [
           <div class="about-content-box">
             <div class="red-bar"></div>
             <p class="about-text">
-              <strong>Duta Raya Marine</strong> is an integrated marine and offshore solution provider based in Batam, Indonesia, specializing in high-grade equipment supply, vessel provisioning, and multidisciplinary technical engineering services[cite: 2]. We are dedicated to supporting shipowners, shipyards, offshore platforms, and oil & gas operators by delivering dependable products, critical spare parts, and responsive technical assistance[cite: 2].
+              <strong>PT. Duta Raya Marine</strong> is an integrated marine and offshore solution provider based in Batam, Indonesia. We specialize in high-grade equipment supply, vessel provisioning, and multidisciplinary technical engineering services. We are dedicated to supporting shipowners, shipyards, offshore platforms, and oil & gas operators by delivering dependable products, critical spare parts, and responsive 24/7 technical assistance.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Section -->
+      <section id="products" class="section-container">
+        <div class="section-header">
+          <div class="red-line"></div>
+          <div>
+            <h2 class="section-title-dark">OUR <span class="title-red">PRODUCTS</span></h2>
+            <p class="section-subtitle mb-0">High-grade supplies, machinery spare parts, electrical, and refrigeration systems.</p>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <div v-for="(prod, idx) in products" :key="idx" class="service-card">
+            <div class="service-icon">
+              <v-icon size="28" color="#dc2626">{{ prod.icon }}</v-icon>
+            </div>
+            <h3 class="card-title">{{ prod.title }}</h3>
+            <p class="card-desc mb-4">{{ prod.desc }}</p>
+            <div class="tags-wrapper">
+              <span v-for="(tag, tIdx) in prod.tags" :key="tIdx" class="mini-tag">
+                {{ tag }}
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -157,8 +196,12 @@ const values = [
       <section id="services" class="section-container">
         <div class="section-header">
           <div class="red-line"></div>
-          <h2 class="section-title-dark">OUR <span class="title-red">SERVICES</span></h2>
+          <div>
+            <h2 class="section-title-dark">ENGINEERING <span class="title-red">SERVICES</span></h2>
+            <p class="section-subtitle mb-0">Multidisciplinary technical assistance and on-site marine maintenance.</p>
+          </div>
         </div>
+
         <div class="cards-grid">
           <div v-for="(item, index) in services" :key="index" class="service-card">
             <div class="service-icon">
@@ -166,6 +209,23 @@ const values = [
             </div>
             <h3 class="card-title">{{ item.title }}</h3>
             <p class="card-desc">{{ item.desc }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Execution Workflow Section -->
+      <section class="section-container">
+        <div class="white-card">
+          <div class="section-header">
+            <div class="red-line"></div>
+            <h2 class="section-title-dark">EXECUTION <span class="title-red">PROCESS</span></h2>
+          </div>
+          <div class="workflow-grid">
+            <div v-for="(step, sIdx) in workflowSteps" :key="sIdx" class="workflow-item">
+              <div class="step-num">{{ step.num }}</div>
+              <h4 class="feature-title mt-2">{{ step.title }}</h4>
+              <p class="feature-desc">{{ step.desc }}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -178,7 +238,7 @@ const values = [
             <h2 class="section-title-dark">CORE <span class="title-red">VALUES</span></h2>
           </div>
           <p class="section-subtitle">
-            Driven by our core values of safety, quality, and timely delivery, we forge enduring partnerships built on integrity, technical precision, and operational efficiency[cite: 2].
+            Driven by safety, quality, and timely delivery, we forge enduring partnerships built on integrity, technical precision, and operational efficiency.
           </p>
           <div class="features-grid">
             <div v-for="(val, idx) in values" :key="idx" class="feature-item">
@@ -201,58 +261,54 @@ const values = [
             <div class="red-line"></div>
             <h2 class="section-title-dark">CONTACT <span class="title-red">US</span></h2>
           </div>
-          <div class="contact-info">
-            <div class="contact-item">
-              <v-icon color="#dc2626" class="mr-2">mdi-web</v-icon>
-              <span>www.dutarayamarine.com</span>
+          <p class="section-subtitle">
+            Contact our team for procurement requests, engineering consultations, or round-the-clock emergency port support.
+          </p>
+
+          <div class="contact-grid">
+            <!-- Office Locations -->
+            <div class="contact-box">
+              <div class="box-title">
+                <v-icon color="#dc2626" class="mr-2">mdi-map-marker</v-icon>
+                <span>Operational Offices</span>
+              </div>
+              <div class="address-item">
+                <strong>Batam:</strong> Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Kec. Sekupang, Kota Batam, Kepulauan Riau 29425
+              </div>
+              <div class="address-item">
+                <strong>Jakarta:</strong> Jln. Raya Pasar Minggu No. 15A, Jakarta Selatan
+              </div>
             </div>
-            <div class="contact-item">
-              <v-icon color="#dc2626" class="mr-2">mdi-map-marker</v-icon>
-              <span>Batam, Indonesia</span>
+
+            <!-- Communication Channels -->
+            <div class="contact-box">
+              <div class="box-title">
+                <v-icon color="#dc2626" class="mr-2">mdi-phone-in-talk</v-icon>
+                <span>Direct Contact</span>
+              </div>
+              <div class="info-row">
+                <v-icon size="20" color="#64748b" class="mr-2">mdi-whatsapp</v-icon>
+                <span>+62 821-9998-8670</span>
+              </div>
+              <div class="info-row">
+                <v-icon size="20" color="#64748b" class="mr-2">mdi-email-outline</v-icon>
+                <span>sales@dutarayamarine.co</span>
+              </div>
+              <div class="info-row">
+                <v-icon size="20" color="#64748b" class="mr-2">mdi-web</v-icon>
+                <span>www.dutarayamarine.com</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- Admin PIN Dialog -->
-    <v-dialog v-model="pinDialog" max-width="390" persistent>
-      <v-card class="pin-dialog pa-2">
-        <v-card-text class="pa-6 text-center">
-          <div class="pin-icon mb-4">
-            <v-icon size="26" color="#0f172a">mdi-shield-key-outline</v-icon>
-          </div>
-          <div class="text-h6 font-weight-bold text-slate mb-2">DRM Admin Access</div>
-          <p class="pin-description mb-5">Enter your 6-digit PIN to access the admin panel.</p>
-          <v-text-field
-            v-model="pin"
-            :error-messages="pinError"
-            :disabled="isSubmitting"
-            autofocus
-            hide-details="auto"
-            inputmode="numeric"
-            maxlength="6"
-            placeholder="••••••"
-            type="password"
-            variant="outlined"
-            class="pin-input"
-            @update:model-value="pin = pin.replace(/\D/g, '').slice(0, 6)"
-            @keyup.enter="verifyPin"
-          />
-        </v-card-text>
-        <v-card-actions class="px-6 pb-6 pt-0">
-          <v-btn variant="text" :disabled="isSubmitting" @click="pinDialog = false">Cancel</v-btn>
-          <v-spacer />
-          <v-btn color="#dc2626" class="text-white" :loading="isSubmitting" variant="flat" @click="verifyPin">Login</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <footer class="footer-bar">
-      <span>Duta Raya Marine &copy; 2026. All rights reserved.</span>
-      <span class="version-tag">v1.0.0</span>
+      <span>PT. Duta Raya Marine &copy; 2026. All rights reserved.</span>
     </footer>
   </div>
+  <whatsapp></whatsapp>
 </template>
 
 <style scoped>
@@ -304,7 +360,7 @@ html {
 }
 
 .logo-img {
-  height: 38px;
+  height: 50px;
   width: auto;
   object-fit: contain;
 }
@@ -324,13 +380,6 @@ html {
 
 .nav-menu a:hover {
   color: #dc2626;
-}
-
-.btn-admin {
-  border-color: #0f172a !important;
-  color: #0f172a !important;
-  text-transform: none !important;
-  font-weight: 600;
 }
 
 /* Content Layout */
@@ -393,6 +442,7 @@ html {
   color: #64748b;
   font-weight: 500;
   margin-bottom: 28px;
+  max-width: 700px;
 }
 
 .hero-banner {
@@ -449,7 +499,7 @@ html {
 
 .section-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -468,6 +518,7 @@ html {
   line-height: 1.6;
 }
 
+/* About Card */
 .about-card {
   background: #ffffff;
   border-radius: 16px;
@@ -510,6 +561,7 @@ html {
   color: #e2e8f0;
 }
 
+/* Cards Grid */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -521,6 +573,8 @@ html {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
   transition: all 0.2s ease;
 }
 
@@ -553,6 +607,23 @@ html {
   line-height: 1.5;
 }
 
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.mini-tag {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* White Card & Features */
 .white-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -593,6 +664,28 @@ html {
   line-height: 1.4;
 }
 
+/* Workflow */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.workflow-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.step-num {
+  font-size: 20px;
+  font-weight: 900;
+  color: #dc2626;
+}
+
+/* Contact Card */
 .contact-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -600,24 +693,46 @@ html {
   padding: 32px;
 }
 
-.contact-info {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
 }
 
-.contact-item {
+.contact-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.box-title {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #0f172a;
-  background: #f8fafc;
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  margin-bottom: 12px;
 }
 
+.address-item {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+/* Footer */
 .footer-bar {
   width: 100%;
   padding: 20px;
@@ -629,21 +744,6 @@ html {
   font-size: 12px;
   margin-top: auto;
 }
-
-.version-tag {
-  background: #dc2626;
-  color: #ffffff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 700;
-}
-
-/* PIN Dialog */
-.pin-dialog { border-radius: 16px !important; }
-.pin-icon { width: 50px; height: 50px; margin: auto; display: grid; place-items: center; border-radius: 12px; background: #f1f5f9; }
-.text-slate { color: #0f172a; }
-.pin-description { color: #64748b; font-size: 13px; line-height: 1.5; }
-.pin-input :deep(input) { letter-spacing: 8px; font-size: 20px; font-weight: 700; text-align: center; }
 
 @media (max-width: 768px) {
   .nav-menu { display: none; }

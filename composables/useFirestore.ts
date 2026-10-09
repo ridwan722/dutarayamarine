@@ -157,23 +157,16 @@ export const hapusdatabase = async (col: string, id: string) => {
 //   });
 // };
 
-export const setToken = async () => {
+export const setToken = async (userId: string, email: string, role: string) => {
   // console.log('settoken 93')
-  const userstore = useUserStore();
   const { $messaging } = useNuxtApp();
-  const datauser = userstore.getUser;
-  const email = userstore.getEmail;
-
-  const iduser = localStorage.getItem("uid");
-  // console.log(iduser, 'iduser')
   let iddevice = localStorage.getItem("id_device");
   if (_.isNull(iddevice)) {
     iddevice = makerandom();
     localStorage.setItem("id_device", iddevice);
   }
 
-  const role = userstore.getrole;
-  const idfcmtoken = iduser + "_" + iddevice;
+  const idfcmtoken = userId + "_" + iddevice;
   let b = await cekeksis("fcm_token", idfcmtoken);
   let c;
   // console.log(b,'b')
@@ -194,20 +187,19 @@ export const setToken = async () => {
   return c;
 };
 
-export const refreshingTokenfcm = async (token: string) => {
-  const userstore = useUserStore();
+export const refreshingTokenfcm = async (
+  token: string,
+  userId: string,
+  role: string,
+) => {
   const { $messaging } = useNuxtApp();
   // console.log($messaging)
   // console.log('tokenset')
   let b;
   // console.log(b)
-  const datauser = userstore.getUser;
-  const iduser = datauser!["uid"];
-  const role = userstore.getrole;
-
   b = token;
   localStorage.setItem("fcm", b);
-  await setdatabase("tokenfcm", iduser, { token: b, topic: role });
+  await setdatabase("tokenfcm", userId, { token: b, topic: role });
   // console.log('ambil token')
 };
 

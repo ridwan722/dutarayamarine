@@ -1,67 +1,69 @@
-import _ from "lodash";
 import { defineStore } from "pinia";
-import { useloadingStore } from "./loadingStore";
-import type { leadsM } from "~/types/leads";
+import type { leadsM } from "~/types/leadsM";
 
-export const useLeadsStore = defineStore("leadsAresa", {
-  state: () => {
-    return {
-      dataLeads: [] as leadsM[],
-      detailLeads: {} as leadsM,
-    };
-  },
+const COLLECTION = "leads";
+
+export const useleadsStore = defineStore("leadsStore", {
+  state: () => ({
+    dataLeads: [] as leadsM[],
+  }),
 
   getters: {
     getDataLeads(state) {
       return state.dataLeads;
     },
-    getDetailLeads(state) {
-      return state.detailLeads;
-    },
   },
 
   actions: {
-    async addLeadsAct(lemparLeads: leadsM) {
-      const notificationStore = useNotificationStore();
-      try {
-        useloadingStore().setLoading(true);
-        await tambahdatabase("customer", lemparLeads);
-        this.tarikDataLeadsAct();
-        notificationStore.showSuccess("Data berhasil ditambahkan");
-        useloadingStore().setLoading(false);
-      } catch (error) {
-        notificationStore.showError("Gagal menyimpan data");
-        useloadingStore().setLoading(false);
-      }
-    },
-
-    async addContactLeadsAct(lemparLeads: leadsM) {
-      const notificationStore = useNotificationStore();
-      try {
-        useloadingStore().setLoading(true);
-        await updatedatabase("customer", lemparLeads.id!, lemparLeads);
-        this.tarikDataLeadsAct();
-        notificationStore.showSuccess("Data berhasil ditambahkan");
-        useloadingStore().setLoading(false);
-      } catch (error) {
-        notificationStore.showError("Gagal menyimpan data");
-        useloadingStore().setLoading(false);
-      }
-    },
-
     async tarikDataLeadsAct() {
-      const datatarik = await queryambilid("customer");
+      const datatarik = await queryambilid(COLLECTION);
       this.dataLeads = datatarik as unknown as leadsM[];
     },
 
-    async tarikDetailLeadsAct(id: string) {
-      const datatarik = await tarikdetaildatabase("customer", id);
-      this.detailLeads = datatarik as unknown as leadsM;
+    async addLeadsAct(data: leadsM) {
+      const notificationStore = useNotificationStore();
+      try {
+        useloadingStore().setLoading(true);
+        const createdLead = await tambahdatabase(COLLECTION, data);
+        this.dataLeads.push({ ...data, id: createdLead.id });
+        notificationStore.showSuccess("Leads berhasil ditambahkan");
+        return true;
+      } catch (error) {
+        notificationStore.showError("Gagal menyimpan Leads");
+        return false;
+      } finally {
+        useloadingStore().setLoading(false);
+      }
     },
 
-    async tarikDataLeadsByStatusAct(status: string) {
-      const datatarik = await queryTarikDataLeadsByStatus(status);
-      this.dataLeads = datatarik as unknown as leadsM[];
+    async updateLeadsAct(data: leadsM) {
+      const notificationStore = useNotificationStore();
+      try {
+        useloadingStore().setLoading(true);
+        await updatedatabase(COLLECTION, data.id!, data);
+        // sessionStorage.removeItem(COLLECTION);
+        await this.tarikDataLeadsAct();
+        notificationStore.showSuccess("Perubahan berhasil disimpan");
+      } catch (error) {
+        notificationStore.showError("Gagal memperbarui Leads");
+      } finally {
+        useloadingStore().setLoading(false);
+      }
+    },
+
+    async deleteLeadsAct(id: string) {
+      const notificationStore = useNotificationStore();
+      try {
+        useloadingStore().setLoading(true);
+        await hapusdatabase(COLLECTION, id);
+        // sessionStorage.removeItem(COLLECTION);
+        await this.tarikDataLeadsAct();
+        notificationStore.showSuccess("Leads berhasil dihapus");
+      } catch (error) {
+        notificationStore.showError("Gagal menghapus Leads");
+      } finally {
+        useloadingStore().setLoading(false);
+      }
     },
   },
 });
