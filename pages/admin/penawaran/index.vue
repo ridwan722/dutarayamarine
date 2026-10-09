@@ -17,7 +17,7 @@
     v-model="data.dialogTambahPenawaran"
     max-width="800"
     scrollable
-    fullscreen-sm-and-down
+    :fullscreen="display.mdAndDown.value"
   >
     <v-card class="rounded-xl-md overflow-hidden elevation-3 border-0">
       <v-card-item class="pa-2 bg-primary text-center">
@@ -98,8 +98,7 @@
           rows="2"
         />
 
-        <!-- Section: Rincian Item -->
-        <div class="d-flex align-center justify-space-between mb-3 mt-2">
+        <div class="mx-auto text-center mb-3 mt-2">
           <span class="text-subtitle-2 font-weight-bold text-primary">
             Rincian Item
           </span>
@@ -110,6 +109,8 @@
           v-for="(item, index) in newPenawaran.penawaran_item"
           :key="index"
           class="bg-grey-lighten-5 rounded-lg pa-1 pa-sm-1 mb-4 border border-dashed position-relative"
+          @focusin="activeSuggestionIndex = index"
+          @focusout="activeSuggestionIndex = null"
         >
           <v-col cols="10" md="11">
             <div class="d-flex justify-space-between align-center mb-2">
@@ -124,7 +125,28 @@
               placeholder="Description"
             />
 
-            <div class="d-flex align-center flex-wrap mb-2">
+            <span
+              v-if="
+                activeSuggestionIndex === index &&
+                barangSesuaiNama(item.nama).length
+              "
+              class="text-grey text-caption mr-1"
+            >
+              Suggestion (Hpp):
+            </span>
+            <v-chip
+              v-for="(barang, idxBarang) in
+                activeSuggestionIndex === index
+                  ? barangSesuaiNama(item.nama)
+                  : []"
+              :key="barang.id ?? idxBarang"
+              size="x-small"
+              class="mr-1 mb-1 text-grey"
+            >
+              {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
+            </v-chip>
+
+            <div class="d-flex align-center flex-wrap my-2">
               <a-checkbox
                 label="Barang"
                 :model-value="item.kategori_item === 'Barang'"
@@ -144,15 +166,6 @@
               />
             </div>
 
-            <!-- KODE BARU (SOLUSI) -->
-            <v-chip
-              v-for="(barang, idxBarang) in barangStore.getDataBarang"
-              :key="barang.id ?? idxBarang"
-              size="x-small"
-              class="mr-1 mb-1 text-grey"
-            >
-              {{ barang.nama_barang }} : Rp {{ rupiah(barang.harga_hpp) }}
-            </v-chip>
 
             <v-row density="compact" no-gutters>
               <v-col cols="6" sm="2" class="pa-1">
@@ -185,14 +198,14 @@
               <v-col cols="12" sm="2" class="pa-1">
                 <a-field-number-new
                   v-model="item.harga_hpp"
-                  label="HPP"
+                  label="Hpp (Ops.)"
                   placeholder="0"
                 />
               </v-col>
               <v-col cols="12" sm="3" class="pa-1">
                 <a-field-number-new
                   v-model="item.amount"
-                  label="Amount/Pcs (Rp)"
+                  label="Harga satuan"
                   placeholder="0"
                 />
               </v-col>
@@ -409,7 +422,7 @@
           class="flex-grow-1 flex-sm-grow-0"
           @click="data.dialogTambahPenawaran = false"
         >
-          Batal
+          Cancel
         </v-btn>
         <v-btn
           size="small"
@@ -418,7 +431,7 @@
           class="font-weight-bold flex-grow-1 flex-sm-grow-0"
           @click="simpanPenawaranDialog"
         >
-          {{ data.penawaranAddEdit === "add" ? "Save" : "Edit" }}
+          {{ data.penawaranAddEdit === "add" ? "Save Quotation" : "Edit" }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -428,7 +441,7 @@
   <div
     class="d-flex flex-column flex-sm-row justify-space-between align-start align-sm-center mb-4 gap-2"
   >
-    <h1 class="text-h5 font-weight-bold my-0">Penawaran</h1>
+    <h1 class="text-h5 font-weight-bold my-0">Quotation</h1>
     <v-btn
       color="primary"
       variant="flat"
@@ -445,33 +458,42 @@
   <v-card class="border rounded-lg" flat>
     <v-card-title class="pa-3 pa-sm-4">
       <div class="d-flex align-center gap-2">
-        <div class="flex-grow-1">
+        <div class="flex-grow-1" style="display: flex; align-items: center;">
           <a-text-field-new
             v-model="data.searchPenawaran"
-            placeholder="Cari no. penawaran / customer"
-            hide-details
-            density="compact"
+            placeholder="Cari semua kolom penawaran"
           />
+          <v-btn
+            v-if="data.searchPenawaran"
+            icon
+            size="x-small"
+            variant="text"
+            color="red"
+            aria-label="Hapus pencarian"
+            class="mb-2"
+            @click="kosonginPencarian"
+          >
+            <v-icon size="20">mdi-close-circle-outline</v-icon>
+          </v-btn>
         </div>
+         <v-btn
+          size="x-small"
+          class="border mb-2"
+          @click="tariksemua"
+          variant="text"
+        >
+          Get All Status
+        </v-btn>
         <v-btn
-          size="38"
+          size="23"
           variant="outlined"
-          class="border flex-shrink-0"
+          class="border flex-shrink-0 mb-2"
           @click="refreshData"
         >
-          <v-icon size="20" icon="mdi-refresh" />
+          <v-icon size="15" icon="mdi-refresh" />
           <v-tooltip activator="parent" location="top">
             Refresh Data
           </v-tooltip>
-        </v-btn>
-
-        <v-btn
-          size="x-small"
-          variant="outlined"
-          class="border flex-shrink-0"
-          @click="tariksemua"
-        >
-          Tarik Semua Status
         </v-btn>
       </div>
     </v-card-title>
@@ -481,8 +503,7 @@
     <!-- Responsive Table -->
     <v-data-table
       :headers="data.headPenawaran"
-      :items="penawaranStore.getDataPenawaranTampil"
-      :search="data.searchPenawaran"
+      :items="penawaranTampilTersaring"
       density="compact"
       :sort-by="[{ key: 'created_at', order: 'desc' }]"
       :hover="true"
@@ -626,6 +647,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 import moment from "moment";
 import type { ConfirmationDialog } from "#components";
 import type { penawaranM } from "~/types/penawaranModel";
@@ -636,6 +658,7 @@ definePageMeta({
 });
 
 const router = useRouter();
+const display = useDisplay();
 const customerStore = usecustomerStore();
 const termconditionStore = usetermconditionStore();
 const barangStore = usebarangStore();
@@ -646,6 +669,7 @@ const notificationStore = useNotificationStore();
 const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog> | null>(
   null,
 );
+const activeSuggestionIndex = ref<number | null>(null);
 
 onMounted(async () => {
   useloadingStore().setLoading(true);
@@ -658,6 +682,10 @@ onMounted(async () => {
 
 const tariksemua = async () => {
   await penawaranStore.tarikDataPenawaranAct();
+};
+
+const kosonginPencarian = () => {
+  data.searchPenawaran = "";
 };
 
 const data = reactive({
@@ -679,6 +707,44 @@ const data = reactive({
     { title: "Aksi", align: "center" as const, value: "aksi", width: "120px" },
   ],
 });
+
+const penawaranTampilTersaring = computed(() => {
+  const query = data.searchPenawaran.trim().toLocaleLowerCase("id-ID");
+  const items = penawaranStore.getDataPenawaranTampil;
+
+  if (!query) return items;
+
+  const searchableColumns = data.headPenawaran
+    .map((header) => header.value)
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value !== "no" && value !== "aksi",
+    );
+
+  return items.filter((item) =>
+    searchableColumns.some((key) => {
+      const itemKey = key === "grand_total" ? "grand_total_penawaran" : key;
+      const value = item[itemKey as keyof typeof item];
+      if (value == null) return false;
+
+      const searchableValue =
+        key === "grand_total" && typeof value === "number"
+          ? `${value} ${rupiah(value)}`
+          : String(value);
+
+      return searchableValue.toLocaleLowerCase("id-ID").includes(query);
+    }),
+  );
+});
+
+function barangSesuaiNama(namaItem: string | null | undefined) {
+  const query = namaItem?.trim().toLocaleLowerCase("id-ID") ?? "";
+  if (!query) return [];
+
+  return barangStore.getDataBarang.filter((barang) =>
+    barang.nama_barang.toLocaleLowerCase("id-ID").includes(query),
+  );
+}
 
 function emptyPenawaran(): penawaranM {
   const generatedNo = generateNoPenawaran();
@@ -1070,7 +1136,7 @@ async function refreshData() {
 
 .sign-card-header {
   min-height: 62px;
-  padding: 14px 18px;
+  padding: 7px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;

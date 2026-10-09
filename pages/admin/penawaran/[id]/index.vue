@@ -109,9 +109,9 @@ async function opendialogaddpengeluaran() {
         </div>
 
         <div class="page-heading">
-          <div>
+
             <h1 class="page-title">Detail Quotation</h1>
-          </div>
+
         </div>
       </div>
     </header>
@@ -333,7 +333,7 @@ async function opendialogaddpengeluaran() {
 
 .page-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.2;
   font-weight: 800;
   color: #172033;

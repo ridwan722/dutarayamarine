@@ -472,7 +472,7 @@ const logout = async () => {
             PT. DUTA RAYA MARINE
           </span>
 
-          <span class="company-name mobile-company"> PT. DRM </span>
+          <span class="company-name mobile-company"> PT. DUTA RAYA MARINE </span>
 
           <span class="company-subtitle"> Enterprise Management </span>
         </div>
