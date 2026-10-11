@@ -4,19 +4,26 @@ definePageMeta({ layout: "website" });
 const values = [
   {
     icon: "mdi-shield-check-outline",
-    title: "Safety first",
-    desc: "We put people, vessel safety, and environmental responsibility at the center of every assignment.",
+    title: "Safety & QHSE",
+    desc: "Safety is a priority across workshop activities and shipboard assignments, alongside environmental responsibility.",
   },
   {
     icon: "mdi-check-decagram-outline",
-    title: "Quality and precision",
-    desc: "We focus on suitable, dependable components and careful technical execution for marine operations.",
+    title: "Quality & reliability",
+    desc: "We source genuine, OEM, and aftermarket parts to match equipment requirements and project specifications.",
   },
   {
     icon: "mdi-clock-fast",
-    title: "Timely response",
-    desc: "We coordinate sourcing, delivery, and technical support around operational needs and schedules.",
+    title: "Responsive delivery",
+    desc: "We coordinate procurement and delivery to support safe, efficient, and continuous vessel operations.",
   },
+];
+
+const mission = [
+  "Supply quality marine and offshore equipment, spare parts, consumables, and project requirements to industry standards.",
+  "Respond to vessel, shipyard, offshore, and marine project requirements quickly and accurately.",
+  "Coordinate procurement and on-time delivery to support uninterrupted operations.",
+  "Build lasting relationships through professional service, trust, integrity, safety, and reliability.",
 ];
 </script>
 
@@ -24,10 +31,10 @@ const values = [
   <div class="site-container">
     <header class="site-page-heading">
       <p class="site-kicker">Tentang kami</p>
-      <h1 class="site-title">Your partner in<br /><span>marine operations.</span></h1>
+      <h1 class="site-title">Marine &amp; offshore<br /><span>supply partner.</span></h1>
       <p class="site-lead">
-        PT. Duta Raya Marine is an integrated marine and offshore solution
-        provider based in Batam, Indonesia.
+        Duta Raya Marine is a Batam-based marine and offshore company specializing
+        in mechanical equipment, machinery, and spare parts.
       </p>
     </header>
 
@@ -36,26 +43,40 @@ const values = [
         <img src="/Logo-DRM.png" alt="Logo PT. Duta Raya Marine" />
       </div>
       <div>
-        <h2 class="site-section-title">Dependable support for demanding environments</h2>
+        <h2 class="site-section-title">Supporting safe, efficient vessel operations</h2>
         <p class="site-section-copy">
-          We support shipowners, shipyards, offshore platforms, and oil and gas
-          operators with high-grade equipment supply, vessel provisioning,
-          critical spare parts, and multidisciplinary technical engineering
-          services. Our team works to understand each requirement and coordinate
-          a practical response, from initial assessment through delivery or
-          service handover.
+          We serve shipowners, shipyards, offshore operators, and marine
+          industries with genuine, OEM, and aftermarket spare parts for a wide
+          range of marine machinery. Our supply covers main and auxiliary
+          engines, generators, pumps, hydraulic systems, gearboxes, and cooling
+          systems, supported by responsive technical assistance and dependable
+          sourcing.
         </p>
         <p class="site-section-copy">
-          With operational offices in Batam and Jakarta, we serve customers
-          across Indonesia and support marine operations with responsive
-          coordination and technical care.
+          Our vision is to become a trusted, professional marine and offshore
+          supplier. We aim to provide quality products and solutions, respond
+          accurately to customer and project needs, deliver on time, and build
+          long-term relationships based on trust and integrity.
         </p>
+      </div>
+    </section>
+
+    <section class="about-mission">
+      <div class="site-page-heading">
+        <p class="site-kicker">Misi kami</p>
+        <h2 class="site-section-title">How we support marine operations</h2>
+      </div>
+      <div class="site-card-grid">
+        <article v-for="(item, index) in mission" :key="item" class="site-card mission-card">
+          <span class="mission-index">0{{ index + 1 }}</span>
+          <p>{{ item }}</p>
+        </article>
       </div>
     </section>
 
     <section class="about-values">
       <div class="site-page-heading">
-        <p class="site-kicker">Cara kami bekerja</p>
+        <p class="site-kicker">Komitmen kami</p>
         <h2 class="site-section-title">What guides our work</h2>
       </div>
       <div class="site-card-grid">
@@ -105,6 +126,27 @@ const values = [
 
 .about-values {
   margin-top: 58px;
+}
+
+.about-mission {
+  margin-top: 58px;
+}
+
+.about-mission .site-page-heading {
+  margin-bottom: 24px;
+}
+
+.mission-card p {
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.mission-index {
+  color: #dc2626;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 .about-values .site-page-heading {

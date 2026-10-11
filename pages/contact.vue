@@ -19,22 +19,21 @@ const offices = [
       <p class="site-kicker">Kontak</p>
       <h1 class="site-title">Let’s talk about<br /><span>your requirements.</span></h1>
       <p class="site-lead">
-        Contact our team for product inquiries, quotations, engineering
-        consultations, or urgent port support.
+        Contact our team for procurement requests, engineering consultations,
+        or round-the-clock emergency port support.
       </p>
     </header>
 
     <section class="site-info-grid">
       <article v-for="office in offices" :key="office.city" class="site-info-card">
-        <h2><v-icon icon="mdi-map-marker" color="#dc2626" /> {{ office.city }} office</h2>
+          <h2><v-icon icon="mdi-map-marker" color="#dc2626" /> {{ office.city }}</h2>
         <address>{{ office.address }}</address>
       </article>
 
       <article class="site-info-card communication-card">
         <h2><v-icon icon="mdi-phone-in-talk" color="#dc2626" /> Direct contact</h2>
-        <a href="tel:+6282199988670"><v-icon icon="mdi-phone-outline" /> +62 821-9998-8670</a>
-        <a href="mailto:sales@dutarayamarine.co"><v-icon icon="mdi-email-outline" /> sales@dutarayamarine.co</a>
-        <span><v-icon icon="mdi-web" /> www.dutarayamarine.com</span>
+        <a href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" /> sales@dutarayamarine.com</a>
+        <a href="https://www.dutarayamarine.com" target="_blank" rel="noreferrer"><v-icon icon="mdi-web" /> www.dutarayamarine.com</a>
       </article>
     </section>
 
@@ -43,9 +42,9 @@ const offices = [
       <div>
         <h2 class="site-section-title">Send us an inquiry</h2>
         <p class="site-section-copy">
-          Use the WhatsApp button at the bottom of the page to fill in your
-          company and vessel details. Your inquiry will be saved and opened in
-          WhatsApp for you to send.
+          Use the WhatsApp button at the bottom of the page to share your
+          company, vessel, and requirement details. You can also email
+          sales@dutarayamarine.com.
         </p>
       </div>
     </section>

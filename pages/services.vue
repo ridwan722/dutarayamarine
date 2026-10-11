@@ -4,31 +4,21 @@ definePageMeta({ layout: "website" });
 const services = [
   {
     icon: "mdi-cog-sync",
-    title: "Mechanical Services & Engine Overhaul",
-    desc: "Main and auxiliary engine overhauls, pump overhauls, hydraulic repairs, turbocharger maintenance, shaft alignment, and radiator or heat exchanger retubing.",
+    title: "Mechanical Services",
+    items: ["Main and auxiliary engine general, top, and major overhaul", "Engine repair, maintenance, troubleshooting, and performance testing", "Hydraulic system repair and overhaul", "Marine piping installation and repair", "Gearbox, propeller, windlass, crane, and valve repair", "Cargo pump, boiler, pump, and motor repair", "Turbocharger maintenance and overhaul", "Heat exchanger and cooler cleaning or repair", "Shaft, coupling, and alignment works", "Marine equipment repair, installation, and commissioning", "Electrical and automation services"],
   },
   {
     icon: "mdi-air-conditioner",
     title: "HVAC & Refrigeration Services",
-    desc: "Marine climate control, accommodation air conditioning, AHU and FCU maintenance, chiller overhaul, compressor repair, leak testing, and refrigerant recharging.",
-  },
-  {
-    icon: "mdi-tune-vertical",
-    title: "Automation & Control Services",
-    desc: "PLC and HMI troubleshooting, control panel rewiring, sensor calibration, VFD maintenance, alarm system service, and onboard repair support.",
-  },
-  {
-    icon: "mdi-hammer-wrench",
-    title: "Carpentry, Marine Interior & Deck Services",
-    desc: "Crew cabin renovation, joinery works, marine-grade flooring and insulation, crane and winch inspection, hydraulic servicing, and deck machinery maintenance.",
+    items: ["Marine HVAC and air conditioning services", "Chiller repair, maintenance, and overhaul", "Refrigeration compressor repair and overhaul", "Refrigeration system repair and troubleshooting", "AHU and FCU maintenance", "Condenser and evaporator cleaning or repair", "Refrigerant leak detection and repair", "Vacuum, pressure testing, and refrigerant charging", "Refrigeration piping installation and repair", "Ducting installation, repair, and modification", "Cold room and provision room refrigeration", "HVAC retrofit, preventive and corrective maintenance", "HVAC system testing and commissioning"],
   },
 ];
 
 const steps = [
-  { num: "01", title: "Inquiry & assessment", desc: "We review the required parts, specifications, vessel, or repair scope." },
-  { num: "02", title: "Sourcing & quotation", desc: "We prepare a proposal with relevant product details and expected lead times." },
-  { num: "03", title: "Service or delivery", desc: "We coordinate delivery to the agreed port, berth, or project location." },
-  { num: "04", title: "Handover", desc: "We complete the work with a joint inspection and service handover." },
+  { num: "01", title: "Requirement assessment", desc: "We evaluate the spare parts, specifications, or repair scope." },
+  { num: "02", title: "Sourcing & quotation", desc: "We prepare a prompt, transparent proposal with components and lead times." },
+  { num: "03", title: "On-site work or delivery", desc: "We coordinate delivery to the anchorage, berth, or shipyard and carry out the agreed work." },
+  { num: "04", title: "Commissioning & handover", desc: "We arrange a joint inspection and sign-off, followed by job documentation." },
 ];
 </script>
 
@@ -38,17 +28,26 @@ const steps = [
       <p class="site-kicker">Layanan</p>
       <h1 class="site-title">Technical support<br /><span>where you need it.</span></h1>
       <p class="site-lead">
-        Our multidisciplinary team supports maintenance, repair, and onboard
-        requirements for marine and offshore operations.
+        Our team handles mechanical and HVAC requirements, from repair and
+        maintenance to overhaul, commissioning, and delivery support.
       </p>
     </header>
 
-    <section class="site-card-grid" aria-label="Layanan teknis">
+    <section class="site-card-grid service-grid" aria-label="Layanan teknis">
       <article v-for="service in services" :key="service.title" class="site-card">
         <div class="site-card-icon"><v-icon :icon="service.icon" size="25" /></div>
         <h3>{{ service.title }}</h3>
-        <p>{{ service.desc }}</p>
+        <ul><li v-for="item in service.items" :key="item">{{ item }}</li></ul>
       </article>
+    </section>
+
+    <section class="qhse-panel">
+      <div class="site-card-icon"><v-icon icon="mdi-shield-check-outline" size="25" /></div>
+      <div>
+        <p class="site-kicker">QHSE commitment</p>
+        <h2 class="site-section-title">Safety is a priority in every assignment.</h2>
+        <p class="site-section-copy">Duta Raya Marine commits to zero-accident practices and environmental responsibility across workshop activities and shipboard assignments.</p>
+      </div>
     </section>
 
     <section class="service-process">
@@ -78,6 +77,47 @@ const steps = [
 <style scoped>
 .service-process {
   margin-top: 64px;
+}
+
+.service-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.service-grid .site-card {
+  height: 100%;
+}
+
+.service-grid ul {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding-left: 18px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.service-grid li::marker {
+  color: #dc2626;
+}
+
+.qhse-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-top: 28px;
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.qhse-panel .site-section-title {
+  font-size: 21px;
+}
+
+.qhse-panel .site-section-copy {
+  margin-bottom: 0;
 }
 
 .service-process .site-page-heading {
@@ -121,6 +161,10 @@ const steps = [
 }
 
 @media (max-width: 850px) {
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+
   .process-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -8,7 +8,7 @@
       >
         <div class="panel-header">
           <div>
-            <p class="eyebrow">DUTA RAYA MARINE</p>
+            <!-- <p class="eyebrow">DUTA RAYA MARINE</p> -->
             <h2 id="whatsapp-title">Kirim inquiry</h2>
             <p class="header-copy">Isi detail berikut, lalu lanjutkan melalui WhatsApp.</p>
           </div>
@@ -23,34 +23,16 @@
         </div>
 
         <form class="inquiry-form" @submit.prevent="sendToWhatsapp">
-          <label>
-            Nama perusahaan <span>*</span>
-            <input v-model.trim="form.nama_perusahaan" required autocomplete="organization" placeholder="Nama perusahaan" />
-          </label>
-          <label>
-            Alamat <span>*</span>
-            <textarea v-model.trim="form.alamat" required rows="2" autocomplete="street-address" placeholder="Alamat perusahaan" />
-          </label>
-          <div class="form-row">
-            <label>
-              PIC <span>*</span>
-              <input v-model.trim="form.pic" required autocomplete="name" placeholder="Nama PIC" />
-            </label>
-          </div>
-          <label>
-            Nama kapal
-            <input v-model.trim="form.vessel" placeholder="Nama kapal (jika ada)" />
-          </label>
-          <label>
-            Kebutuhan / pesan
-            <textarea v-model.trim="form.inquiry" rows="3" placeholder="Ceritakan produk atau layanan yang dibutuhkan" />
-          </label>
+          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" label="Name *required"></v-text-field>
+          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" label="Company Name *required"></v-text-field>
+          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" label="Address"></v-text-field>
+          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" label="Vessel"></v-text-field>
+          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" label="Inquiry"></v-textarea>
 
-          <p class="required-note"><span>*</span> Wajib diisi</p>
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
-          <button class="send-button" type="submit" :disabled="isSaving">
+          <button class="send-button" type="submit" :disabled="isSaving || !requiredFieldsFilled">
             <v-icon :icon="isSaving ? 'mdi-loading' : 'mdi-whatsapp'" size="20" />
-            {{ isSaving ? 'Menyimpan data...' : 'Lanjutkan ke WhatsApp' }}
+            {{ isSaving ? 'Menyimpan data...' : 'WhatsApp' }}
           </button>
         </form>
       </section>
@@ -63,14 +45,14 @@
       :aria-label="isOpen ? 'Tutup form WhatsApp' : 'Buka form WhatsApp'"
       @click="isOpen = !isOpen"
     >
-      <v-icon :icon="isOpen ? 'mdi-close' : 'mdi-whatsapp'" size="25" />
-      <span>{{ isOpen ? 'Tutup' : 'Hubungi kami' }}</span>
+      <v-icon :icon="isOpen ? 'mdi-close' : 'mdi-whatsapp'" size="21" />
+      <span>{{ isOpen ? 'Close' : 'WhatsApp' }}</span>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import type { leadsM } from "~/types/leadsM";
 
 const whatsappNumber = "6282199988670";
@@ -85,16 +67,21 @@ const form = reactive({
   vessel: "",
   inquiry: "",
 });
+const requiredFieldsFilled = computed(() =>
+  form.pic.trim().length > 0 && form.nama_perusahaan.trim().length > 0,
+);
 
 async function sendToWhatsapp() {
+  if (!requiredFieldsFilled.value || isSaving.value) return;
+
   const message = [
-    "Halo Duta Raya Marine, saya ingin menyampaikan inquiry.",
+    "Halo Duta Raya Marine, Saya ingin menanyakan informasi seputar Layanan yang tersedia di Duta Raya Marine. Apakah saya bisa dibantu dengan informasi dari situs resmi www.dutarayamarine.com?",
     "",
-    `Nama perusahaan: ${form.nama_perusahaan}`,
-    `Alamat: ${form.alamat}`,
-    `PIC: ${form.pic}`,
-    `Kapal: ${form.vessel || "-"}`,
-    `Kebutuhan: ${form.inquiry || "-"}`,
+    `Name: ${form.pic}`,
+    `Address: ${form.alamat}`,
+    `Company Name: ${form.nama_perusahaan}`,
+    `Vessel: ${form.vessel || "-"}`,
+    `Inquiry: ${form.inquiry || "-"}`,
   ].join("\n");
 
   submitError.value = "";
@@ -141,22 +128,22 @@ async function sendToWhatsapp() {
 <style scoped>
 .whatsapp-widget {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 20px;
+  bottom: 20px;
   z-index: 500;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 14px;
+  gap: 10px;
 }
 
 .whatsapp-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 52px;
-  padding: 0 20px;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 15px;
   border: 0;
   border-radius: 999px;
   background: #16a34a;
@@ -164,7 +151,7 @@ async function sendToWhatsapp() {
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
   cursor: pointer;
   font: inherit;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   transition: background 160ms ease, transform 160ms ease;
 }
@@ -175,11 +162,11 @@ async function sendToWhatsapp() {
 }
 
 .inquiry-panel {
-  width: min(390px, calc(100vw - 32px));
-  max-height: min(78vh, 720px);
+  width: min(340px, calc(100vw - 32px));
+  max-height: min(72vh, 600px);
   overflow-y: auto;
   border: 1px solid #e2e8f0;
-  border-radius: 18px;
+  border-radius: 14px;
   background: #fff;
   box-shadow: 0 20px 55px rgba(15, 23, 42, 0.22);
 }
@@ -188,8 +175,8 @@ async function sendToWhatsapp() {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
-  padding: 22px 22px 17px;
+  gap: 10px;
+  padding: 15px 16px 13px;
   background: #0f172a;
   color: #fff;
 }
@@ -204,21 +191,21 @@ async function sendToWhatsapp() {
 
 .panel-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 750;
 }
 
 .header-copy {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
 .close-button {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 29px;
+  height: 29px;
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -230,79 +217,49 @@ async function sendToWhatsapp() {
 
 .inquiry-form {
   display: grid;
-  gap: 13px;
-  padding: 19px 22px 22px;
+  gap: 9px;
+  padding: 10px 16px 15px;
 }
 
-.inquiry-form label {
-  display: grid;
-  gap: 6px;
-  color: #334155;
+.inquiry-form :deep(.v-input) {
+  margin: 0;
   font-size: 12px;
-  font-weight: 700;
 }
 
-.inquiry-form label span,
-.required-note span {
-  color: #dc2626;
+.inquiry-form :deep(.v-field__input) {
+  min-height: 36px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
 }
 
-.inquiry-form input,
-.inquiry-form textarea {
-  width: 100%;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px 11px;
-  background: #fff;
-  color: #0f172a;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 400;
-  outline: none;
+.inquiry-form :deep(.v-textarea .v-field__input) {
+  min-height: 52px;
 }
 
-.inquiry-form textarea {
-  resize: vertical;
+.inquiry-form :deep(.v-label) {
+  font-size: 12px;
 }
-
-.inquiry-form input:focus,
-.inquiry-form textarea:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 11px;
-}
-
-.required-note {
-  margin: -3px 0 0;
-  color: #64748b;
-  font-size: 11px;
-}
-
 .submit-error {
   margin: 0;
   color: #b91c1c;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
 .send-button {
   display: flex;
-  min-height: 46px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   gap: 8px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 7px;
   background: #16a34a;
   color: #fff;
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -328,22 +285,18 @@ async function sendToWhatsapp() {
 
 @media (max-width: 480px) {
   .whatsapp-widget {
-    right: 16px;
-    bottom: 16px;
+    right: 12px;
+    bottom: 12px;
   }
 
   .inquiry-panel {
-    max-height: 76vh;
+    max-height: 70vh;
   }
 
   .panel-header,
   .inquiry-form {
-    padding-right: 17px;
-    padding-left: 17px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
+    padding-right: 13px;
+    padding-left: 13px;
   }
 }
 </style>
