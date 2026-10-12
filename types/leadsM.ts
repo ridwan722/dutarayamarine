@@ -1,5 +1,5 @@
 export interface leadsM {
-  id?: string;
+  id_leads?: string;
   nama_perusahaan: string;
   pic: string;
   alamat: string;

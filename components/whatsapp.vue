@@ -98,6 +98,7 @@ async function sendToWhatsapp() {
   whatsappWindow.opener = null;
 
   const lead: leadsM = {
+    id_leads: crypto.randomUUID(),
     nama_perusahaan: form.nama_perusahaan,
     alamat: form.alamat,
     pic: form.pic,
