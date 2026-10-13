@@ -8,9 +8,8 @@
       >
         <div class="panel-header">
           <div>
-            <!-- <p class="eyebrow">DUTA RAYA MARINE</p> -->
             <h2 id="whatsapp-title">Kirim inquiry</h2>
-            <p class="header-copy">Isi detail berikut, lalu lanjutkan melalui WhatsApp.</p>
+            <p class="header-copy">Lengkapi detail, kami siap membantu.</p>
           </div>
           <button
             class="close-button"
@@ -23,16 +22,19 @@
         </div>
 
         <form class="inquiry-form" @submit.prevent="sendToWhatsapp">
-          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" label="Name *required"></v-text-field>
-          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" label="Company Name *required"></v-text-field>
-          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" label="Address"></v-text-field>
-          <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" label="Vessel"></v-text-field>
-          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" label="Inquiry"></v-textarea>
+          <div class="field-grid">
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" label="Your name *" autocomplete="name"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" label="Company *" autocomplete="organization"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" label="Address" autocomplete="street-address"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" label="Vessel"></v-text-field>
+          </div>
+          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" label="How can we help?"></v-textarea>
+          <p class="required-note">* Required fields</p>
 
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
           <button class="send-button" type="submit" :disabled="isSaving || !requiredFieldsFilled">
             <v-icon :icon="isSaving ? 'mdi-loading' : 'mdi-whatsapp'" size="20" />
-            {{ isSaving ? 'Menyimpan data...' : 'WhatsApp' }}
+            {{ isSaving ? 'Menyimpan data...' : 'Lanjutkan ke WhatsApp' }}
           </button>
         </form>
       </section>
@@ -55,7 +57,7 @@
 import { computed, reactive, ref } from "vue";
 import type { leadsM } from "~/types/leadsM";
 
-const whatsappNumber = "6282199988670";
+const whatsappNumber = "6281318031993";
 const isOpen = ref(false);
 const isSaving = ref(false);
 const submitError = ref("");
@@ -143,13 +145,13 @@ async function sendToWhatsapp() {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 44px;
-  padding: 0 15px;
+  min-height: 42px;
+  padding: 0 14px;
   border: 0;
   border-radius: 999px;
-  background: #16a34a;
+  background: #dc2626;
   color: #fff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.18);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
@@ -158,18 +160,19 @@ async function sendToWhatsapp() {
 }
 
 .whatsapp-toggle:hover {
-  background: #15803d;
+  background: #b91c1c;
   transform: translateY(-2px);
 }
 
 .inquiry-panel {
-  width: min(340px, calc(100vw - 32px));
-  max-height: min(72vh, 600px);
+  width: min(360px, calc(100vw - 28px));
+  max-height: min(78vh, 620px);
   overflow-y: auto;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-top: 3px solid #dc2626;
+  border-radius: 16px;
   background: #fff;
-  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.18);
 }
 
 .panel-header {
@@ -177,7 +180,8 @@ async function sendToWhatsapp() {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  padding: 15px 16px 13px;
+  padding: 14px 15px 12px;
+  border-bottom: 1px solid #f1f5f9;
   background: #0f172a;
   color: #fff;
 }
@@ -218,8 +222,14 @@ async function sendToWhatsapp() {
 
 .inquiry-form {
   display: grid;
-  gap: 9px;
-  padding: 10px 16px 15px;
+  gap: 8px;
+  padding: 12px 15px 14px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .inquiry-form :deep(.v-input) {
@@ -228,9 +238,9 @@ async function sendToWhatsapp() {
 }
 
 .inquiry-form :deep(.v-field__input) {
-  min-height: 36px;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  min-height: 38px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   font-size: 12px;
 }
 
@@ -241,6 +251,20 @@ async function sendToWhatsapp() {
 .inquiry-form :deep(.v-label) {
   font-size: 12px;
 }
+
+.inquiry-form :deep(.v-field--focused .v-field__outline) {
+  color: #0f172a;
+}
+
+.inquiry-form :deep(.v-field--focused .v-label) {
+  color: #0f172a;
+}
+
+.required-note {
+  margin: -2px 0 0;
+  color: #b91c1c;
+  font-size: 10px;
+}
 .submit-error {
   margin: 0;
   color: #b91c1c;
@@ -250,18 +274,25 @@ async function sendToWhatsapp() {
 
 .send-button {
   display: flex;
-  min-height: 40px;
+  min-height: 42px;
   align-items: center;
   justify-content: center;
   gap: 8px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 9px;
   background: #16a34a;
   color: #fff;
   cursor: pointer;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+}
+
+.whatsapp-toggle:focus-visible,
+.close-button:focus-visible,
+.send-button:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.32);
+  outline-offset: 2px;
 }
 
 .send-button:hover {
@@ -298,6 +329,10 @@ async function sendToWhatsapp() {
   .inquiry-form {
     padding-right: 13px;
     padding-left: 13px;
+  }
+
+  .field-grid {
+    gap: 7px;
   }
 }
 </style>
