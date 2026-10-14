@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 definePageMeta({ layout: "website" });
 
@@ -14,7 +14,7 @@ const slides = [
     to: "/services",
   },
   {
-    image: "/carousel-1.jpg",
+    image: "/carousel-2.jpg",
     kicker: "Parts & equipment",
     title: "The right equipment",
     accent: "for every voyage.",
@@ -23,7 +23,7 @@ const slides = [
     to: "/products",
   },
   {
-    image: "/carousel-1.webp",
+    image: "/carousel-3.jpg",
     kicker: "Based in Batam, Indonesia",
     title: "A responsive partner",
     accent: "at every port call.",
@@ -35,6 +35,7 @@ const slides = [
 
 const activeSlide = ref(0);
 const currentSlide = computed(() => slides[activeSlide.value]!);
+let slideTimer: ReturnType<typeof setInterval> | undefined;
 const productCategories = [
   { icon: "mdi-engine", title: "Engine & machinery", detail: "Genuine, OEM, and aftermarket parts for engines, generators, pumps, and machinery." },
   { icon: "mdi-package-variant-closed", title: "Ship supplies", detail: "Mooring, lifting, welding, coating, maintenance, and deck consumables." },
@@ -51,6 +52,14 @@ const services = [
 function changeSlide(direction: number) {
   activeSlide.value = (activeSlide.value + direction + slides.length) % slides.length;
 }
+
+onMounted(() => {
+  slideTimer = setInterval(() => changeSlide(1), 5000);
+});
+
+onUnmounted(() => {
+  if (slideTimer) clearInterval(slideTimer);
+});
 </script>
 
 <template>
@@ -88,7 +97,7 @@ function changeSlide(direction: number) {
               @click="activeSlide = index"
             />
           </div>
-          <span class="slide-count">0{{ activeSlide + 1 }} <i>/</i> 0{{ slides.length }}</span>
+          <!-- <span class="slide-count">0{{ activeSlide + 1 }} <i>/</i> 0{{ slides.length }}</span> -->
           <div class="hero-arrows">
             <button type="button" aria-label="Slide sebelumnya" @click="changeSlide(-1)"><v-icon icon="mdi-arrow-left" /></button>
             <button type="button" aria-label="Slide berikutnya" @click="changeSlide(1)"><v-icon icon="mdi-arrow-right" /></button>
@@ -192,7 +201,7 @@ function changeSlide(direction: number) {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(90deg, rgba(3, 8, 18, .96) 0%, rgba(5, 12, 25, .82) 38%, rgba(7, 14, 26, .32) 100%);
+  background: linear-gradient(90deg, rgba(3, 8, 18, .96) 0%, rgba(5, 12, 25, .82) 38%, rgba(7, 14, 26, .32) 58%, transparent 76%);
   content: "";
 }
 

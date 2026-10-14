@@ -1,5 +1,6 @@
 <template>
   <div class="whatsapp-widget">
+    <!-- Panel Form Inquiry -->
     <Transition name="panel">
       <section
         v-if="isOpen"
@@ -8,8 +9,9 @@
       >
         <div class="panel-header">
           <div>
-            <h2 id="whatsapp-title">Kirim inquiry</h2>
-            <p class="header-copy">Lengkapi detail, kami siap membantu.</p>
+            <span class="eyebrow">DUTA RAYA MARINE</span>
+            <h2 id="whatsapp-title">Kirim Inquiry</h2>
+            <p class="header-copy">Lengkapi detail, kami siap membantu Anda.</p>
           </div>
           <button
             class="close-button"
@@ -29,9 +31,10 @@
             <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" label="Vessel"></v-text-field>
           </div>
           <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" label="How can we help?"></v-textarea>
-          <p class="required-note">* Required fields</p>
-
+          
+          <p class="required-note">* Kolom wajib diisi</p>
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
+          
           <button class="send-button" type="submit" :disabled="isSaving || !requiredFieldsFilled">
             <v-icon :icon="isSaving ? 'mdi-loading' : 'mdi-whatsapp'" size="20" />
             {{ isSaving ? 'Menyimpan data...' : 'Lanjutkan ke WhatsApp' }}
@@ -40,16 +43,27 @@
       </section>
     </Transition>
 
-    <button
-      class="whatsapp-toggle"
-      type="button"
-      :aria-expanded="isOpen"
-      :aria-label="isOpen ? 'Tutup form WhatsApp' : 'Buka form WhatsApp'"
-      @click="isOpen = !isOpen"
-    >
-      <v-icon :icon="isOpen ? 'mdi-close' : 'mdi-whatsapp'" size="21" />
-      <span>{{ isOpen ? 'Close' : 'WhatsApp' }}</span>
-    </button>
+    <!-- Floating Toggle Button dengan Animasi Getar Telepon -->
+    <div class="toggle-container" :class="{ 'is-open': isOpen }">
+      <button
+        class="whatsapp-toggle"
+        type="button"
+        :class="{ 'is-active': isOpen }"
+        :aria-expanded="isOpen"
+        :aria-label="isOpen ? 'Tutup form WhatsApp' : 'Buka form WhatsApp'"
+        @click="isOpen = !isOpen"
+      >
+        <div class="icon-bubble">
+          <v-icon
+            :icon="isOpen ? 'mdi-close' : 'mdi-headset'"
+            size="24"
+            :class="['widget-icon', { 'ring-shake': !isOpen }]"
+          />
+          <span v-if="!isOpen" class="pulse-ring"></span>
+        </div>
+        <span class="widget-label">{{ isOpen ? 'Tutup' : 'Whatsapp' }}</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -62,6 +76,7 @@ const isOpen = ref(false);
 const isSaving = ref(false);
 const submitError = ref("");
 const leadsStore = useleadsStore();
+
 const form = reactive({
   nama_perusahaan: "",
   alamat: "",
@@ -69,6 +84,7 @@ const form = reactive({
   vessel: "",
   inquiry: "",
 });
+
 const requiredFieldsFilled = computed(() =>
   form.pic.trim().length > 0 && form.nama_perusahaan.trim().length > 0,
 );
@@ -89,8 +105,6 @@ async function sendToWhatsapp() {
   submitError.value = "";
   isSaving.value = true;
 
-  // Buka tab saat masih dalam aksi submit agar browser tidak memblokir popup
-  // setelah proses simpan Firestore selesai.
   const whatsappWindow = window.open("about:blank", "_blank");
   if (!whatsappWindow) {
     submitError.value = "Browser memblokir tab baru. Izinkan popup lalu coba lagi.";
@@ -131,48 +145,156 @@ async function sendToWhatsapp() {
 <style scoped>
 .whatsapp-widget {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 24px;
+  bottom: 24px;
   z-index: 500;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
+  font-family: inherit;
+}
+
+/* Floating Container Animation */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  animation: float-widget 3.5s ease-in-out infinite;
+}
+
+.toggle-container.is-open {
+  animation: none;
+}
+
+@keyframes float-widget {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .whatsapp-toggle {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 42px;
-  padding: 0 14px;
+  gap: 10px;
+  padding: 6px 18px 6px 6px;
   border: 0;
-  border-radius: 999px;
-  background: #dc2626;
-  color: #fff;
-  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.18);
+  border-radius: 50px;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
   cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  transition: background 160ms ease, transform 160ms ease;
+  transition: background 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms ease;
+  outline: none;
 }
 
 .whatsapp-toggle:hover {
-  background: #b91c1c;
-  transform: translateY(-2px);
+  background: #1e293b;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
 }
 
+.whatsapp-toggle.is-active {
+  background: #dc2626;
+}
+
+.icon-bubble {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  transition: background-color 200ms ease;
+}
+
+.whatsapp-toggle.is-active .icon-bubble {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animasi Getar Telepon (Ring/Shake) per 1-1.5 detik */
+.ring-shake {
+  animation: ring-shake 1.2s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes ring-shake {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  10% {
+    transform: rotate(-18deg) scale(1.1);
+  }
+  20% {
+    transform: rotate(18deg) scale(1.1);
+  }
+  30% {
+    transform: rotate(-15deg) scale(1.1);
+  }
+  40% {
+    transform: rotate(15deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(-8deg) scale(1.05);
+  }
+  60% {
+    transform: rotate(8deg) scale(1.05);
+  }
+  70% {
+    transform: rotate(0deg) scale(1);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #0fd816;
+  animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.widget-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Panel Form Inquiry */
 .inquiry-panel {
   width: min(360px, calc(100vw - 28px));
   max-height: min(78vh, 620px);
   overflow-y: auto;
   border: 1px solid #e2e8f0;
-  border-top: 3px solid #dc2626;
+  border-top: 4px solid #dc2626;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.18);
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22);
 }
 
 .panel-header {
@@ -180,50 +302,56 @@ async function sendToWhatsapp() {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  padding: 14px 15px 12px;
+  padding: 16px;
   border-bottom: 1px solid #f1f5f9;
   background: #0f172a;
-  color: #fff;
+  color: #ffffff;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
-  color: #fca5a5;
+  display: block;
+  margin-bottom: 4px;
+  color: #dc2626;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
 }
 
 .panel-header h2 {
   margin: 0;
   font-size: 17px;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .header-copy {
   margin: 4px 0 0;
-  color: #cbd5e1;
+  color: #94a3b8;
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .close-button {
   display: grid;
-  width: 29px;
-  height: 29px;
+  width: 28px;
+  height: 28px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   background: transparent;
-  color: #fff;
+  color: #ffffff;
   cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .inquiry-form {
   display: grid;
-  gap: 8px;
-  padding: 12px 15px 14px;
+  gap: 10px;
+  padding: 14px 16px 16px;
 }
 
 .field-grid {
@@ -252,24 +380,18 @@ async function sendToWhatsapp() {
   font-size: 12px;
 }
 
-.inquiry-form :deep(.v-field--focused .v-field__outline) {
-  color: #0f172a;
-}
-
-.inquiry-form :deep(.v-field--focused .v-label) {
-  color: #0f172a;
-}
-
 .required-note {
   margin: -2px 0 0;
-  color: #b91c1c;
+  color: #dc2626;
   font-size: 10px;
+  font-weight: 600;
 }
+
 .submit-error {
   margin: 0;
   color: #b91c1c;
   font-size: 11px;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .send-button {
@@ -279,60 +401,49 @@ async function sendToWhatsapp() {
   justify-content: center;
   gap: 8px;
   border: 0;
-  border-radius: 9px;
-  background: #16a34a;
-  color: #fff;
+  border-radius: 8px;
+  background: #25d366;
+  color: #ffffff;
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-}
-
-.whatsapp-toggle:focus-visible,
-.close-button:focus-visible,
-.send-button:focus-visible {
-  outline: 3px solid rgba(220, 38, 38, 0.32);
-  outline-offset: 2px;
+  transition: background 160ms ease;
 }
 
 .send-button:hover {
-  background: #15803d;
+  background: #1eb956;
 }
 
 .send-button:disabled {
-  cursor: wait;
-  opacity: 0.7;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
+/* Transisi Panel Form */
 .panel-enter-active,
 .panel-leave-active {
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .panel-enter-from,
 .panel-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px) scale(0.98);
 }
 
 @media (max-width: 480px) {
   .whatsapp-widget {
-    right: 12px;
-    bottom: 12px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .widget-label {
+    font-size: 12px;
   }
 
   .inquiry-panel {
-    max-height: 70vh;
-  }
-
-  .panel-header,
-  .inquiry-form {
-    padding-right: 13px;
-    padding-left: 13px;
-  }
-
-  .field-grid {
-    gap: 7px;
+    max-height: 72vh;
   }
 }
 </style>
