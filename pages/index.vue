@@ -3,12 +3,57 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 
 definePageMeta({ layout: "website" });
 
+const seoDescription =
+  "PT Duta Raya Marine supplies marine equipment, ship spare parts, HVAC, and technical services for vessels, shipyards, and offshore operators in Batam and Jakarta.";
+
+usePageSeo({
+  title: "Marine Supplier Batam & Ship Spare Parts | Duta Raya Marine",
+  description: seoDescription,
+  path: "/",
+});
+
+useHead({
+  script: [
+    {
+      type: "application/ld+json",
+      textContent: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "PT. Duta Raya Marine",
+        url: "https://www.dutarayamarine.com/",
+        logo: "https://www.dutarayamarine.com/Logo-DRM.png",
+        email: "sales@dutarayamarine.com",
+        description: seoDescription,
+        address: [
+          {
+            "@type": "PostalAddress",
+            streetAddress:
+              "Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Sekupang",
+            addressLocality: "Batam",
+            addressRegion: "Kepulauan Riau",
+            postalCode: "29425",
+            addressCountry: "ID",
+          },
+          {
+            "@type": "PostalAddress",
+            streetAddress: "Jln. Raya Pasar Minggu No. 15A",
+            addressLocality: "Jakarta Selatan",
+            addressRegion: "DKI Jakarta",
+            addressCountry: "ID",
+          },
+        ],
+        areaServed: ["Batam", "Jakarta", "Indonesia"],
+      }),
+    },
+  ],
+});
+
 const slides = [
   {
     image: "/carousel-1.jpg",
-    kicker: "Marine & offshore solutions",
-    title: "DUTA RAYA",
-    accent: "MARINE",
+    kicker: "Duta Raya Marine · Batam, Indonesia",
+    title: "Marine equipment",
+    accent: "& ship spare parts.",
     description: "Marine machinery, genuine and OEM spare parts, and responsive technical support for shipowners, shipyards, and offshore operators.",
     action: "Explore our services",
     to: "/services",

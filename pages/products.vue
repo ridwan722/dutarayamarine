@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: "website" });
 
+usePageSeo({
+  title: "Marine Equipment & Ship Spare Parts | Duta Raya Marine",
+  description:
+    "Source genuine, OEM, and aftermarket ship spare parts, marine equipment, consumables, hydraulic components, and HVAC products in Batam, Indonesia.",
+  path: "/products",
+});
+
 const products = [
   {
     icon: "mdi-package-variant-closed",
@@ -37,7 +44,7 @@ const compressorBrands = ["Bitzer", "Carrier", "Copeland", "Danfoss", "Carlyle",
   <div class="site-container">
     <header class="site-page-heading">
       <p class="site-kicker">Produk</p>
-      <h1 class="site-title">Equipment for<br /><span>reliable operations.</span></h1>
+      <h1 class="site-title">Marine equipment &amp;<br /><span>ship spare parts.</span></h1>
       <p class="site-lead">
         We supply genuine, OEM, and aftermarket parts, consumables, and
         refrigeration equipment for vessel and project requirements.

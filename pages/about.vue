@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: "website" });
 
+usePageSeo({
+  title: "About Our Marine Supply Company | Duta Raya Marine",
+  description:
+    "Learn about PT Duta Raya Marine, a Batam-based supplier of marine and offshore equipment, machinery, spare parts, and technical support.",
+  path: "/about",
+});
+
 const values = [
   {
     icon: "mdi-shield-check-outline",

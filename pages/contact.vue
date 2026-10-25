@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: "website" });
 
+usePageSeo({
+  title: "Contact Our Marine Supply Team | Duta Raya Marine",
+  description:
+    "Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.",
+  path: "/contact",
+});
+
 const offices = [
   {
     city: "Batam",
@@ -17,7 +24,7 @@ const offices = [
   <div class="site-container">
     <header class="site-page-heading">
       <p class="site-kicker">Kontak</p>
-      <h1 class="site-title">Let’s talk about<br /><span>your requirements.</span></h1>
+      <h1 class="site-title">Contact our marine<br /><span>supply team.</span></h1>
       <p class="site-lead">
         Contact our team for procurement requests, engineering consultations,
         or round-the-clock emergency port support.

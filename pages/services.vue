@@ -1,6 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: "website" });
 
+usePageSeo({
+  title: "Marine Engineering & HVAC Services | Duta Raya Marine",
+  description:
+    "Marine engineering services in Batam for engine overhaul, mechanical repair, hydraulics, HVAC, refrigeration, automation, testing, and commissioning.",
+  path: "/services",
+});
+
 const services = [
   {
     icon: "mdi-cog-sync",
@@ -26,7 +33,7 @@ const steps = [
   <div class="site-container">
     <header class="site-page-heading">
       <p class="site-kicker">Layanan</p>
-      <h1 class="site-title">Technical support<br /><span>where you need it.</span></h1>
+      <h1 class="site-title">Marine engineering &amp;<br /><span>HVAC services.</span></h1>
       <p class="site-lead">
         Our team handles mechanical and HVAC requirements, from repair and
         maintenance to overhaul, commissioning, and delivery support.

@@ -4,10 +4,26 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: {
+        lang: "en",
+      },
       meta: [
         {
           name: "google-site-verification",
           content: "4xkq5csQLCgI0vdVvGcV_CY5pw-NqxwTNSYJLMN67Iw",
+        },
+        {
+          name: "robots",
+          content:
+            "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
+        {
+          property: "og:site_name",
+          content: "PT. Duta Raya Marine",
+        },
+        {
+          property: "og:locale",
+          content: "en_ID",
         },
       ],
     },
@@ -23,7 +39,7 @@ export default defineNuxtConfig({
     "nuxt-vuefire",
   ],
 
-  ssr: false,
+  ssr: true,
 
   // Prevents stale build asset caching issues on deploy
   experimental: {
