@@ -1,74 +1,131 @@
 <template>
   <v-app>
     <div class="site-shell">
-      <div class="site-fixed-header" :class="{ 'is-hidden': headerHidden }">
-        <!-- TOP UTILITY BAR INDUSTRIAL -->
+      <div
+        class="site-fixed-header"
+        :class="{
+          'is-hidden': headerHidden,
+          'is-scrolled': headerScrolled,
+          'menu-is-open': menuOpen,
+        }"
+      >
+        <!-- Compact company and contact rail -->
         <div class="site-utility-bar">
           <div class="site-utility-inner">
             <div class="utility-left">
-              <!-- <span class="utility-badge">ISO 9001 / IACS STANDARDS</span> -->
-              <span>Supply Sparepart &amp; Layanan Teknis Kapal Tanker · Indonesia</span>
+              <span class="utility-status"><i aria-hidden="true"></i> Marine supply &amp; technical services</span>
+              <span class="utility-divider" aria-hidden="true"></span>
+              <span class="utility-location"><v-icon icon="mdi-map-marker-outline" size="13" /> Batam · Jakarta, Indonesia</span>
             </div>
             <div class="utility-right">
-              <!-- <a href="tel:+628111234567" class="utility-contact bold">
-                <v-icon icon="mdi-phone" size="13" /> Emergency Support 24/7
-              </a>
-              <span class="sep">|</span>
+              <NuxtLink to="/about" class="utility-contact">
+                Company profile
+              </NuxtLink>
+              <span class="utility-divider" aria-hidden="true"></span>
               <a href="mailto:sales@dutarayamarine.com" class="utility-contact">
-                <v-icon icon="mdi-email" size="13" /> sales@dutarayamarine.com
+                <v-icon icon="mdi-email-outline" size="14" /> sales@dutarayamarine.com
               </a>
-              <span class="sep">|</span> -->
-              <div class="lang">
-                <strong>ID</strong> / <span>EN</span>
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- MAIN NAVBAR -->
+        <!-- Primary navigation -->
         <header class="site-navbar">
           <div class="site-nav-container">
             <NuxtLink class="site-brand" to="/" aria-label="Duta Raya Marine, beranda">
-              <img src="/main-logo.png" alt="Duta Raya Marine" />
-              <!-- <div class="brand-info">
-                <span class="brand-name">PT. DUTA RAYA MARINE</span>
-                <span class="brand-tag">Tanker &amp; Offshore Supply</span>
-              </div> -->
+              <span class="brand-mark"><img src="/main-logo.png" alt="" /></span>
+              <span class="brand-info">
+                <strong>PT. DUTA RAYA MARINE</strong>
+                <small>Marine &amp; Offshore Solutions</small>
+              </span>
             </NuxtLink>
 
-            <button
-              class="site-menu-toggle"
-              type="button"
-              :aria-expanded="menuOpen"
-              aria-label="Buka atau tutup navigasi"
-              @click="menuOpen = !menuOpen"
+            <nav
+              id="primary-navigation"
+              class="site-nav-links"
+              :class="{ 'is-open': menuOpen }"
+              aria-label="Navigasi utama"
             >
-              <v-icon :icon="menuOpen ? 'mdi-close' : 'mdi-menu'" size="25" />
-            </button>
+              <div class="mobile-menu-header">
+                <span>Navigasi</span>
+                <small>PT. Duta Raya Marine</small>
+              </div>
 
-            <span class="mobile-language" aria-label="Bahasa Inggris">EN</span>
+              <div v-for="link in links" :key="link.to" class="site-nav-item">
+                <NuxtLink
+                  :to="link.to"
+                  class="site-nav-link"
+                  exact-active-class="is-active"
+                  @click="closeMenu"
+                >
+                  <span>{{ link.label }}</span>
+                  <v-icon v-if="link.children" icon="mdi-chevron-down" size="15" />
+                </NuxtLink>
 
-            <nav class="site-nav-links" :class="{ 'is-open': menuOpen }" aria-label="Navigasi utama">
-              <NuxtLink
-                v-for="link in links"
-                :key="link.to"
-                :to="link.to"
-                exact-active-class="is-active"
-                @click="menuOpen = false"
-              >
-                {{ link.label }}
+                <div v-if="link.children" class="nav-flyout">
+                  <div class="nav-flyout-heading">
+                    <span>{{ link.eyebrow }}</span>
+                    <strong>{{ link.flyoutTitle }}</strong>
+                  </div>
+                  <NuxtLink
+                    v-for="child in link.children"
+                    :key="child.title"
+                    :to="child.to"
+                    class="nav-flyout-link"
+                    @click="closeMenu"
+                  >
+                    <span class="nav-flyout-icon"><v-icon :icon="child.icon" size="19" /></span>
+                    <span><strong>{{ child.title }}</strong><small>{{ child.description }}</small></span>
+                    <v-icon class="nav-flyout-arrow" icon="mdi-arrow-up-right" size="16" />
+                  </NuxtLink>
+                  <NuxtLink :to="link.to" class="nav-flyout-all" @click="closeMenu">
+                    Lihat semua {{ link.label.toLowerCase() }}
+                    <v-icon icon="mdi-arrow-right" size="16" />
+                  </NuxtLink>
+                </div>
+              </div>
+
+              <NuxtLink to="/contact" class="mobile-rfq" @click="closeMenu">
+                <span>Minta penawaran</span>
+                <v-icon icon="mdi-arrow-right" size="18" />
               </NuxtLink>
-              <NuxtLink to="/contact" class="mobile-rfq" @click="menuOpen = false">
-                CONTACT US
-              </NuxtLink>
+
+              <div class="mobile-menu-meta">
+                <span><v-icon icon="mdi-map-marker-outline" size="17" /> Batam &amp; Jakarta, Indonesia</span>
+                <a href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" size="17" /> sales@dutarayamarine.com</a>
+              </div>
             </nav>
 
             <NuxtLink class="site-nav-cta" to="/contact">
-              CONTACT US
+              <span>Minta penawaran</span>
+              <v-icon icon="mdi-arrow-up-right" size="17" />
             </NuxtLink>
+
+            <button
+              ref="menuButton"
+              class="site-menu-toggle"
+              type="button"
+              :aria-expanded="menuOpen"
+              aria-controls="primary-navigation"
+              :aria-label="menuOpen ? 'Tutup navigasi' : 'Buka navigasi'"
+              @click="toggleMenu"
+            >
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </button>
           </div>
         </header>
+
       </div>
+
+      <button
+        v-if="menuOpen"
+        class="nav-backdrop"
+        type="button"
+        aria-label="Tutup navigasi"
+        @click="closeMenu"
+      ></button>
 
       <main class="site-main">
         <slot />
@@ -128,7 +185,7 @@
           @click="scrollToTop"
         >
           <span>Back to top</span>
-          <v-icon icon="mdi-arrow-up" size="18" />
+          <v-icon icon="mdi-arrow-up" size="15" />
         </button>
       </Transition>
     </div>
@@ -137,16 +194,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 const menuOpen = ref(false);
 const showScrollTop = ref(false);
 const headerHidden = ref(false);
+const headerScrolled = ref(false);
+const menuButton = ref<HTMLButtonElement | null>(null);
+const route = useRoute();
 let lastScrollY = 0;
 
 function updateScrollState() {
   const currentScrollY = window.scrollY;
   showScrollTop.value = currentScrollY > 420;
+  headerScrolled.value = currentScrollY > 24;
 
   if (menuOpen.value || currentScrollY <= 80) {
     headerHidden.value = false;
@@ -159,6 +220,25 @@ function updateScrollState() {
   lastScrollY = currentScrollY;
 }
 
+function toggleMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+
+function closeMenu() {
+  menuOpen.value = false;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && menuOpen.value) {
+    closeMenu();
+    menuButton.value?.focus();
+  }
+}
+
+function handleResize() {
+  if (window.innerWidth > 1080 && menuOpen.value) closeMenu();
+}
+
 function scrollToTop() {
   const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
   window.scrollTo({ top: 0, behavior });
@@ -167,16 +247,62 @@ function scrollToTop() {
 onMounted(() => {
   lastScrollY = window.scrollY;
   window.addEventListener("scroll", updateScrollState, { passive: true });
+  window.addEventListener("resize", handleResize, { passive: true });
+  window.addEventListener("keydown", handleKeydown);
   updateScrollState();
 });
 
-onUnmounted(() => window.removeEventListener("scroll", updateScrollState));
+onUnmounted(() => {
+  window.removeEventListener("scroll", updateScrollState);
+  window.removeEventListener("resize", handleResize);
+  window.removeEventListener("keydown", handleKeydown);
+  document.documentElement.classList.remove("site-menu-open");
+});
 
-const links = [
+watch(menuOpen, (isOpen) => {
+  document.documentElement.classList.toggle("site-menu-open", isOpen);
+});
+
+watch(() => route.fullPath, closeMenu);
+
+type NavLink = {
+  label: string;
+  to: string;
+  eyebrow?: string;
+  flyoutTitle?: string;
+  children?: Array<{
+    title: string;
+    description: string;
+    icon: string;
+    to: string;
+  }>;
+};
+
+const links: NavLink[] = [
   { label: "Beranda", to: "/" },
   { label: "Tentang Kami", to: "/about" },
-  { label: "Produk", to: "/products" },
-  { label: "Layanan", to: "/services" },
+  {
+    label: "Produk",
+    to: "/products",
+    eyebrow: "Product range",
+    flyoutTitle: "Equipment for reliable operations",
+    children: [
+      { title: "Engine & machinery", description: "Parts for engines, pumps, generators, and auxiliaries.", icon: "mdi-engine-outline", to: "/products" },
+      { title: "Ship supplies", description: "Deck, lifting, welding, coating, and consumables.", icon: "mdi-package-variant-closed", to: "/products" },
+      { title: "HVAC & refrigeration", description: "Compressors, controls, AHUs, FCUs, and accessories.", icon: "mdi-snowflake", to: "/products" },
+    ],
+  },
+  {
+    label: "Layanan",
+    to: "/services",
+    eyebrow: "Technical support",
+    flyoutTitle: "Practical response for every vessel",
+    children: [
+      { title: "Mechanical & engine", description: "Repair, overhaul, alignment, and commissioning.", icon: "mdi-cog-outline", to: "/services" },
+      { title: "HVAC & refrigeration", description: "Maintenance, troubleshooting, retrofit, and testing.", icon: "mdi-air-conditioner", to: "/services" },
+      { title: "Automation & control", description: "Electrical support, controls, and vessel systems.", icon: "mdi-tune-vertical", to: "/services" },
+    ],
+  },
   { label: "Kontak", to: "/contact" },
 ];
 </script>
@@ -214,16 +340,19 @@ body {
 }
 
 /* ==========================================================================
-   HEADER REDESIGN (SOLID & INDUSTRIAL)
+   HEADER — COMPACT MARINE COMMAND BAR
    ========================================================================== */
+html.site-menu-open {
+  overflow: hidden;
+}
+
 .site-fixed-header {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   top: 0;
   right: 0;
   left: 0;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-  transition: transform 240ms ease;
+  transition: transform 240ms ease, box-shadow 240ms ease;
   will-change: transform;
 }
 
@@ -231,185 +360,393 @@ body {
   transform: translateY(-100%);
 }
 
+.site-fixed-header.menu-is-open {
+  transform: none;
+}
+
+.site-fixed-header.is-scrolled {
+  box-shadow: 0 10px 30px rgba(8, 18, 38, .12);
+}
+
 .site-utility-bar {
-  background: #0f172a;
-  color: #94a3b8;
-  font-size: 11px;
-  border-bottom: 1px solid #1e293b;
+  max-height: 31px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(148, 163, 184, .16);
+  background: #0b162a;
+  color: #aeb9c8;
+  font-size: 10px;
+  transition: max-height 220ms ease, opacity 180ms ease, border-color 180ms ease;
+}
+
+.site-fixed-header.is-scrolled .site-utility-bar {
+  max-height: 0;
+  border-color: transparent;
+  opacity: 0;
 }
 
 .site-utility-inner {
   display: flex;
-  width: min(1240px, 100% - 48px);
-  min-height: 34px;
+  width: min(1320px, 100% - 56px);
+  min-height: 30px;
   align-items: center;
   justify-content: space-between;
   margin: 0 auto;
 }
 
 .utility-left,
-.utility-right {
+.utility-right,
+.utility-status,
+.utility-location,
+.utility-contact {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
-.utility-badge {
-  background: #dc2626;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 2px;
-  letter-spacing: 0.5px;
+.utility-left,
+.utility-right {
+  gap: 13px;
 }
 
-.utility-contact {
-  color: #cbd5e1;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
+.utility-status {
+  gap: 8px;
+  color: #eef2f7;
+  font-weight: 750;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.utility-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, .12);
+}
+
+.utility-location {
   gap: 4px;
 }
 
+.utility-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(148, 163, 184, .28);
+}
+
+.utility-contact {
+  gap: 5px;
+  color: #c7d0dc;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
 .utility-contact:hover {
-  color: #ffffff;
-}
-
-.utility-contact.bold {
-  color: #f87171;
-  font-weight: 700;
-}
-
-.sep {
-  color: #334155;
-}
-
-.lang {
-  color: #64748b;
-  font-size: 10px;
-}
-
-.lang strong {
-  color: #dc2626;
+  color: #fff;
 }
 
 .site-navbar {
   position: relative;
-  border-bottom: 3px solid #dc2626;
-  background: #ffffff;
+  z-index: 2;
+  border-bottom: 1px solid #e8edf3;
+  background: rgba(255, 255, 255, .98);
+}
+
+.site-navbar::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #d51f2b 0, #d51f2b 28%, transparent 28%);
+  content: "";
 }
 
 .site-nav-container {
-  width: min(1240px, 100% - 48px);
-  min-height: 72px;
-  margin: 0 auto;
   display: flex;
+  width: min(1320px, 100% - 56px);
+  min-height: 70px;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: clamp(22px, 3vw, 48px);
+  margin: 0 auto;
 }
 
 .site-brand {
   display: inline-flex;
+  min-width: max-content;
   align-items: center;
   gap: 12px;
+  color: #0b162a;
   text-decoration: none;
 }
 
-.site-brand img {
-  display: block;
-  width: auto;
+.brand-mark {
+  display: grid;
+  width: 72px;
   height: 42px;
+  place-items: center;
+}
+
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
   object-fit: contain;
 }
 
 .brand-info {
   display: flex;
+  padding-left: 12px;
+  border-left: 1px solid #dbe2ea;
   flex-direction: column;
+  line-height: 1;
 }
 
-.brand-name {
-  color: #0f172a;
-  font-size: 15px;
+.brand-info strong {
+  color: #0b162a;
+  font-size: 12px;
   font-weight: 900;
-  letter-spacing: -0.2px;
-  line-height: 1.1;
+  letter-spacing: .035em;
 }
 
-.brand-tag {
-  color: #64748b;
-  font-size: 10px;
-  font-weight: 700;
+.brand-info small {
+  margin-top: 6px;
+  color: #6b7788;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .11em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .site-nav-links {
   display: flex;
+  min-width: 0;
+  flex: 1;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 1px;
 }
 
-.site-nav-links a {
+.site-nav-item {
   position: relative;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: #334155;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-  transition: color 160ms ease, background 160ms ease;
 }
 
-.site-nav-links a:hover {
-  color: #dc2626;
+.site-nav-link {
+  position: relative;
+  display: flex;
+  min-height: 70px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  color: #344154;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 750;
+  transition: color 160ms ease;
+}
+
+.site-nav-link::after {
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 3px;
+  transform: scaleX(0);
+  transform-origin: center;
+  background: #d51f2b;
+  content: "";
+  transition: transform 180ms ease;
+}
+
+.site-nav-link:hover,
+.site-nav-link.is-active,
+.site-nav-item:focus-within > .site-nav-link {
+  color: #c81e29;
+}
+
+.site-nav-link:hover::after,
+.site-nav-link.is-active::after,
+.site-nav-item:focus-within > .site-nav-link::after {
+  transform: scaleX(1);
+}
+
+.site-nav-link .v-icon {
+  transition: transform 180ms ease;
+}
+
+.site-nav-item:hover > .site-nav-link .v-icon,
+.site-nav-item:focus-within > .site-nav-link .v-icon {
+  transform: rotate(180deg);
+}
+
+.nav-flyout {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: 410px;
+  padding: 10px;
+  transform: translate(-50%, 8px);
+  border: 1px solid #e1e7ee;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(8, 18, 38, .17);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+}
+
+.nav-flyout::before {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 11px;
+  content: "";
+}
+
+.nav-flyout::after {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  border-top: 1px solid #e1e7ee;
+  border-left: 1px solid #e1e7ee;
+  background: #f5f7fa;
+  content: "";
+}
+
+.site-nav-item:hover > .nav-flyout,
+.site-nav-item:focus-within > .nav-flyout {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.nav-flyout-heading {
+  display: flex;
+  padding: 15px 16px 13px;
+  border-radius: 6px 6px 3px 3px;
+  background: #f5f7fa;
+  flex-direction: column;
+}
+
+.nav-flyout-heading span {
+  margin-bottom: 5px;
+  color: #d51f2b;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.nav-flyout-heading strong {
+  color: #101b2e;
+  font-size: 13px;
+  letter-spacing: -.01em;
+}
+
+.nav-flyout-link {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 10px;
+  border-bottom: 1px solid #edf1f5;
+  color: #172236;
+  text-decoration: none;
+  transition: background 160ms ease;
+}
+
+.nav-flyout-link:hover,
+.nav-flyout-link:focus-visible {
+  border-radius: 5px;
   background: #f8fafc;
 }
 
-.site-nav-links a.is-active {
-  color: #dc2626;
-  background: #ffecec;
+.nav-flyout-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid #e3e8ef;
+  border-radius: 5px;
+  background: #fff;
+  color: #d51f2b;
+}
+
+.nav-flyout-link > span:nth-child(2) {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.nav-flyout-link strong {
+  font-size: 11px;
+}
+
+.nav-flyout-link small {
+  overflow: hidden;
+  margin-top: 3px;
+  color: #748093;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 9px;
+}
+
+.nav-flyout-arrow {
+  color: #96a0af;
+}
+
+.nav-flyout-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px 6px;
+  color: #b91c25;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .site-nav-cta {
   display: inline-flex;
-  min-height: 40px;
+  min-height: 42px;
+  flex: 0 0 auto;
   align-items: center;
-  gap: 7px;
-  padding: 0 18px;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 17px;
+  border: 1px solid #bc1722;
   border-radius: 4px;
-  background: #dc2626;
+  background: #d51f2b;
+  box-shadow: 0 5px 14px rgba(213, 31, 43, .18);
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  transition: background 160ms ease;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
 .site-nav-cta:hover {
-  background: #b91c1c;
+  transform: translateY(-1px);
+  background: #b91823;
+  box-shadow: 0 8px 18px rgba(185, 24, 35, .24);
 }
 
-.mobile-rfq {
-  display: none;
-}
-
-.site-menu-toggle {
-  display: none;
-  width: 25px;
-  height: 25px;
-  place-items: center;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  background: #fff;
-  color: #0f172a;
-  cursor: pointer;
-}
-
-.mobile-language {
+.site-menu-toggle,
+.mobile-menu-header,
+.mobile-rfq,
+.mobile-menu-meta,
+.nav-backdrop {
   display: none;
 }
 
@@ -421,7 +758,7 @@ body {
   z-index: 1;
   width: 100%;
   flex: 1;
-  padding-top: 106px;
+  padding-top: 101px;
 }
 
 .site-container {
@@ -817,21 +1154,21 @@ body {
 
 .scroll-top-button {
   position: fixed;
-  right: 28px;
-  bottom: 28px;
+  right: 24px;
+  bottom: 96px;
   z-index: 450;
   display: inline-flex;
-  min-height: 42px;
+  min-height: 36px;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
+  gap: 7px;
+  padding: 0 11px;
   border: none;
   border-radius: 4px;
   background: #dc2626;
   color: #fff;
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -860,86 +1197,204 @@ body {
   }
 }
 
-@media (max-width: 1050px) {
+@media (max-width: 1080px) {
   .site-footer-main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 38px;
   }
 
+  .site-utility-bar {
+    display: none;
+  }
+
   .site-nav-container {
     position: relative;
-    width: calc(100% - 48px);
-    min-height: 76px;
-    justify-content: center;
+    width: calc(100% - 40px);
+    min-height: 72px;
+    gap: 14px;
   }
 
-  .site-brand {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+  .brand-mark {
+    width: 66px;
+    height: 38px;
   }
 
-  .site-brand img {
-    height: 60px;
+  .site-nav-cta {
+    margin-left: auto;
   }
 
   .site-menu-toggle {
-    position: absolute;
-    left: 0;
-    display: grid;
-    width: 25px;
-    height: 25px;
-    border: 0;
-    border-radius: 0;
-    background: #dc2626;
-    color: #fff;
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dce3eb;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
   }
 
-  .mobile-language {
-    position: absolute;
-    right: 0;
-    display: block;
-    color: #555;
-    font-size: 16px;
-    font-weight: 800;
+  .site-menu-toggle span {
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: #142036;
+    transition: transform 180ms ease, opacity 180ms ease;
   }
 
-  .site-nav-links,
-  .site-nav-cta {
+  .menu-is-open .site-menu-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-is-open .site-menu-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-is-open .site-menu-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .site-nav-links {
     display: none;
   }
 
   .site-nav-links.is-open {
     position: absolute;
-    top: 100%;
-    right: -24px;
-    left: -24px;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
+    top: calc(100% + 1px);
+    left: 50%;
+    z-index: 4;
+    display: block;
+    width: 100vw;
+    max-height: calc(100dvh - 72px);
+    overflow-y: auto;
     align-items: stretch;
-    gap: 0;
-    padding: 8px 16px 14px;
-    border-bottom: 3px solid #dc2626;
+    padding: 12px max(24px, calc((100vw - 960px) / 2)) 24px;
+    transform: translateX(-50%);
+    border-top: 0;
+    border-bottom: 3px solid #d51f2b;
     background: #fff;
-    box-shadow: 0 15px 28px rgba(15, 23, 42, .12);
+    box-shadow: 0 22px 45px rgba(8, 18, 38, .17);
   }
 
-  .site-nav-links.is-open a {
-    padding: 12px;
-    border-bottom: 1px solid #f1f5f9;
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 2px 12px;
+    border-bottom: 1px solid #e7ebf0;
+  }
+
+  .mobile-menu-header span {
+    color: #101b2e;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  .mobile-menu-header small {
+    color: #7d8898;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .site-nav-item {
+    border-bottom: 1px solid #edf1f5;
+  }
+
+  .site-nav-link {
+    min-height: 55px;
+    justify-content: space-between;
+    padding: 0 2px;
+    color: #1f2c40;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .site-nav-link::after {
+    top: 15px;
+    right: auto;
+    bottom: 15px;
+    left: -24px;
+    width: 3px;
+    height: auto;
+    transform: scaleY(0);
+  }
+
+  .site-nav-link.is-active::after {
+    transform: scaleY(1);
+  }
+
+  .site-nav-link .v-icon {
+    transform: rotate(-90deg);
+  }
+
+  .nav-flyout {
+    display: none;
   }
 
   .mobile-rfq {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding: 0 16px;
+    border-radius: 4px;
+    background: #d51f2b;
+    color: #fff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .mobile-menu-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #e6ebf1;
+    border-radius: 5px;
+    background: #f7f9fb;
+    flex-direction: column;
+  }
+
+  .mobile-menu-meta span,
+  .mobile-menu-meta a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #596679;
+    text-decoration: none;
+    font-size: 11px;
+  }
+
+  .mobile-menu-meta .v-icon {
+    color: #d51f2b;
+  }
+
+  .nav-backdrop {
+    position: fixed;
+    z-index: 900;
+    top: 72px;
+    right: 0;
+    bottom: 0;
+    left: 0;
     display: block;
-    margin-top: 8px;
-    background: #dc2626;
-    color: #fff !important;
-    text-align: center;
+    border: 0;
+    background: rgba(7, 15, 29, .58);
+    backdrop-filter: blur(2px);
   }
 
   .site-main {
-    padding-top: 79px;
+    padding-top: 72px;
   }
 }
 
@@ -956,56 +1411,12 @@ body {
   }
 
   .site-nav-container {
-    min-height: 76px;
-  }
-
-  .site-utility-bar {
-    display: none;
-  }
-
-  .site-main {
-    padding-top: 79px;
-  }
-
-  .brand-tag,
-  .site-nav-cta {
-    display: none;
-  }
-
-  .site-nav-links {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    display: none;
-    align-items: stretch;
-    gap: 0;
-    padding: 8px 16px 14px;
-    border-bottom: 3px solid #dc2626;
-    background: #fff;
-    box-shadow: 0 15px 28px rgba(15, 23, 42, .12);
+    min-height: 72px;
   }
 
   .site-nav-links.is-open {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .site-nav-links a {
-    padding: 12px;
-    border-bottom: 1px solid #f1f5f9;
-  }
-
-  .mobile-rfq {
-    display: block;
-    margin-top: 8px;
-    padding: 12px;
-    background: #dc2626;
-    color: #ffffff !important;
-    text-align: center;
-    font-weight: 800;
-    text-decoration: none;
-    border-radius: 4px;
+    padding-right: 16px;
+    padding-left: 16px;
   }
 
   .site-container {
@@ -1040,11 +1451,43 @@ body {
 
   .scroll-top-button {
     right: 16px;
-    bottom: 24px;
+    bottom: 88px;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-nav-cta {
+    display: none;
+  }
+
+  .site-menu-toggle {
+    margin-left: auto;
   }
 }
 
 @media (max-width: 520px) {
+  .site-nav-container {
+    width: calc(100% - 24px);
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 55px;
+  }
+
+  .brand-info {
+    padding-left: 9px;
+  }
+
+  .brand-info strong {
+    font-size: 10px;
+  }
+
+  .brand-info small {
+    margin-top: 5px;
+    font-size: 7px;
+  }
+
   .site-footer-main {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1055,8 +1498,8 @@ body {
   }
 
   .scroll-top-button {
-    min-height: 42px;
-    padding: 0 12px;
+    min-height: 34px;
+    padding: 0 10px;
   }
 }
 </style>
