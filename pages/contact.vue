@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { seoKeywords } from "~/seo.config";
+
 definePageMeta({ layout: "website" });
 
 usePageSeo({
@@ -6,6 +8,7 @@ usePageSeo({
   description:
     "Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.",
   path: "/contact",
+  keywords: seoKeywords.contact,
 });
 
 const offices = [

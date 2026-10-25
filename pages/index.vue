@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { seoKeywords } from "~/seo.config";
 
 definePageMeta({ layout: "website" });
 
@@ -10,6 +11,7 @@ usePageSeo({
   title: "Marine Supplier Batam & Ship Spare Parts | Duta Raya Marine",
   description: seoDescription,
   path: "/",
+  keywords: seoKeywords.home,
 });
 
 useHead({

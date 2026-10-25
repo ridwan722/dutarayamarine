@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { seoKeywords } from "~/seo.config";
+
 definePageMeta({ layout: "website" });
 
 usePageSeo({
@@ -6,6 +8,7 @@ usePageSeo({
   description:
     "Marine engineering services in Batam for engine overhaul, mechanical repair, hydraulics, HVAC, refrigeration, automation, testing, and commissioning.",
   path: "/services",
+  keywords: seoKeywords.services,
 });
 
 const services = [

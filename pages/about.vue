@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { seoKeywords } from "~/seo.config";
+
 definePageMeta({ layout: "website" });
 
 usePageSeo({
@@ -6,6 +8,7 @@ usePageSeo({
   description:
     "Learn about PT Duta Raya Marine, a Batam-based supplier of marine and offshore equipment, machinery, spare parts, and technical support.",
   path: "/about",
+  keywords: seoKeywords.about,
 });
 
 const values = [

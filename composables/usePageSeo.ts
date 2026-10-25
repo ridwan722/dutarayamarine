@@ -5,6 +5,7 @@ interface PageSeoOptions {
   title: string;
   description: string;
   path: string;
+  keywords: readonly string[];
   image?: string;
 }
 
@@ -12,6 +13,7 @@ export function usePageSeo({
   title,
   description,
   path,
+  keywords,
   image = DEFAULT_SOCIAL_IMAGE,
 }: PageSeoOptions) {
   const canonicalUrl = new URL(path, `${SITE_URL}/`).toString();
@@ -20,6 +22,7 @@ export function usePageSeo({
   useSeoMeta({
     title,
     description,
+    keywords: keywords.join(", "),
     ogTitle: title,
     ogDescription: description,
     ogType: "website",

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { seoKeywords } from "~/seo.config";
+
 definePageMeta({ layout: "website" });
 
 usePageSeo({
@@ -6,6 +8,7 @@ usePageSeo({
   description:
     "Source genuine, OEM, and aftermarket ship spare parts, marine equipment, consumables, hydraulic components, and HVAC products in Batam, Indonesia.",
   path: "/products",
+  keywords: seoKeywords.products,
 });
 
 const products = [
