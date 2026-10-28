@@ -57,7 +57,9 @@ function projectImage(project: ProjectWeb, index: number) {
 }
 
 function projectPath(project: ProjectWeb) {
-  return `/projects/${encodeURIComponent(project.id)}`;
+  return project.judul
+    ? `/projects/${encodeURIComponent(project.judul)}`
+    : "/projects";
 }
 </script>
 

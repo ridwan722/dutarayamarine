@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { doc } from "firebase/firestore";
+import { collection, limit, query, where } from "firebase/firestore";
 import { computed } from "vue";
-import { useDocument, useFirestore } from "vuefire";
+import { useCollection, useFirestore } from "vuefire";
 import type { ProjectWeb, ProjectWebRecord } from "~/types/projectWeb";
 import {
   formatProjectDate,
@@ -13,23 +13,31 @@ import {
 definePageMeta({ layout: "website" });
 
 const route = useRoute();
-const projectId = computed(() => {
-  const id = route.params.id;
-  return Array.isArray(id) ? id[0] || "" : String(id || "");
+const projectTitle = computed(() => {
+  const title = route.params.judul;
+  return Array.isArray(title) ? title[0] || "" : String(title || "");
 });
 
 const db = useFirestore();
-const projectSource = useDocument<ProjectWebRecord>(
-  computed(() => doc(db, "project-web", projectId.value)),
+const projectQuery = computed(() =>
+  query(
+    collection(db, "project-web"),
+    where("judul", "==", projectTitle.value),
+    limit(1),
+  ),
+);
+const projectSource = useCollection<ProjectWebRecord>(
+  projectQuery,
   {
-    ssrKey: `public-project-web-${projectId.value}`,
+    ssrKey: `public-project-web-title-${projectTitle.value}`,
+    wait: true,
   },
 );
 
 const pending = projectSource.pending;
 const loadError = projectSource.error;
 const project = computed(
-  () => (projectSource.value as ProjectWeb | null | undefined) || undefined,
+  () => (projectSource.value?.[0] as ProjectWeb | undefined) || undefined,
 );
 const photos = computed(() => getProjectPhotos(project.value));
 const paragraphs = computed(() => getProjectParagraphs(project.value));
@@ -44,7 +52,7 @@ const seoTitle = computed(() =>
 const seoDescription = computed(() => getProjectExcerpt(project.value));
 const canonicalUrl = computed(
   () =>
-    `https://www.dutarayamarine.com/projects/${encodeURIComponent(projectId.value)}`,
+    `https://www.dutarayamarine.com/projects/${encodeURIComponent(projectTitle.value)}`,
 );
 const socialImage = computed(() =>
   primaryImage.value.startsWith("http")
@@ -117,6 +125,11 @@ useHead(() => ({
 
     <template v-else>
       <header class="detail-hero">
+        <div
+          class="detail-hero-background"
+          :style="{ backgroundImage: `url('${primaryImage}')` }"
+          aria-hidden="true"
+        ></div>
         <div class="detail-hero-inner">
           <div class="detail-hero-copy">
             <NuxtLink to="/projects" class="detail-back-link">
@@ -126,19 +139,14 @@ useHead(() => ({
               <span aria-hidden="true"></span>
               {{ formatProjectDate(project.createdAt) }}
             </p>
-            <h1>{{ project.judul || "Marine Project" }}</h1>
+            <h1 >{{ project.judul || "Marine Project" }}</h1>
             <p v-if="project.sub_judul" class="detail-subtitle">
               {{ project.sub_judul }}
             </p>
           </div>
-
-          <div class="detail-hero-image">
-            <img
-              :src="primaryImage"
-              :alt="project.judul || 'Duta Raya Marine project'"
-            />
-            <span>{{ photos.length }} {{ photos.length === 1 ? "photo" : "photos" }}</span>
-          </div>
+          <!-- <span class="detail-photo-count">
+            {{ photos.length }} {{ photos.length === 1 ? "photo" : "photos" }}
+          </span> -->
         </div>
       </header>
 
@@ -155,6 +163,8 @@ useHead(() => ({
           <p v-else class="detail-empty-copy">
             Project documentation will be added by the Duta Raya Marine team.
           </p>
+
+          disini tampilin foto nya, jangan gede gede
 
           <blockquote v-if="project.paragraf_penutup" class="detail-closing">
             <span aria-hidden="true"><v-icon icon="mdi-format-quote-open" size="28" /></span>
@@ -325,19 +335,32 @@ useHead(() => ({
 .detail-hero {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   background: #0b162a;
   color: #fff;
 }
 
 .detail-hero::after {
   position: absolute;
-  top: -180px;
-  left: 38%;
-  width: 470px;
-  height: 470px;
-  border: 70px solid rgba(255, 255, 255, 0.025);
-  border-radius: 50%;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(3, 8, 18, 0.96) 0%,
+    rgba(5, 12, 25, 0.84) 42%,
+    rgba(7, 14, 26, 0.42) 68%,
+    rgba(7, 14, 26, 0.2) 100%
+  );
   content: "";
+}
+
+.detail-hero-background {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  transform: scale(1.02);
 }
 
 .detail-hero-inner {
@@ -345,12 +368,15 @@ useHead(() => ({
   z-index: 1;
   display: grid;
   width: min(1200px, 100% - 48px);
-  min-height: 540px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(480px, 1.1fr);
+  min-height: 220px;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: clamp(40px, 7vw, 92px);
   margin: 0 auto;
   padding: 58px 0;
+}
+
+.detail-hero-copy {
+  max-width: 700px;
 }
 
 .detail-back-link {
@@ -390,7 +416,7 @@ useHead(() => ({
 .detail-hero-copy h1 {
   margin: 0;
   color: #fff;
-  font-size: clamp(38px, 5.2vw, 64px);
+  /* font-size: clamp(38px, 5.2vw, 64px); */
   font-weight: 900;
   letter-spacing: -0.05em;
   line-height: 1.05;
@@ -405,37 +431,13 @@ useHead(() => ({
   line-height: 1.75;
 }
 
-.detail-hero-image {
-  position: relative;
-  height: 410px;
-}
-
-.detail-hero-image::before {
-  position: absolute;
-  z-index: -1;
-  top: 28px;
-  right: -24px;
-  bottom: -24px;
-  left: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  content: "";
-}
-
-.detail-hero-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.3);
-}
-
-.detail-hero-image span {
+.detail-photo-count {
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: 30px;
   padding: 11px 14px;
   border-left: 3px solid #d51f2b;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.94);
   color: #0f172a;
   font-size: 10px;
   font-weight: 900;
@@ -448,7 +450,7 @@ useHead(() => ({
   grid-template-columns: minmax(0, 1fr) 300px;
   align-items: start;
   gap: clamp(44px, 8vw, 100px);
-  padding-top: 76px;
+  padding-top: 36px;
 }
 
 .detail-paragraphs {
@@ -487,7 +489,7 @@ useHead(() => ({
 .detail-closing p {
   margin: 0;
   color: #26364a;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 650;
   line-height: 1.75;
   white-space: pre-line;
@@ -568,7 +570,7 @@ useHead(() => ({
 }
 
 .detail-gallery-grid figure {
-  min-height: 320px;
+  min-height: 120px;
   margin: 0;
   overflow: hidden;
   background: #e2e8f0;
@@ -576,7 +578,7 @@ useHead(() => ({
 
 .detail-gallery-grid figure:nth-child(3n) {
   grid-column: 1 / -1;
-  min-height: 430px;
+  min-height: 230px;
 }
 
 .detail-gallery-grid img {
@@ -649,8 +651,7 @@ useHead(() => ({
 
 @media (max-width: 940px) {
   .detail-hero-inner {
-    grid-template-columns: 1fr;
-    gap: 44px;
+    min-height: 200px;
   }
 
   .detail-hero-copy {
@@ -667,22 +668,28 @@ useHead(() => ({
 }
 
 @media (max-width: 720px) {
+  .detail-hero::after {
+    background: linear-gradient(
+      180deg,
+      rgba(3, 8, 18, 0.78),
+      rgba(3, 8, 18, 0.92)
+    );
+  }
+
   .detail-hero-inner {
     width: calc(100% - 32px);
-    min-height: auto;
-    padding: 44px 0 58px;
+    min-height: 200px;
+    padding: 44px 0 90px;
   }
 
   .detail-back-link {
     margin-bottom: 32px;
   }
 
-  .detail-hero-image {
-    height: 320px;
-  }
-
-  .detail-hero-image::before {
-    display: none;
+  .detail-photo-count {
+    right: auto;
+    bottom: 22px;
+    left: 0;
   }
 
   .detail-paragraphs p,
@@ -696,7 +703,7 @@ useHead(() => ({
 
   .detail-gallery-grid figure,
   .detail-gallery-grid figure:nth-child(3n) {
-    min-height: 280px;
+    min-height: 80px;
     grid-column: auto;
   }
 
@@ -711,10 +718,6 @@ useHead(() => ({
 @media (max-width: 480px) {
   .detail-hero-copy h1 {
     font-size: 38px;
-  }
-
-  .detail-hero-image {
-    height: 250px;
   }
 
   .detail-closing {
