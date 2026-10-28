@@ -4,17 +4,28 @@ import { seoKeywords } from "~/seo.config";
 
 definePageMeta({ layout: "website" });
 
-const seoDescription =
-  "PT Duta Raya Marine supplies marine equipment, ship spare parts, HVAC, and technical services for vessels, shipyards, and offshore operators in Batam and Jakarta.";
+const { translate } = useSiteLocale();
+const seoTitle = computed(() =>
+  translate(
+    "Duta Raya Marine | Marine Supplier & Ship Spare Parts in Batam & Jakarta",
+    "Duta Raya Marine | Marine Supplier & Ship Spare Parts in Batam & Jakarta",
+  ),
+);
+const seoDescription = computed(() =>
+  translate(
+    "PT Duta Raya Marine supplies marine equipment, ship spare parts, HVAC, and technical services for vessels, shipyards, and offshore operators in Batam and Jakarta.",
+    "PT Duta Raya Marine memasok peralatan kelautan, suku cadang kapal, HVAC, dan layanan teknis untuk kapal, galangan, serta operator lepas pantai di Batam dan Jakarta.",
+  ),
+);
 
 usePageSeo({
-  title: "Marine Supplier Batam & Ship Spare Parts | Duta Raya Marine",
+  title: seoTitle,
   description: seoDescription,
   path: "/",
   keywords: seoKeywords.home,
 });
 
-useHead({
+useHead(() => ({
   script: [
     {
       type: "application/ld+json",
@@ -25,7 +36,7 @@ useHead({
         url: "https://www.dutarayamarine.com/",
         logo: "https://www.dutarayamarine.com/Logo-DRM.png",
         email: "sales@dutarayamarine.com",
-        description: seoDescription,
+        description: seoDescription.value,
         address: [
           {
             "@type": "PostalAddress",
@@ -48,56 +59,57 @@ useHead({
       }),
     },
   ],
-});
+}));
 
-const slides = [
+const slides = computed(() => [
   {
     image: "/carousel-1.jpg",
-    kicker: "Duta Raya Marine · Batam, Indonesia",
-    title: "Marine equipment",
-    accent: "& ship spare parts.",
-    description: "Marine machinery, genuine and OEM spare parts, and responsive technical support for shipowners, shipyards, and offshore operators.",
-    action: "Explore our services",
+    kicker: translate("Duta Raya Marine · Batam, Indonesia", "Duta Raya Marine · Batam, Indonesia"),
+    title: translate("Marine equipment", "Peralatan kelautan"),
+    accent: translate("& ship spare parts.", "& suku cadang kapal."),
+    description: translate("Marine machinery, genuine and OEM spare parts, and responsive technical support for shipowners, shipyards, and offshore operators.", "Permesinan kelautan, suku cadang genuine dan OEM, serta dukungan teknis responsif untuk pemilik kapal, galangan, dan operator lepas pantai."),
+    action: translate("Explore our services", "Jelajahi layanan kami"),
     to: "/services",
   },
   {
     image: "/carousel-2.jpg",
-    kicker: "Parts & equipment",
-    title: "The right equipment",
-    accent: "for every voyage.",
-    description: "From main and auxiliary engines to pumps, hydraulics, and cooling systems, find parts matched to your equipment.",
-    action: "Browse product range",
+    kicker: translate("Parts & equipment", "Suku cadang & peralatan"),
+    title: translate("The right equipment", "Peralatan yang tepat"),
+    accent: translate("for every voyage.", "untuk setiap pelayaran."),
+    description: translate("From main and auxiliary engines to pumps, hydraulics, and cooling systems, find parts matched to your equipment.", "Dari mesin utama dan bantu hingga pompa, hidraulik, dan sistem pendingin, temukan suku cadang yang sesuai dengan peralatan Anda."),
+    action: translate("Browse product range", "Lihat rangkaian produk"),
     to: "/products",
   },
   {
     image: "/carousel-3.jpg",
-    kicker: "Based in Batam, Indonesia",
-    title: "A responsive partner",
-    accent: "at every port call.",
-    description: "Talk to our team about procurement, mechanical repairs, HVAC service, or emergency port support.",
-    action: "Talk to our team",
+    kicker: translate("Based in Batam, Indonesia", "Berbasis di Batam, Indonesia"),
+    title: translate("A responsive partner", "Mitra yang responsif"),
+    accent: translate("at every port call.", "di setiap kunjungan pelabuhan."),
+    description: translate("Talk to our team about procurement, mechanical repairs, HVAC service, or emergency port support.", "Hubungi tim kami untuk pengadaan, perbaikan mekanikal, layanan HVAC, atau dukungan darurat di pelabuhan."),
+    action: translate("Talk to our team", "Hubungi tim kami"),
     to: "/contact",
   },
-];
+]);
 
 const activeSlide = ref(0);
-const currentSlide = computed(() => slides[activeSlide.value]!);
+const currentSlide = computed(() => slides.value[activeSlide.value]!);
 let slideTimer: ReturnType<typeof setInterval> | undefined;
-const productCategories = [
-  { icon: "mdi-engine", title: "Engine & machinery", detail: "Genuine, OEM, and aftermarket parts for engines, generators, pumps, and machinery." },
-  { icon: "mdi-package-variant-closed", title: "Ship supplies", detail: "Mooring, lifting, welding, coating, maintenance, and deck consumables." },
-  { icon: "mdi-pump", title: "Hydraulic & cooling", detail: "Hydraulic and gearbox parts, pumps, radiators, coolers, and filters." },
-  { icon: "mdi-snowflake", title: "HVAC & refrigeration", detail: "Compressors, refrigeration components, AHUs, FCUs, controls, and accessories." },
-];
+const productCategories = computed(() => [
+  { icon: "mdi-engine", title: translate("Engine & machinery", "Mesin & permesinan"), detail: translate("Genuine, OEM, and aftermarket parts for engines, generators, pumps, and machinery.", "Suku cadang genuine, OEM, dan aftermarket untuk mesin, generator, pompa, dan permesinan.") },
+  { icon: "mdi-package-variant-closed", title: translate("Ship supplies", "Perlengkapan kapal"), detail: translate("Mooring, lifting, welding, coating, maintenance, and deck consumables.", "Perlengkapan tambat, pengangkatan, pengelasan, pelapisan, perawatan, dan bahan habis pakai dek.") },
+  { icon: "mdi-pump", title: translate("Hydraulic & cooling", "Hidraulik & pendingin"), detail: translate("Hydraulic and gearbox parts, pumps, radiators, coolers, and filters.", "Suku cadang hidraulik dan gearbox, pompa, radiator, pendingin, dan filter.") },
+  { icon: "mdi-snowflake", title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), detail: translate("Compressors, refrigeration components, AHUs, FCUs, controls, and accessories.", "Kompresor, komponen refrigerasi, AHU, FCU, kontrol, dan aksesori.") },
+]);
 
-const services = [
-  { icon: "mdi-cog-sync", title: "Mechanical & engine", to: "/services" },
-  { icon: "mdi-air-conditioner", title: "HVAC & refrigeration", to: "/services" },
-  { icon: "mdi-tune-vertical", title: "Automation & control", to: "/services" },
-];
+const services = computed(() => [
+  { icon: "mdi-cog-sync", title: translate("Mechanical & engine", "Mekanikal & mesin"), to: "/services" },
+  { icon: "mdi-air-conditioner", title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), to: "/services" },
+  { icon: "mdi-tune-vertical", title: translate("Automation & control", "Otomasi & kontrol"), to: "/services" },
+]);
 
 function changeSlide(direction: number) {
-  activeSlide.value = (activeSlide.value + direction + slides.length) % slides.length;
+  activeSlide.value =
+    (activeSlide.value + direction + slides.value.length) % slides.value.length;
 }
 
 onMounted(() => {
@@ -111,7 +123,7 @@ onUnmounted(() => {
 
 <template>
   <div class="homepage">
-    <section class="hero-carousel" aria-label="Marine solutions highlights">
+    <section class="hero-carousel" :aria-label="translate('Marine solutions highlights', 'Sorotan solusi kelautan')">
       <div
         class="hero-background"
         :style="{ backgroundImage: `url('${currentSlide.image}')` }"
@@ -133,12 +145,12 @@ onUnmounted(() => {
         </Transition>
 
         <div class="hero-controls">
-          <div class="hero-pagination" aria-label="Pilih slide">
+          <div class="hero-pagination" :aria-label="translate('Choose slide', 'Pilih slide')">
             <button
               v-for="(_, index) in slides"
               :key="index"
               type="button"
-              :aria-label="`Tampilkan slide ${index + 1}`"
+              :aria-label="translate(`Show slide ${index + 1}`, `Tampilkan slide ${index + 1}`)"
               :aria-current="activeSlide === index ? 'true' : undefined"
               :class="{ active: activeSlide === index }"
               @click="activeSlide = index"
@@ -146,21 +158,21 @@ onUnmounted(() => {
           </div>
           <!-- <span class="slide-count">0{{ activeSlide + 1 }} <i>/</i> 0{{ slides.length }}</span> -->
           <div class="hero-arrows">
-            <button type="button" aria-label="Slide sebelumnya" @click="changeSlide(-1)"><v-icon icon="mdi-arrow-left" /></button>
-            <button type="button" aria-label="Slide berikutnya" @click="changeSlide(1)"><v-icon icon="mdi-arrow-right" /></button>
+            <button type="button" :aria-label="translate('Previous slide', 'Slide sebelumnya')" @click="changeSlide(-1)"><v-icon icon="mdi-arrow-left" /></button>
+            <button type="button" :aria-label="translate('Next slide', 'Slide berikutnya')" @click="changeSlide(1)"><v-icon icon="mdi-arrow-right" /></button>
           </div>
         </div>
       </div>
-      <div class="hero-edge-label">BUILT FOR MARINE OPERATIONS</div>
+      <div class="hero-edge-label">{{ translate("BUILT FOR MARINE OPERATIONS", "DIBANGUN UNTUK OPERASI KELAUTAN") }}</div>
     </section>
 
     <section class="range-section site-container">
       <div class="section-heading-row">
         <div>
-          <p class="site-kicker">What we supply</p>
-          <h2 class="site-section-title">Marine parts &amp;<br /><span class="site-red">equipment supply</span></h2>
+          <p class="site-kicker">{{ translate("What we supply", "Yang kami sediakan") }}</p>
+          <h2 class="site-section-title">{{ translate("Marine parts &", "Suku cadang kelautan &") }}<br /><span class="site-red">{{ translate("equipment supply", "pasokan peralatan") }}</span></h2>
         </div>
-        <NuxtLink class="text-link" to="/products">View all products <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
+        <NuxtLink class="text-link" to="/products">{{ translate("View all products", "Lihat semua produk") }} <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
       </div>
 
       <div class="range-grid">
@@ -173,7 +185,7 @@ onUnmounted(() => {
           <div class="range-card-copy">
             <h3>{{ category.title }}</h3>
             <p>{{ category.detail }}</p>
-            <span class="range-link">Explore range <v-icon icon="mdi-arrow-right" size="16" /></span>
+            <span class="range-link">{{ translate("Explore range", "Jelajahi rangkaian") }} <v-icon icon="mdi-arrow-right" size="16" /></span>
           </div>
         </NuxtLink>
       </div>
@@ -184,13 +196,13 @@ onUnmounted(() => {
         <div class="support-graphic" aria-hidden="true">
           <div class="support-ring"></div>
           <v-icon icon="mdi-wrench-cog-outline" size="74" />
-          <span class="support-graphic-tag">TECHNICAL SUPPORT</span>
+          <span class="support-graphic-tag">{{ translate("TECHNICAL SUPPORT", "DUKUNGAN TEKNIS") }}</span>
         </div>
         <div class="support-copy">
-          <p class="site-kicker">Service &amp; support</p>
-          <h2>Keeping your vessel<br />ready for the next voyage.</h2>
-          <p>From engine overhaul and hydraulic repairs to refrigeration commissioning, we coordinate practical technical support for your vessel.</p>
-          <NuxtLink class="support-button" to="/services">Discover our services <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
+          <p class="site-kicker">{{ translate("Service & support", "Layanan & dukungan") }}</p>
+          <h2>{{ translate("Keeping your vessel", "Menjaga kapal Anda") }}<br />{{ translate("ready for the next voyage.", "siap untuk pelayaran berikutnya.") }}</h2>
+          <p>{{ translate("From engine overhaul and hydraulic repairs to refrigeration commissioning, we coordinate practical technical support for your vessel.", "Dari overhaul mesin dan perbaikan hidraulik hingga commissioning refrigerasi, kami mengoordinasikan dukungan teknis praktis untuk kapal Anda.") }}</p>
+          <NuxtLink class="support-button" to="/services">{{ translate("Discover our services", "Temukan layanan kami") }} <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
         </div>
       </div>
     </section>
@@ -198,10 +210,10 @@ onUnmounted(() => {
     <section class="service-preview site-container">
       <div class="section-heading-row">
         <div>
-          <p class="site-kicker">How we support</p>
-          <h2 class="site-section-title">Technical expertise.<br /><span class="site-red">Practical response.</span></h2>
+          <p class="site-kicker">{{ translate("How we support", "Cara kami mendukung") }}</p>
+          <h2 class="site-section-title">{{ translate("Technical expertise.", "Keahlian teknis.") }}<br /><span class="site-red">{{ translate("Practical response.", "Respons praktis.") }}</span></h2>
         </div>
-        <NuxtLink class="text-link" to="/services">All services <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
+        <NuxtLink class="text-link" to="/services">{{ translate("All services", "Semua layanan") }} <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
       </div>
       <div class="service-list">
         <NuxtLink v-for="(service, index) in services" :key="service.title" :to="service.to" class="service-row">
@@ -215,16 +227,16 @@ onUnmounted(() => {
 
     <section class="brand-strip">
       <div class="brand-strip-inner">
-        <p>Supported engine &amp; compressor brands</p>
+        <p>{{ translate("Supported engine & compressor brands", "Merek mesin & kompresor yang didukung") }}</p>
         <div class="brand-list"><span>MAN B&amp;W</span><span>WÄRTSILÄ</span><span>YANMAR</span><span>CATERPILLAR</span><span>BITZER</span><span>CARRIER</span></div>
       </div>
     </section>
 
     <section class="home-contact site-container">
       <div class="home-contact-copy">
-        <p class="site-kicker">Start a conversation</p>
-        <h2>Have a requirement?<br /><span>We’re ready to help.</span></h2>
-        <p>Contact us for procurement, engineering consultation, or round-the-clock emergency port support.</p>
+        <p class="site-kicker">{{ translate("Start a conversation", "Mulai percakapan") }}</p>
+        <h2>{{ translate("Have a requirement?", "Memiliki kebutuhan?") }}<br /><span>{{ translate("We’re ready to help.", "Kami siap membantu.") }}</span></h2>
+        <p>{{ translate("Contact us for procurement, engineering consultation, or round-the-clock emergency port support.", "Hubungi kami untuk pengadaan, konsultasi teknik, atau dukungan darurat pelabuhan sepanjang waktu.") }}</p>
       </div>
     </section>
   </div>

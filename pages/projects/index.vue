@@ -8,15 +8,16 @@ import {
   formatProjectDate,
   getProjectExcerpt,
   getProjectPhotos,
+  getProjectTitle,
   getProjectTimestamp,
 } from "~/utils/projectWeb";
 
 definePageMeta({ layout: "website" });
+const { locale, translate } = useSiteLocale();
 
 usePageSeo({
-  title: "Marine Projects & Vessel Support | Duta Raya Marine",
-  description:
-    "Explore marine machinery, HVAC, vessel supply, and technical service projects from Duta Raya Marine in Batam and Jakarta.",
+  title: computed(() => translate("Marine Projects & Vessel Support | Duta Raya Marine", "Proyek Kelautan & Dukungan Kapal | Duta Raya Marine")),
+  description: computed(() => translate("Explore marine machinery, HVAC, vessel supply, and technical service projects from Duta Raya Marine in Batam and Jakarta.", "Jelajahi proyek permesinan kelautan, HVAC, pasokan kapal, dan layanan teknis Duta Raya Marine di Batam dan Jakarta.")),
   path: "/projects",
   keywords: seoKeywords.projects,
   image: "https://www.dutarayamarine.com/carousel-3.jpg",
@@ -45,10 +46,11 @@ const projects = computed<ProjectWeb[]>(() =>
 );
 
 const portfolioStatus = computed(() => {
-  if (pending.value) return "Loading live portfolio";
-  if (loadError.value) return "Portfolio connection unavailable";
+  if (pending.value) return translate("Loading live portfolio", "Memuat portofolio langsung");
+  if (loadError.value) return translate("Portfolio connection unavailable", "Koneksi portofolio tidak tersedia");
 
   const count = projects.value.length;
+  if (locale.value === "id") return `${count} proyek dipublikasikan`;
   return `${count} ${count === 1 ? "project" : "projects"} published`;
 });
 
@@ -61,6 +63,10 @@ function projectPath(project: ProjectWeb) {
     ? `/projects/${encodeURIComponent(project.judul)}`
     : "/projects";
 }
+
+function localizedProjectTitle(project: ProjectWeb) {
+  return getProjectTitle(project, locale.value) || translate("Marine Project", "Proyek Kelautan");
+}
 </script>
 
 <template>
@@ -69,25 +75,24 @@ function projectPath(project: ProjectWeb) {
       <div class="projects-hero-inner">
         <div class="projects-hero-copy">
           <p class="projects-kicker">
-            <span aria-hidden="true"></span> Project portfolio
+            <span aria-hidden="true"></span> {{ translate("Project portfolio", "Portofolio proyek") }}
           </p>
-          <h1>Marine work,<br /><em>documented clearly.</em></h1>
+          <h1>{{ translate("Marine work,", "Pekerjaan kelautan,") }}<br /><em>{{ translate("documented clearly.", "terdokumentasi dengan jelas.") }}</em></h1>
           <p>
-            Explore project documentation from our marine supply and technical
-            service work, loaded directly from our project database.
+            {{ translate("Explore project documentation from our marine supply and technical service work, loaded directly from our project database.", "Jelajahi dokumentasi proyek dari pekerjaan pasokan kelautan dan layanan teknis kami, yang dimuat langsung dari database proyek.") }}
           </p>
           <a href="#project-list" class="projects-primary-action">
-            Explore projects <v-icon icon="mdi-arrow-down" size="18" />
+            {{ translate("Explore projects", "Jelajahi proyek") }} <v-icon icon="mdi-arrow-down" size="18" />
           </a>
         </div>
 
         <div class="projects-hero-visual">
           <img
             src="/carousel-3.jpg"
-            alt="Aerial view of a marine vessel deck at sea"
+            :alt="translate('Aerial view of a marine vessel deck at sea', 'Pemandangan udara dek kapal di laut')"
           />
           <div class="projects-hero-note" aria-live="polite">
-            <span>Live project library</span>
+            <span>{{ translate("Live project library", "Pustaka proyek langsung") }}</span>
             <strong>{{ portfolioStatus }}</strong>
           </div>
         </div>
@@ -97,18 +102,17 @@ function projectPath(project: ProjectWeb) {
     <main id="project-list" class="projects-content site-container">
       <section class="projects-intro" aria-labelledby="project-list-title">
         <div>
-          <p class="site-kicker">Our projects</p>
+          <p class="site-kicker">{{ translate("Our projects", "Proyek kami") }}</p>
           <h2 id="project-list-title" class="site-section-title">
-            Project stories from<br /><span class="site-red">the field.</span>
+            {{ translate("Project stories from", "Cerita proyek dari") }}<br /><span class="site-red">{{ translate("the field.", "lapangan.") }}</span>
           </h2>
         </div>
         <p>
-          Each entry contains the project overview, written documentation, and
-          photos maintained by the Duta Raya Marine team.
+          {{ translate("Each entry contains the project overview, written documentation, and photos maintained by the Duta Raya Marine team.", "Setiap entri memuat gambaran proyek, dokumentasi tertulis, dan foto yang dikelola oleh tim Duta Raya Marine.") }}
         </p>
       </section>
 
-      <section v-if="pending" class="project-grid" aria-label="Loading projects">
+      <section v-if="pending" class="project-grid" :aria-label="translate('Loading projects', 'Memuat proyek')">
         <article v-for="index in 3" :key="index" class="project-card project-card-skeleton">
           <div class="skeleton-image"></div>
           <div class="project-card-body">
@@ -124,11 +128,11 @@ function projectPath(project: ProjectWeb) {
         <span class="project-state-icon">
           <v-icon icon="mdi-cloud-alert-outline" size="30" />
         </span>
-        <p class="site-kicker">Connection error</p>
-        <h2>Project data could not be loaded.</h2>
+        <p class="site-kicker">{{ translate("Connection error", "Kesalahan koneksi") }}</p>
+        <h2>{{ translate("Project data could not be loaded.", "Data proyek tidak dapat dimuat.") }}</h2>
         <p>
-          Please check the Firestore connection and public read permission for
-          the <code>project-web</code> collection, then reload this page.
+          {{ translate("Please check the Firestore connection and public read permission for the", "Periksa koneksi Firestore dan izin baca publik untuk koleksi") }}
+          <code>project-web</code>{{ translate(" collection, then reload this page.", ", lalu muat ulang halaman ini.") }}
         </p>
       </section>
 
@@ -136,26 +140,26 @@ function projectPath(project: ProjectWeb) {
         <span class="project-state-icon">
           <v-icon icon="mdi-folder-open-outline" size="30" />
         </span>
-        <p class="site-kicker">Project library</p>
-        <h2>No projects have been published yet.</h2>
+        <p class="site-kicker">{{ translate("Project library", "Pustaka proyek") }}</p>
+        <h2>{{ translate("No projects have been published yet.", "Belum ada proyek yang dipublikasikan.") }}</h2>
         <p>
-          New documents added to the <code>project-web</code> collection will
-          appear here automatically.
+          {{ translate("New documents added to the", "Dokumen baru yang ditambahkan ke koleksi") }}
+          <code>project-web</code>{{ translate(" collection will appear here automatically.", " akan muncul di sini secara otomatis.") }}
         </p>
       </section>
 
-      <section v-else class="project-grid" aria-label="Published projects">
+      <section v-else class="project-grid" :aria-label="translate('Published projects', 'Proyek yang dipublikasikan')">
         <NuxtLink
           v-for="(project, index) in projects"
           :key="project.id"
           :to="projectPath(project)"
           class="project-card"
-          :aria-label="`Read project: ${project.judul || 'Marine project'}`"
+          :aria-label="`${translate('Read project', 'Baca proyek')}: ${localizedProjectTitle(project)}`"
         >
           <div class="project-card-image">
             <img
               :src="projectImage(project, index)"
-              :alt="project.judul || 'Duta Raya Marine project'"
+              :alt="localizedProjectTitle(project)"
               loading="lazy"
               decoding="async"
             />
@@ -163,13 +167,16 @@ function projectPath(project: ProjectWeb) {
           </div>
           <div class="project-card-body">
             <div class="project-card-meta">
-              <span>{{ formatProjectDate(project.createdAt) }}</span>
-              <span>{{ getProjectPhotos(project).length }} photos</span>
+              <span>{{ formatProjectDate(project.createdAt, locale) }}</span>
+              <span>
+                {{ getProjectPhotos(project).length }}
+                {{ locale === "id" ? "foto" : getProjectPhotos(project).length === 1 ? "photo" : "photos" }}
+              </span>
             </div>
-            <h3>{{ project.judul || "Marine Project" }}</h3>
-            <p>{{ getProjectExcerpt(project) }}</p>
+            <h3>{{ localizedProjectTitle(project) }}</h3>
+            <p>{{ getProjectExcerpt(project, locale) }}</p>
             <span class="project-card-link">
-              View project details <v-icon icon="mdi-arrow-up-right" size="17" />
+              {{ translate("View project details", "Lihat detail proyek") }} <v-icon icon="mdi-arrow-up-right" size="17" />
             </span>
           </div>
         </NuxtLink>
@@ -177,15 +184,14 @@ function projectPath(project: ProjectWeb) {
 
       <section class="project-enquiry">
         <div>
-          <p class="project-enquiry-label">Start a project enquiry</p>
-          <h2>Tell us what needs to move forward.</h2>
+          <p class="project-enquiry-label">{{ translate("Start a project enquiry", "Mulai inquiry proyek") }}</p>
+          <h2>{{ translate("Tell us what needs to move forward.", "Sampaikan kebutuhan agar dapat dilanjutkan.") }}</h2>
           <p>
-            Send the vessel name, location, equipment model, technical scope,
-            and target schedule for a focused review.
+            {{ translate("Send the vessel name, location, equipment model, technical scope, and target schedule for a focused review.", "Kirimkan nama kapal, lokasi, model peralatan, ruang lingkup teknis, dan target jadwal untuk peninjauan yang terarah.") }}
           </p>
         </div>
         <NuxtLink to="/contact">
-          Contact our project team <v-icon icon="mdi-arrow-right" size="19" />
+          {{ translate("Contact our project team", "Hubungi tim proyek kami") }} <v-icon icon="mdi-arrow-right" size="19" />
         </NuxtLink>
       </section>
     </main>

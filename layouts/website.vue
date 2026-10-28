@@ -13,13 +13,13 @@
         <div class="site-utility-bar">
           <div class="site-utility-inner">
             <div class="utility-left">
-              <span class="utility-status"><i aria-hidden="true"></i> Marine supply &amp; technical services</span>
+              <span class="utility-status"><i aria-hidden="true"></i> {{ translate("Marine supply & technical services", "Pasokan kelautan & layanan teknis") }}</span>
               <span class="utility-divider" aria-hidden="true"></span>
               <span class="utility-location"><v-icon icon="mdi-map-marker-outline" size="13" /> Batam · Jakarta, Indonesia</span>
             </div>
             <div class="utility-right">
               <NuxtLink to="/about" class="utility-contact">
-                Company profile
+                {{ translate("Company profile", "Profil perusahaan") }}
               </NuxtLink>
               <span class="utility-divider" aria-hidden="true"></span>
               <a href="mailto:sales@dutarayamarine.com" class="utility-contact">
@@ -32,11 +32,11 @@
         <!-- Primary navigation -->
         <header class="site-navbar">
           <div class="site-nav-container">
-            <NuxtLink class="site-brand" to="/" aria-label="Duta Raya Marine, beranda">
+            <NuxtLink class="site-brand" to="/" :aria-label="translate('Duta Raya Marine, home', 'Duta Raya Marine, beranda')">
               <span class="brand-mark"><img src="/main-logo.png" alt="" /></span>
               <span class="brand-info">
                 <strong>PT. DUTA RAYA MARINE</strong>
-                <small>Marine &amp; Offshore Solutions</small>
+                <small>{{ translate("Marine & Offshore Solutions", "Solusi Kelautan & Lepas Pantai") }}</small>
               </span>
             </NuxtLink>
 
@@ -44,10 +44,10 @@
               id="primary-navigation"
               class="site-nav-links"
               :class="{ 'is-open': menuOpen }"
-              aria-label="Navigasi utama"
+              :aria-label="translate('Primary navigation', 'Navigasi utama')"
             >
               <div class="mobile-menu-header">
-                <span>Navigasi</span>
+                <span>{{ translate("Navigation", "Navigasi") }}</span>
                 <small>PT. Duta Raya Marine</small>
               </div>
 
@@ -79,14 +79,14 @@
                     <v-icon class="nav-flyout-arrow" icon="mdi-arrow-up-right" size="16" />
                   </NuxtLink>
                   <NuxtLink :to="link.to" class="nav-flyout-all" @click="closeMenu">
-                    Lihat semua {{ link.label.toLowerCase() }}
+                    {{ translate("View all", "Lihat semua") }} {{ link.label.toLowerCase() }}
                     <v-icon icon="mdi-arrow-right" size="16" />
                   </NuxtLink>
                 </div>
               </div>
 
               <NuxtLink to="/contact" class="mobile-rfq" @click="closeMenu">
-                <span>Minta penawaran</span>
+                <span>{{ translate("Request a quotation", "Minta penawaran") }}</span>
                 <v-icon icon="mdi-arrow-right" size="18" />
               </NuxtLink>
 
@@ -96,8 +96,31 @@
               </div>
             </nav>
 
+            <div
+              class="site-language-switcher"
+              role="group"
+              :aria-label="translate('Choose language', 'Pilih bahasa')"
+            >
+              <button
+                type="button"
+                :class="{ 'is-active': locale === 'en' }"
+                :aria-pressed="locale === 'en'"
+                @click="setLocale('en')"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                :class="{ 'is-active': locale === 'id' }"
+                :aria-pressed="locale === 'id'"
+                @click="setLocale('id')"
+              >
+                ID
+              </button>
+            </div>
+
             <NuxtLink class="site-nav-cta" to="/contact">
-              <span>Minta penawaran</span>
+              <span>{{ translate("Request a quotation", "Minta penawaran") }}</span>
               <v-icon icon="mdi-arrow-up-right" size="17" />
             </NuxtLink>
 
@@ -107,7 +130,7 @@
               type="button"
               :aria-expanded="menuOpen"
               aria-controls="primary-navigation"
-              :aria-label="menuOpen ? 'Tutup navigasi' : 'Buka navigasi'"
+              :aria-label="menuOpen ? translate('Close navigation', 'Tutup navigasi') : translate('Open navigation', 'Buka navigasi')"
               @click="toggleMenu"
             >
               <span aria-hidden="true"></span>
@@ -123,7 +146,7 @@
         v-if="menuOpen"
         class="nav-backdrop"
         type="button"
-        aria-label="Tutup navigasi"
+        :aria-label="translate('Close navigation', 'Tutup navigasi')"
         @click="closeMenu"
       ></button>
 
@@ -135,43 +158,43 @@
         <div class="footer-contact-cta-inner">
           <div>
             <p class="footer-eyebrow">PT. DUTA RAYA MARINE</p>
-            <h2>Have a marine requirement?</h2>
-            <p>Talk to our team about procurement, technical service, or emergency port support.</p>
+            <h2>{{ translate("Have a marine requirement?", "Memiliki kebutuhan kelautan?") }}</h2>
+            <p>{{ translate("Talk to our team about procurement, technical service, or emergency port support.", "Hubungi tim kami untuk pengadaan, layanan teknis, atau dukungan darurat di pelabuhan.") }}</p>
           </div>
-          <NuxtLink to="/contact">Contact our team <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
+          <NuxtLink to="/contact">{{ translate("Contact our team", "Hubungi tim kami") }} <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
         </div>
       </section>
 
       <footer class="site-footer">
         <div class="site-footer-main">
           <div class="footer-company">
-            <p>Marine and offshore equipment, spare parts, and technical services for vessel operations.</p>
+            <p>{{ translate("Marine and offshore equipment, spare parts, and technical services for vessel operations.", "Peralatan kelautan dan lepas pantai, suku cadang, serta layanan teknis untuk operasional kapal.") }}</p>
             <a class="footer-contact-link" href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" size="18" /> sales@dutarayamarine.com</a>
           </div>
 
-          <nav class="footer-column" aria-label="Navigasi footer">
-            <h2>Explore</h2>
+          <nav class="footer-column" :aria-label="translate('Footer navigation', 'Navigasi footer')">
+            <h2>{{ translate("Explore", "Jelajahi") }}</h2>
             <NuxtLink v-for="link in links" :key="link.to" :to="link.to">{{ link.label }}</NuxtLink>
           </nav>
 
-          <nav class="footer-column" aria-label="Produk dan layanan">
-            <h2>Our capabilities</h2>
-            <NuxtLink to="/products">Engine &amp; machinery parts</NuxtLink>
-            <NuxtLink to="/products">Ship supplies &amp; consumables</NuxtLink>
-            <NuxtLink to="/products">HVAC &amp; refrigeration</NuxtLink>
-            <NuxtLink to="/services">Mechanical services</NuxtLink>
-            <NuxtLink to="/services">HVAC &amp; refrigeration services</NuxtLink>
+          <nav class="footer-column" :aria-label="translate('Products and services', 'Produk dan layanan')">
+            <h2>{{ translate("Our capabilities", "Kemampuan kami") }}</h2>
+            <NuxtLink to="/products">{{ translate("Engine & machinery parts", "Suku cadang mesin & permesinan") }}</NuxtLink>
+            <NuxtLink to="/products">{{ translate("Ship supplies & consumables", "Perlengkapan kapal & bahan habis pakai") }}</NuxtLink>
+            <NuxtLink to="/products">{{ translate("HVAC & refrigeration", "HVAC & refrigerasi") }}</NuxtLink>
+            <NuxtLink to="/services">{{ translate("Mechanical services", "Layanan mekanikal") }}</NuxtLink>
+            <NuxtLink to="/services">{{ translate("HVAC & refrigeration services", "Layanan HVAC & refrigerasi") }}</NuxtLink>
           </nav>
 
           <div class="footer-column footer-offices">
-            <h2>Our offices</h2>
+            <h2>{{ translate("Our offices", "Kantor kami") }}</h2>
             <p><strong>Batam</strong><br />Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Sekupang, Batam 29425</p>
             <p><strong>Jakarta</strong><br />Jln. Raya Pasar Minggu No. 15A, Jakarta Selatan</p>
           </div>
         </div>
 
         <div class="site-footer-bottom">
-          <span>PT. Duta Raya Marine &copy; {{ new Date().getFullYear() }}. All rights reserved.</span>
+          <span>PT. Duta Raya Marine &copy; {{ new Date().getFullYear() }}. {{ translate("All rights reserved.", "Hak cipta dilindungi.") }}</span>
           <span>Batam &amp; Jakarta, Indonesia</span>
         </div>
       </footer>
@@ -181,10 +204,10 @@
           v-if="showScrollTop"
           class="scroll-top-button"
           type="button"
-          aria-label="Kembali ke atas"
+          :aria-label="translate('Back to top', 'Kembali ke atas')"
           @click="scrollToTop"
         >
-          <span>Back to top</span>
+          <span>{{ translate("Back to top", "Kembali ke atas") }}</span>
           <v-icon icon="mdi-arrow-up" size="15" />
         </button>
       </Transition>
@@ -194,7 +217,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+
+const { locale, setLocale, translate } = useSiteLocale();
+
+useHead(() => ({
+  htmlAttrs: {
+    lang: locale.value === "id" ? "id" : "en",
+  },
+  meta: [
+    {
+      property: "og:locale",
+      content: locale.value === "id" ? "id_ID" : "en_ID",
+    },
+  ],
+}));
 
 const menuOpen = ref(false);
 const showScrollTop = ref(false);
@@ -278,34 +315,34 @@ type NavLink = {
   }>;
 };
 
-const links: NavLink[] = [
-  { label: "Beranda", to: "/" },
-  { label: "Tentang Kami", to: "/about" },
+const links = computed<NavLink[]>(() => [
+  { label: translate("Home", "Beranda"), to: "/" },
+  { label: translate("About Us", "Tentang Kami"), to: "/about" },
   {
-    label: "Produk",
+    label: translate("Products", "Produk"),
     to: "/products",
-    eyebrow: "Product range",
-    flyoutTitle: "Equipment for reliable operations",
+    eyebrow: translate("Product range", "Rangkaian produk"),
+    flyoutTitle: translate("Equipment for reliable operations", "Peralatan untuk operasional yang andal"),
     children: [
-      { title: "Engine & machinery", description: "Parts for engines, pumps, generators, and auxiliaries.", icon: "mdi-engine-outline", to: "/products" },
-      { title: "Ship supplies", description: "Deck, lifting, welding, coating, and consumables.", icon: "mdi-package-variant-closed", to: "/products" },
-      { title: "HVAC & refrigeration", description: "Compressors, controls, AHUs, FCUs, and accessories.", icon: "mdi-snowflake", to: "/products" },
+      { title: translate("Engine & machinery", "Mesin & permesinan"), description: translate("Parts for engines, pumps, generators, and auxiliaries.", "Suku cadang untuk mesin, pompa, generator, dan peralatan bantu."), icon: "mdi-engine-outline", to: "/products" },
+      { title: translate("Ship supplies", "Perlengkapan kapal"), description: translate("Deck, lifting, welding, coating, and consumables.", "Perlengkapan dek, pengangkatan, pengelasan, pelapisan, dan bahan habis pakai."), icon: "mdi-package-variant-closed", to: "/products" },
+      { title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), description: translate("Compressors, controls, AHUs, FCUs, and accessories.", "Kompresor, kontrol, AHU, FCU, dan aksesori."), icon: "mdi-snowflake", to: "/products" },
     ],
   },
   {
-    label: "Layanan",
+    label: translate("Services", "Layanan"),
     to: "/services",
-    eyebrow: "Technical support",
-    flyoutTitle: "Practical response for every vessel",
+    eyebrow: translate("Technical support", "Dukungan teknis"),
+    flyoutTitle: translate("Practical response for every vessel", "Respons praktis untuk setiap kapal"),
     children: [
-      { title: "Mechanical & engine", description: "Repair, overhaul, alignment, and commissioning.", icon: "mdi-cog-outline", to: "/services" },
-      { title: "HVAC & refrigeration", description: "Maintenance, troubleshooting, retrofit, and testing.", icon: "mdi-air-conditioner", to: "/services" },
-      { title: "Automation & control", description: "Electrical support, controls, and vessel systems.", icon: "mdi-tune-vertical", to: "/services" },
+      { title: translate("Mechanical & engine", "Mekanikal & mesin"), description: translate("Repair, overhaul, alignment, and commissioning.", "Perbaikan, overhaul, alignment, dan commissioning."), icon: "mdi-cog-outline", to: "/services" },
+      { title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), description: translate("Maintenance, troubleshooting, retrofit, and testing.", "Pemeliharaan, troubleshooting, retrofit, dan pengujian."), icon: "mdi-air-conditioner", to: "/services" },
+      { title: translate("Automation & control", "Otomasi & kontrol"), description: translate("Electrical support, controls, and vessel systems.", "Dukungan elektrikal, kontrol, dan sistem kapal."), icon: "mdi-tune-vertical", to: "/services" },
     ],
   },
-  { label: "Proyek", to: "/projects" },
-  { label: "Kontak", to: "/contact" },
-];
+  { label: translate("Projects", "Proyek"), to: "/projects" },
+  { label: translate("Contact", "Kontak"), to: "/contact" },
+]);
 </script>
 
 <style>
@@ -713,6 +750,45 @@ html.site-menu-open {
   font-weight: 850;
   letter-spacing: .04em;
   text-transform: uppercase;
+}
+
+.site-language-switcher {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #e1e6ed;
+  border-radius: 999px;
+  background: #f2f5f8;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.site-language-switcher button {
+  width: 30px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #718096;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.site-language-switcher button:not(.is-active):hover {
+  background: rgba(255, 255, 255, .75);
+  color: #263449;
+}
+
+.site-language-switcher button.is-active {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, .14);
+  color: #c81e29;
 }
 
 .site-nav-cta {
@@ -1221,7 +1297,15 @@ html.site-menu-open {
   }
 
   .site-nav-cta {
+    margin-left: 0;
+  }
+
+  .site-language-switcher {
     margin-left: auto;
+  }
+
+  .site-nav-cta + .site-menu-toggle {
+    margin-left: 0;
   }
 
   .site-menu-toggle {
@@ -1462,7 +1546,13 @@ html.site-menu-open {
   }
 
   .site-menu-toggle {
-    margin-left: auto;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-info {
+    display: none;
   }
 }
 

@@ -10,13 +10,13 @@
         <div class="panel-header">
           <div>
             <span class="eyebrow">DUTA RAYA MARINE</span>
-            <h2 id="whatsapp-title">Kirim Inquiry</h2>
-            <p class="header-copy">Lengkapi detail, kami siap membantu Anda.</p>
+            <h2 id="whatsapp-title">{{ translate("Send an Inquiry", "Kirim Inquiry") }}</h2>
+            <p class="header-copy">{{ translate("Complete the details and we’ll be ready to help.", "Lengkapi detail, kami siap membantu Anda.") }}</p>
           </div>
           <button
             class="close-button"
             type="button"
-            aria-label="Tutup form WhatsApp"
+            :aria-label="translate('Close WhatsApp form', 'Tutup form WhatsApp')"
             @click="isOpen = false"
           >
             <v-icon icon="mdi-close" />
@@ -25,19 +25,19 @@
 
         <form class="inquiry-form" @submit.prevent="sendToWhatsapp">
           <div class="field-grid">
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" label="Your name *" autocomplete="name"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" label="Company *" autocomplete="organization"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" label="Address" autocomplete="street-address"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" label="Vessel"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" :label="translate('Your name *', 'Nama Anda *')" autocomplete="name"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" :label="translate('Company *', 'Perusahaan *')" autocomplete="organization"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" :label="translate('Address', 'Alamat')" autocomplete="street-address"></v-text-field>
+            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" :label="translate('Vessel', 'Kapal')"></v-text-field>
           </div>
-          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" label="How can we help?"></v-textarea>
+          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" :label="translate('How can we help?', 'Apa yang dapat kami bantu?')"></v-textarea>
           
-          <p class="required-note">* Kolom wajib diisi</p>
+          <p class="required-note">{{ translate("* Required fields", "* Kolom wajib diisi") }}</p>
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
           
           <button class="send-button" type="submit" :disabled="isSaving || !requiredFieldsFilled">
             <v-icon :icon="isSaving ? 'mdi-loading' : 'mdi-whatsapp'" size="20" />
-            {{ isSaving ? 'Menyimpan data...' : 'Lanjutkan ke WhatsApp' }}
+            {{ isSaving ? translate('Saving data...', 'Menyimpan data...') : translate('Continue to WhatsApp', 'Lanjutkan ke WhatsApp') }}
           </button>
         </form>
       </section>
@@ -50,7 +50,7 @@
         type="button"
         :class="{ 'is-active': isOpen }"
         :aria-expanded="isOpen"
-        :aria-label="isOpen ? 'Tutup form WhatsApp' : 'Buka form WhatsApp'"
+        :aria-label="isOpen ? translate('Close WhatsApp form', 'Tutup form WhatsApp') : translate('Open WhatsApp form', 'Buka form WhatsApp')"
         @click="isOpen = !isOpen"
       >
         <div class="icon-bubble">
@@ -61,7 +61,7 @@
           />
           <span v-if="!isOpen" class="pulse-ring"></span>
         </div>
-        <span class="widget-label">{{ isOpen ? 'Tutup' : 'Whatsapp' }}</span>
+        <span class="widget-label">{{ isOpen ? translate('Close', 'Tutup') : 'WhatsApp' }}</span>
       </button>
     </div>
   </div>
@@ -76,6 +76,7 @@ const isOpen = ref(false);
 const isSaving = ref(false);
 const submitError = ref("");
 const leadsStore = useleadsStore();
+const { translate } = useSiteLocale();
 
 const form = reactive({
   nama_perusahaan: "",
@@ -93,7 +94,10 @@ async function sendToWhatsapp() {
   if (!requiredFieldsFilled.value || isSaving.value) return;
 
   const message = [
-    "Halo Duta Raya Marine, Saya ingin menanyakan informasi seputar Layanan yang tersedia di Duta Raya Marine. Apakah saya bisa dibantu dengan informasi dari situs resmi www.dutarayamarine.com?",
+    translate(
+      "Hello Duta Raya Marine, I would like to ask about the services available at Duta Raya Marine. Could you assist me with information from the official website www.dutarayamarine.com?",
+      "Halo Duta Raya Marine, saya ingin menanyakan informasi seputar layanan yang tersedia di Duta Raya Marine. Apakah saya bisa dibantu dengan informasi dari situs resmi www.dutarayamarine.com?",
+    ),
     "",
     `Name: ${form.pic}`,
     `Address: ${form.alamat}`,
@@ -107,7 +111,10 @@ async function sendToWhatsapp() {
 
   const whatsappWindow = window.open("about:blank", "_blank");
   if (!whatsappWindow) {
-    submitError.value = "Browser memblokir tab baru. Izinkan popup lalu coba lagi.";
+    submitError.value = translate(
+      "The browser blocked the new tab. Allow pop-ups and try again.",
+      "Browser memblokir tab baru. Izinkan popup lalu coba lagi.",
+    );
     isSaving.value = false;
     return;
   }
@@ -127,7 +134,10 @@ async function sendToWhatsapp() {
     const saved = await leadsStore.addLeadsAct(lead);
     if (!saved) {
       whatsappWindow.close();
-      submitError.value = "Data belum berhasil disimpan. Periksa koneksi lalu coba lagi.";
+      submitError.value = translate(
+        "The data could not be saved. Check your connection and try again.",
+        "Data belum berhasil disimpan. Periksa koneksi lalu coba lagi.",
+      );
       return;
     }
 
@@ -135,7 +145,10 @@ async function sendToWhatsapp() {
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
   } catch {
     whatsappWindow.close();
-    submitError.value = "Data belum berhasil disimpan. Periksa koneksi lalu coba lagi.";
+    submitError.value = translate(
+      "The data could not be saved. Check your connection and try again.",
+      "Data belum berhasil disimpan. Periksa koneksi lalu coba lagi.",
+    );
   } finally {
     isSaving.value = false;
   }

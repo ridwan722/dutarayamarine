@@ -5,12 +5,16 @@ import { useCollection, useFirestore } from "vuefire";
 import type { ProjectWeb, ProjectWebRecord } from "~/types/projectWeb";
 import {
   formatProjectDate,
+  getProjectClosing,
   getProjectExcerpt,
   getProjectParagraphs,
   getProjectPhotos,
+  getProjectSubtitle,
+  getProjectTitle,
 } from "~/utils/projectWeb";
 
 definePageMeta({ layout: "website" });
+const { locale, translate } = useSiteLocale();
 
 const route = useRoute();
 const projectTitle = computed(() => {
@@ -40,16 +44,34 @@ const project = computed(
   () => (projectSource.value?.[0] as ProjectWeb | undefined) || undefined,
 );
 const photos = computed(() => getProjectPhotos(project.value));
-const paragraphs = computed(() => getProjectParagraphs(project.value));
+const localizedTitle = computed(
+  () =>
+    getProjectTitle(project.value, locale.value) ||
+    translate("Marine Project", "Proyek Kelautan"),
+);
+const localizedSubtitle = computed(() =>
+  getProjectSubtitle(project.value, locale.value),
+);
+const paragraphs = computed(() =>
+  getProjectParagraphs(project.value, locale.value),
+);
+const localizedClosing = computed(() =>
+  getProjectClosing(project.value, locale.value),
+);
 const primaryImage = computed(() => photos.value[0] || "/carousel-3.jpg");
-const galleryPhotos = computed(() => photos.value.slice(1));
+const galleryPhotos = computed(() => photos.value);
 
 const seoTitle = computed(() =>
-  project.value?.judul
-    ? `${project.value.judul} | Duta Raya Marine Projects`
-    : "Marine Project Detail | Duta Raya Marine",
+  project.value
+    ? `${localizedTitle.value} | ${translate("Duta Raya Marine Projects", "Proyek Duta Raya Marine")}`
+    : translate(
+        "Marine Project Detail | Duta Raya Marine",
+        "Detail Proyek Kelautan | Duta Raya Marine",
+      ),
 );
-const seoDescription = computed(() => getProjectExcerpt(project.value));
+const seoDescription = computed(() =>
+  getProjectExcerpt(project.value, locale.value),
+);
 const canonicalUrl = computed(
   () =>
     `https://www.dutarayamarine.com/projects/${encodeURIComponent(projectTitle.value)}`,
@@ -68,7 +90,7 @@ useSeoMeta({
   ogType: "article",
   ogUrl: () => canonicalUrl.value,
   ogImage: () => socialImage.value,
-  ogImageAlt: () => project.value?.judul || "Duta Raya Marine project",
+  ogImageAlt: () => localizedTitle.value,
   twitterCard: "summary_large_image",
   twitterTitle: () => seoTitle.value,
   twitterDescription: () => seoDescription.value,
@@ -88,7 +110,7 @@ useHead(() => ({
 
 <template>
   <div class="project-detail-page">
-    <section v-if="pending" class="detail-loading site-container" aria-label="Loading project">
+    <section v-if="pending" class="detail-loading site-container" :aria-label="translate('Loading project', 'Memuat proyek')">
       <span class="detail-loading-kicker"></span>
       <span class="detail-loading-title"></span>
       <span class="detail-loading-copy"></span>
@@ -100,14 +122,13 @@ useHead(() => ({
       <span class="detail-state-icon">
         <v-icon icon="mdi-cloud-alert-outline" size="32" />
       </span>
-      <p class="site-kicker">Connection error</p>
-      <h1>Project data could not be loaded.</h1>
+      <p class="site-kicker">{{ translate("Connection error", "Kesalahan koneksi") }}</p>
+      <h1>{{ translate("Project data could not be loaded.", "Data proyek tidak dapat dimuat.") }}</h1>
       <p>
-        Please check the Firestore connection and public read permission for
-        this document.
+        {{ translate("Please check the Firestore connection and public read permission for this document.", "Periksa koneksi Firestore dan izin baca publik untuk dokumen ini.") }}
       </p>
       <NuxtLink to="/projects">
-        <v-icon icon="mdi-arrow-left" size="17" /> Back to projects
+        <v-icon icon="mdi-arrow-left" size="17" /> {{ translate("Back to projects", "Kembali ke proyek") }}
       </NuxtLink>
     </section>
 
@@ -115,11 +136,11 @@ useHead(() => ({
       <span class="detail-state-icon">
         <v-icon icon="mdi-file-question-outline" size="32" />
       </span>
-      <p class="site-kicker">Project not found</p>
-      <h1>This project is not available.</h1>
-      <p>The document may have been removed or the project URL is incorrect.</p>
+      <p class="site-kicker">{{ translate("Project not found", "Proyek tidak ditemukan") }}</p>
+      <h1>{{ translate("This project is not available.", "Proyek ini tidak tersedia.") }}</h1>
+      <p>{{ translate("The document may have been removed or the project URL is incorrect.", "Dokumen mungkin telah dihapus atau URL proyek tidak benar.") }}</p>
       <NuxtLink to="/projects">
-        <v-icon icon="mdi-arrow-left" size="17" /> Back to projects
+        <v-icon icon="mdi-arrow-left" size="17" /> {{ translate("Back to projects", "Kembali ke proyek") }}
       </NuxtLink>
     </section>
 
@@ -133,15 +154,15 @@ useHead(() => ({
         <div class="detail-hero-inner">
           <div class="detail-hero-copy">
             <NuxtLink to="/projects" class="detail-back-link">
-              <v-icon icon="mdi-arrow-left" size="16" /> All projects
+              <v-icon icon="mdi-arrow-left" size="16" /> {{ translate("All projects", "Semua proyek") }}
             </NuxtLink>
             <p class="detail-kicker">
               <span aria-hidden="true"></span>
-              {{ formatProjectDate(project.createdAt) }}
+              {{ formatProjectDate(project.createdAt, locale) }}
             </p>
-            <h1 >{{ project.judul || "Marine Project" }}</h1>
-            <p v-if="project.sub_judul" class="detail-subtitle">
-              {{ project.sub_judul }}
+            <h1 >{{ localizedTitle }}</h1>
+            <p v-if="localizedSubtitle" class="detail-subtitle">
+              {{ localizedSubtitle }}
             </p>
           </div>
           <!-- <span class="detail-photo-count">
@@ -152,8 +173,8 @@ useHead(() => ({
 
       <main class="detail-content site-container">
         <article class="detail-article">
-          <p class="site-kicker">Project overview</p>
-          <h2 class="site-section-title">The project story</h2>
+          <p class="site-kicker">{{ translate("Project overview", "Gambaran proyek") }}</p>
+          <h2 class="site-section-title">{{ translate("The project story", "Cerita proyek") }}</h2>
 
           <div v-if="paragraphs.length" class="detail-paragraphs">
             <p v-for="(paragraph, index) in paragraphs" :key="index">
@@ -161,64 +182,56 @@ useHead(() => ({
             </p>
           </div>
           <p v-else class="detail-empty-copy">
-            Project documentation will be added by the Duta Raya Marine team.
+            {{ translate("Project documentation will be added by the Duta Raya Marine team.", "Dokumentasi proyek akan ditambahkan oleh tim Duta Raya Marine.") }}
           </p>
 
-          disini tampilin foto nya, jangan gede gede
-
-          <blockquote v-if="project.paragraf_penutup" class="detail-closing">
-            <span aria-hidden="true"><v-icon icon="mdi-format-quote-open" size="28" /></span>
-            <p>{{ project.paragraf_penutup }}</p>
-          </blockquote>
-        </article>
-
-        <aside class="detail-sidebar" aria-label="Project information">
-          <p class="detail-sidebar-label">Project information</p>
-          <dl>
-            <div>
-              <dt>Published</dt>
-              <dd>{{ formatProjectDate(project.createdAt) }}</dd>
-            </div>
-            <div>
-              <dt>Documentation</dt>
-              <dd>{{ photos.length }} {{ photos.length === 1 ? "photo" : "photos" }}</dd>
-            </div>
-            <div>
-              <dt>Reference ID</dt>
-              <dd>{{ project.id_project_web || project.id }}</dd>
-            </div>
-          </dl>
-          <NuxtLink to="/contact">
-            Discuss a similar project <v-icon icon="mdi-arrow-up-right" size="17" />
-          </NuxtLink>
-        </aside>
-      </main>
-
-      <section v-if="galleryPhotos.length" class="detail-gallery site-container">
-        <header>
-          <p class="site-kicker">Project gallery</p>
-          <h2 class="site-section-title">Photo documentation</h2>
-        </header>
-        <div class="detail-gallery-grid">
+         <div class="detail-gallery-grid">
           <figure v-for="(photo, index) in galleryPhotos" :key="`${photo.slice(0, 60)}-${index}`">
             <img
               :src="photo"
-              :alt="`${project.judul || 'Marine project'} photo ${index + 2}`"
+              :alt="`${localizedTitle} ${translate('photo', 'foto')} ${index + 1}`"
               loading="lazy"
               decoding="async"
             />
           </figure>
         </div>
-      </section>
+
+          <blockquote v-if="localizedClosing" class="detail-closing">
+            <span aria-hidden="true"><v-icon icon="mdi-format-quote-open" size="28" /></span>
+            <p>{{ localizedClosing }}</p>
+          </blockquote>
+        </article>
+
+        <aside class="detail-sidebar" :aria-label="translate('Project information', 'Informasi proyek')">
+          <p class="detail-sidebar-label">{{ translate("Project information", "Informasi proyek") }}</p>
+          <dl>
+            <div>
+              <dt>{{ translate("Published", "Dipublikasikan") }}</dt>
+              <dd>{{ formatProjectDate(project.createdAt, locale) }}</dd>
+            </div>
+            <div>
+              <dt>{{ translate("Documentation", "Dokumentasi") }}</dt>
+              <dd>{{ photos.length }} {{ locale === "id" ? "foto" : photos.length === 1 ? "photo" : "photos" }}</dd>
+            </div>
+            <div>
+              <dt>{{ translate("Reference ID", "ID referensi") }}</dt>
+              <dd>{{ project.id_project_web || project.id }}</dd>
+            </div>
+          </dl>
+          <NuxtLink to="/contact">
+            {{ translate("Discuss a similar project", "Diskusikan proyek serupa") }} <v-icon icon="mdi-arrow-up-right" size="17" />
+          </NuxtLink>
+        </aside>
+      </main>
 
       <section class="detail-next-step">
         <div class="detail-next-step-inner">
           <div>
-            <p>Have a related requirement?</p>
-            <h2>Let’s plan the next project.</h2>
+            <p>{{ translate("Have a related requirement?", "Memiliki kebutuhan terkait?") }}</p>
+            <h2>{{ translate("Let’s plan the next project.", "Mari rencanakan proyek berikutnya.") }}</h2>
           </div>
           <NuxtLink to="/contact">
-            Contact our team <v-icon icon="mdi-arrow-right" size="18" />
+            {{ translate("Contact our team", "Hubungi tim kami") }} <v-icon icon="mdi-arrow-right" size="18" />
           </NuxtLink>
         </div>
       </section>
@@ -565,33 +578,28 @@ useHead(() => ({
 
 .detail-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 170px));
+  gap: 10px;
 }
 
 .detail-gallery-grid figure {
-  min-height: 120px;
+  aspect-ratio: 4 / 3;
   margin: 0;
   overflow: hidden;
-  background: #e2e8f0;
-}
-
-.detail-gallery-grid figure:nth-child(3n) {
-  grid-column: 1 / -1;
-  min-height: 230px;
+  border-radius: 4px;
+  background: #ffffff;
 }
 
 .detail-gallery-grid img {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: inherit;
-  object-fit: cover;
-  transition: transform 400ms ease;
+  object-fit: contain;
+  transition: opacity 160ms ease;
 }
 
 .detail-gallery-grid figure:hover img {
-  transform: scale(1.025);
+  opacity: 0.9;
 }
 
 .detail-next-step {
@@ -695,16 +703,6 @@ useHead(() => ({
   .detail-paragraphs p,
   .detail-empty-copy {
     font-size: 15px;
-  }
-
-  .detail-gallery-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .detail-gallery-grid figure,
-  .detail-gallery-grid figure:nth-child(3n) {
-    min-height: 80px;
-    grid-column: auto;
   }
 
   .detail-next-step-inner {

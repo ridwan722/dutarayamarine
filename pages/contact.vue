@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { seoKeywords } from "~/seo.config";
 
 definePageMeta({ layout: "website" });
+const { translate } = useSiteLocale();
 
 usePageSeo({
-  title: "Contact Our Marine Supply Team | Duta Raya Marine",
-  description:
-    "Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.",
+  title: computed(() => translate("Contact Our Marine Supply Team | Duta Raya Marine", "Hubungi Tim Pasokan Kelautan Kami | Duta Raya Marine")),
+  description: computed(() => translate("Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.", "Hubungi PT Duta Raya Marine di Batam atau Jakarta untuk peralatan kelautan, suku cadang kapal, layanan teknis, penawaran, dan dukungan darurat pelabuhan.")),
   path: "/contact",
   keywords: seoKeywords.contact,
 });
@@ -26,11 +27,10 @@ const offices = [
 <template>
   <div class="site-container">
     <header class="site-page-heading">
-      <p class="site-kicker">Kontak</p>
-      <h1 class="site-title">Contact our marine<br /><span>supply team.</span></h1>
+      <p class="site-kicker">{{ translate("Contact", "Kontak") }}</p>
+      <h1 class="site-title">{{ translate("Contact our marine", "Hubungi tim pasokan") }}<br /><span>{{ translate("supply team.", "kelautan kami.") }}</span></h1>
       <p class="site-lead">
-        Contact our team for procurement requests, engineering consultations,
-        or round-the-clock emergency port support.
+        {{ translate("Contact our team for procurement requests, engineering consultations, or round-the-clock emergency port support.", "Hubungi tim kami untuk permintaan pengadaan, konsultasi teknik, atau dukungan darurat pelabuhan sepanjang waktu.") }}
       </p>
     </header>
 
@@ -41,7 +41,7 @@ const offices = [
       </article>
 
       <article class="site-info-card communication-card">
-        <h2><v-icon icon="mdi-phone-in-talk" color="#dc2626" /> Direct contact</h2>
+        <h2><v-icon icon="mdi-phone-in-talk" color="#dc2626" /> {{ translate("Direct contact", "Kontak langsung") }}</h2>
         <a href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" /> sales@dutarayamarine.com</a>
         <a href="https://www.dutarayamarine.com" target="_blank" rel="noreferrer"><v-icon icon="mdi-web" /> www.dutarayamarine.com</a>
       </article>
@@ -50,11 +50,9 @@ const offices = [
     <section class="contact-prompt site-panel">
       <div class="contact-prompt-icon"><v-icon icon="mdi-whatsapp" size="28" /></div>
       <div>
-        <h2 class="site-section-title">Send us an inquiry</h2>
+        <h2 class="site-section-title">{{ translate("Send us an inquiry", "Kirim inquiry kepada kami") }}</h2>
         <p class="site-section-copy">
-          Use the WhatsApp button at the bottom of the page to share your
-          company, vessel, and requirement details. You can also email
-          sales@dutarayamarine.com.
+          {{ translate("Use the WhatsApp button at the bottom of the page to share your company, vessel, and requirement details. You can also email sales@dutarayamarine.com.", "Gunakan tombol WhatsApp di bagian bawah halaman untuk membagikan detail perusahaan, kapal, dan kebutuhan Anda. Anda juga dapat mengirim email ke sales@dutarayamarine.com.") }}
         </p>
       </div>
     </section>

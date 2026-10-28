@@ -1,49 +1,75 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { seoKeywords } from "~/seo.config";
 
 definePageMeta({ layout: "website" });
+const { translate } = useSiteLocale();
 
 usePageSeo({
-  title: "Marine Engineering & HVAC Services | Duta Raya Marine",
-  description:
-    "Marine engineering services in Batam for engine overhaul, mechanical repair, hydraulics, HVAC, refrigeration, automation, testing, and commissioning.",
+  title: computed(() => translate("Marine Engineering & HVAC Services | Duta Raya Marine", "Layanan Teknik Kelautan & HVAC | Duta Raya Marine")),
+  description: computed(() => translate("Marine engineering services in Batam for engine overhaul, mechanical repair, hydraulics, HVAC, refrigeration, automation, testing, and commissioning.", "Layanan teknik kelautan di Batam untuk overhaul mesin, perbaikan mekanikal, hidraulik, HVAC, refrigerasi, otomasi, pengujian, dan commissioning.")),
   path: "/services",
   keywords: seoKeywords.services,
 });
 
-const services = [
+const services = computed(() => [
   {
     icon: "mdi-cog-sync",
-    title: "Mechanical Services",
-    items: ["Main and auxiliary engine general, top, and major overhaul", "Engine repair, maintenance, troubleshooting, and performance testing", "Hydraulic system repair and overhaul", "Marine piping installation and repair", "Gearbox, propeller, windlass, crane, and valve repair", "Cargo pump, boiler, pump, and motor repair", "Turbocharger maintenance and overhaul", "Heat exchanger and cooler cleaning or repair", "Shaft, coupling, and alignment works", "Marine equipment repair, installation, and commissioning", "Electrical and automation services"],
+    title: translate("Mechanical Services", "Layanan Mekanikal"),
+    items: [
+      translate("Main and auxiliary engine general, top, and major overhaul", "General, top, dan major overhaul mesin utama dan bantu"),
+      translate("Engine repair, maintenance, troubleshooting, and performance testing", "Perbaikan, pemeliharaan, troubleshooting, dan pengujian performa mesin"),
+      translate("Hydraulic system repair and overhaul", "Perbaikan dan overhaul sistem hidraulik"),
+      translate("Marine piping installation and repair", "Instalasi dan perbaikan perpipaan kelautan"),
+      translate("Gearbox, propeller, windlass, crane, and valve repair", "Perbaikan gearbox, propeller, windlass, crane, dan valve"),
+      translate("Cargo pump, boiler, pump, and motor repair", "Perbaikan cargo pump, boiler, pompa, dan motor"),
+      translate("Turbocharger maintenance and overhaul", "Pemeliharaan dan overhaul turbocharger"),
+      translate("Heat exchanger and cooler cleaning or repair", "Pembersihan atau perbaikan heat exchanger dan cooler"),
+      translate("Shaft, coupling, and alignment works", "Pekerjaan shaft, coupling, dan alignment"),
+      translate("Marine equipment repair, installation, and commissioning", "Perbaikan, instalasi, dan commissioning peralatan kelautan"),
+      translate("Electrical and automation services", "Layanan elektrikal dan otomasi"),
+    ],
   },
   {
     icon: "mdi-air-conditioner",
-    title: "HVAC & Refrigeration Services",
-    items: ["Marine HVAC and air conditioning services", "Chiller repair, maintenance, and overhaul", "Refrigeration compressor repair and overhaul", "Refrigeration system repair and troubleshooting", "AHU and FCU maintenance", "Condenser and evaporator cleaning or repair", "Refrigerant leak detection and repair", "Vacuum, pressure testing, and refrigerant charging", "Refrigeration piping installation and repair", "Ducting installation, repair, and modification", "Cold room and provision room refrigeration", "HVAC retrofit, preventive and corrective maintenance", "HVAC system testing and commissioning"],
+    title: translate("HVAC & Refrigeration Services", "Layanan HVAC & Refrigerasi"),
+    items: [
+      translate("Marine HVAC and air conditioning services", "Layanan HVAC kelautan dan pendingin udara"),
+      translate("Chiller repair, maintenance, and overhaul", "Perbaikan, pemeliharaan, dan overhaul chiller"),
+      translate("Refrigeration compressor repair and overhaul", "Perbaikan dan overhaul kompresor refrigerasi"),
+      translate("Refrigeration system repair and troubleshooting", "Perbaikan dan troubleshooting sistem refrigerasi"),
+      translate("AHU and FCU maintenance", "Pemeliharaan AHU dan FCU"),
+      translate("Condenser and evaporator cleaning or repair", "Pembersihan atau perbaikan condenser dan evaporator"),
+      translate("Refrigerant leak detection and repair", "Deteksi dan perbaikan kebocoran refrigeran"),
+      translate("Vacuum, pressure testing, and refrigerant charging", "Vacuum, pressure testing, dan pengisian refrigeran"),
+      translate("Refrigeration piping installation and repair", "Instalasi dan perbaikan perpipaan refrigerasi"),
+      translate("Ducting installation, repair, and modification", "Instalasi, perbaikan, dan modifikasi ducting"),
+      translate("Cold room and provision room refrigeration", "Refrigerasi cold room dan provision room"),
+      translate("HVAC retrofit, preventive and corrective maintenance", "Retrofit HVAC serta pemeliharaan preventif dan korektif"),
+      translate("HVAC system testing and commissioning", "Pengujian dan commissioning sistem HVAC"),
+    ],
   },
-];
+]);
 
-const steps = [
-  { num: "01", title: "Requirement assessment", desc: "We evaluate the spare parts, specifications, or repair scope." },
-  { num: "02", title: "Sourcing & quotation", desc: "We prepare a prompt, transparent proposal with components and lead times." },
-  { num: "03", title: "On-site work or delivery", desc: "We coordinate delivery to the anchorage, berth, or shipyard and carry out the agreed work." },
-  { num: "04", title: "Commissioning & handover", desc: "We arrange a joint inspection and sign-off, followed by job documentation." },
-];
+const steps = computed(() => [
+  { num: "01", title: translate("Requirement assessment", "Penilaian kebutuhan"), desc: translate("We evaluate the spare parts, specifications, or repair scope.", "Kami mengevaluasi suku cadang, spesifikasi, atau ruang lingkup perbaikan.") },
+  { num: "02", title: translate("Sourcing & quotation", "Sourcing & penawaran"), desc: translate("We prepare a prompt, transparent proposal with components and lead times.", "Kami menyiapkan proposal yang cepat dan transparan dengan rincian komponen serta lead time.") },
+  { num: "03", title: translate("On-site work or delivery", "Pekerjaan di lokasi atau pengiriman"), desc: translate("We coordinate delivery to the anchorage, berth, or shipyard and carry out the agreed work.", "Kami mengoordinasikan pengiriman ke anchorage, dermaga, atau galangan dan melaksanakan pekerjaan yang disepakati.") },
+  { num: "04", title: translate("Commissioning & handover", "Commissioning & serah terima"), desc: translate("We arrange a joint inspection and sign-off, followed by job documentation.", "Kami mengatur inspeksi bersama dan persetujuan, dilanjutkan dengan dokumentasi pekerjaan.") },
+]);
 </script>
 
 <template>
   <div class="site-container">
     <header class="site-page-heading">
-      <p class="site-kicker">Layanan</p>
-      <h1 class="site-title">Marine engineering &amp;<br /><span>HVAC services.</span></h1>
+      <p class="site-kicker">{{ translate("Services", "Layanan") }}</p>
+      <h1 class="site-title">{{ translate("Marine engineering &", "Teknik kelautan &") }}<br /><span>{{ translate("HVAC services.", "layanan HVAC.") }}</span></h1>
       <p class="site-lead">
-        Our team handles mechanical and HVAC requirements, from repair and
-        maintenance to overhaul, commissioning, and delivery support.
+        {{ translate("Our team handles mechanical and HVAC requirements, from repair and maintenance to overhaul, commissioning, and delivery support.", "Tim kami menangani kebutuhan mekanikal dan HVAC, mulai dari perbaikan dan pemeliharaan hingga overhaul, commissioning, dan dukungan pengiriman.") }}
       </p>
     </header>
 
-    <section class="site-card-grid service-grid" aria-label="Layanan teknis">
+    <section class="site-card-grid service-grid" :aria-label="translate('Technical services', 'Layanan teknis')">
       <article v-for="service in services" :key="service.title" class="site-card">
         <div class="site-card-icon"><v-icon :icon="service.icon" size="25" /></div>
         <h3>{{ service.title }}</h3>
@@ -54,16 +80,16 @@ const steps = [
     <section class="qhse-panel">
       <div class="site-card-icon"><v-icon icon="mdi-shield-check-outline" size="25" /></div>
       <div>
-        <p class="site-kicker">QHSE commitment</p>
-        <h2 class="site-section-title">Safety is a priority in every assignment.</h2>
-        <p class="site-section-copy">Duta Raya Marine commits to zero-accident practices and environmental responsibility across workshop activities and shipboard assignments.</p>
+        <p class="site-kicker">{{ translate("QHSE commitment", "Komitmen QHSE") }}</p>
+        <h2 class="site-section-title">{{ translate("Safety is a priority in every assignment.", "Keselamatan adalah prioritas dalam setiap pekerjaan.") }}</h2>
+        <p class="site-section-copy">{{ translate("Duta Raya Marine commits to zero-accident practices and environmental responsibility across workshop activities and shipboard assignments.", "Duta Raya Marine berkomitmen pada praktik zero accident dan tanggung jawab lingkungan dalam kegiatan bengkel maupun pekerjaan di atas kapal.") }}</p>
       </div>
     </section>
 
     <section class="service-process">
       <header class="site-page-heading">
-        <p class="site-kicker">Alur kerja</p>
-        <h2 class="site-section-title">From inquiry to handover</h2>
+        <p class="site-kicker">{{ translate("Workflow", "Alur kerja") }}</p>
+        <h2 class="site-section-title">{{ translate("From inquiry to handover", "Dari inquiry hingga serah terima") }}</h2>
       </header>
       <div class="process-grid">
         <article v-for="step in steps" :key="step.num" class="process-step">
@@ -76,10 +102,10 @@ const steps = [
 
     <section class="site-cta">
       <div>
-        <h2>Need technical support?</h2>
-        <p>Share your service scope and vessel location with our team.</p>
+        <h2>{{ translate("Need technical support?", "Memerlukan dukungan teknis?") }}</h2>
+        <p>{{ translate("Share your service scope and vessel location with our team.", "Sampaikan ruang lingkup layanan dan lokasi kapal kepada tim kami.") }}</p>
       </div>
-      <NuxtLink to="/contact">Discuss your requirement <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
+      <NuxtLink to="/contact">{{ translate("Discuss your requirement", "Diskusikan kebutuhan Anda") }} <v-icon icon="mdi-arrow-right" size="18" /></NuxtLink>
     </section>
   </div>
 </template>

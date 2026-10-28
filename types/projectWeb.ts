@@ -19,9 +19,13 @@ export interface ProjectWebRecord {
   createdAt?: ProjectWebTimestamp;
   foto?: ProjectWebPhoto[];
   judul?: string;
+  judul_en?: string;
   sub_judul?: string;
+  sub_judul_en?: string;
   paragraf?: string[] | string;
+  paragraf_en?: string[] | string;
   paragraf_penutup?: string;
+  paragraf_penutup_en?: string;
 }
 
 export type ProjectWeb = ProjectWebRecord & {

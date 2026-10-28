@@ -2,6 +2,42 @@ import type {
   ProjectWebRecord,
   ProjectWebTimestamp,
 } from "~/types/projectWeb";
+import type { SiteLocale } from "~/composables/useSiteLocale";
+
+function localizedText(
+  indonesian?: string,
+  english?: string,
+  locale: SiteLocale = "en",
+): string {
+  const primary = locale === "id" ? indonesian : english;
+  const fallback = locale === "id" ? english : indonesian;
+  return primary?.trim() || fallback?.trim() || "";
+}
+
+export function getProjectTitle(
+  project?: ProjectWebRecord | null,
+  locale: SiteLocale = "en",
+): string {
+  return localizedText(project?.judul, project?.judul_en, locale);
+}
+
+export function getProjectSubtitle(
+  project?: ProjectWebRecord | null,
+  locale: SiteLocale = "en",
+): string {
+  return localizedText(project?.sub_judul, project?.sub_judul_en, locale);
+}
+
+export function getProjectClosing(
+  project?: ProjectWebRecord | null,
+  locale: SiteLocale = "en",
+): string {
+  return localizedText(
+    project?.paragraf_penutup,
+    project?.paragraf_penutup_en,
+    locale,
+  );
+}
 
 export function getProjectPhotos(project?: ProjectWebRecord | null): string[] {
   if (!Array.isArray(project?.foto)) return [];
@@ -13,19 +49,27 @@ export function getProjectPhotos(project?: ProjectWebRecord | null): string[] {
 
 export function getProjectParagraphs(
   project?: ProjectWebRecord | null,
+  locale: SiteLocale = "en",
 ): string[] {
-  if (Array.isArray(project?.paragraf)) {
-    return project.paragraf.filter(
-      (paragraph): paragraph is string =>
-        typeof paragraph === "string" && Boolean(paragraph.trim()),
-    );
+  const primary = locale === "id" ? project?.paragraf : project?.paragraf_en;
+  const fallback = locale === "id" ? project?.paragraf_en : project?.paragraf;
+
+  function normalize(value?: string[] | string): string[] {
+    if (Array.isArray(value)) {
+      return value.filter(
+        (paragraph): paragraph is string =>
+          typeof paragraph === "string" && Boolean(paragraph.trim()),
+      );
+    }
+
+    if (typeof value === "string" && value.trim()) return [value];
+    return [];
   }
 
-  if (typeof project?.paragraf === "string" && project.paragraf.trim()) {
-    return [project.paragraf];
-  }
+  const primaryParagraphs = normalize(primary);
+  if (primaryParagraphs.length) return primaryParagraphs;
 
-  return [];
+  return normalize(fallback);
 }
 
 export function getProjectTimestamp(value?: ProjectWebTimestamp): number {
@@ -60,23 +104,31 @@ export function getProjectTimestamp(value?: ProjectWebTimestamp): number {
   return typeof seconds === "number" ? seconds * 1000 : 0;
 }
 
-export function formatProjectDate(value?: ProjectWebTimestamp): string {
+export function formatProjectDate(
+  value?: ProjectWebTimestamp,
+  locale: SiteLocale = "en",
+): string {
   const timestamp = getProjectTimestamp(value);
-  if (!timestamp) return "Project update";
+  if (!timestamp) return locale === "id" ? "Pembaruan proyek" : "Project update";
 
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en", {
     month: "long",
     year: "numeric",
     timeZone: "Asia/Jakarta",
   }).format(new Date(timestamp));
 }
 
-export function getProjectExcerpt(project?: ProjectWebRecord | null): string {
+export function getProjectExcerpt(
+  project?: ProjectWebRecord | null,
+  locale: SiteLocale = "en",
+): string {
   const source =
-    project?.sub_judul?.trim() ||
-    getProjectParagraphs(project)[0]?.trim() ||
-    project?.paragraf_penutup?.trim() ||
-    "Explore this marine project from Duta Raya Marine.";
+    getProjectSubtitle(project, locale) ||
+    getProjectParagraphs(project, locale)[0]?.trim() ||
+    getProjectClosing(project, locale) ||
+    (locale === "id"
+      ? "Jelajahi proyek kelautan dari Duta Raya Marine ini."
+      : "Explore this marine project from Duta Raya Marine.");
 
   return source.length > 180 ? `${source.slice(0, 177).trimEnd()}…` : source;
 }
