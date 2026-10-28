@@ -42,6 +42,14 @@ export const seoKeywords = {
     "hydraulic repair",
     "marine commissioning",
   ],
+  projects: [
+    "marine projects Batam",
+    "vessel project support",
+    "marine machinery project",
+    "marine HVAC project",
+    "vessel supply Indonesia",
+    "port call support Batam",
+  ],
   contact: [
     "marine supplier Batam contact",
     "marine supplier Jakarta",

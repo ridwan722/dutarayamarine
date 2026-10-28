@@ -303,6 +303,7 @@ const links: NavLink[] = [
       { title: "Automation & control", description: "Electrical support, controls, and vessel systems.", icon: "mdi-tune-vertical", to: "/services" },
     ],
   },
+  { label: "Proyek", to: "/projects" },
   { label: "Kontak", to: "/contact" },
 ];
 </script>
