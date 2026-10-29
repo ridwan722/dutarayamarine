@@ -22,7 +22,7 @@
                 {{ translate("Company profile", "Profil perusahaan") }}
               </NuxtLink>
               <span class="utility-divider" aria-hidden="true"></span>
-              <a href="mailto:sales@dutarayamarine.com" class="utility-contact">
+              <a class="utility-contact">
                 <v-icon icon="mdi-email-outline" size="14" /> sales@dutarayamarine.com
               </a>
             </div>
@@ -92,7 +92,7 @@
 
               <div class="mobile-menu-meta">
                 <span><v-icon icon="mdi-map-marker-outline" size="17" /> Batam &amp; Jakarta, Indonesia</span>
-                <a href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" size="17" /> sales@dutarayamarine.com</a>
+                <a ><v-icon icon="mdi-email-outline" size="17" /> sales@dutarayamarine.com</a>
               </div>
             </nav>
 
@@ -169,7 +169,7 @@
         <div class="site-footer-main">
           <div class="footer-company">
             <p>{{ translate("Marine and offshore equipment, spare parts, and technical services for vessel operations.", "Peralatan kelautan dan lepas pantai, suku cadang, serta layanan teknis untuk operasional kapal.") }}</p>
-            <a class="footer-contact-link" href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" size="18" /> sales@dutarayamarine.com</a>
+            <a class="footer-contact-link" ><v-icon icon="mdi-email-outline" size="18" /> sales@dutarayamarine.com</a>
           </div>
 
           <nav class="footer-column" :aria-label="translate('Footer navigation', 'Navigasi footer')">

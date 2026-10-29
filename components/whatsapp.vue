@@ -32,7 +32,7 @@
           </div>
           <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" :label="translate('How can we help?', 'Apa yang dapat kami bantu?')"></v-textarea>
           
-          <p class="required-note">{{ translate("* Required fields", "* Kolom wajib diisi") }}</p>
+          <p class="required-note">{{ translate("Fields marked with an asterisk (*) are required", "Tanda Bintang (*) kolom wajib diisi") }}</p>
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
           
           <button class="send-button" type="submit" :disabled="isSaving || !requiredFieldsFilled">

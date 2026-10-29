@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { collection } from "firebase/firestore";
-import { computed } from "vue";
+import { computed, nextTick, onMounted, watch } from "vue";
 import { useCollection, useFirestore } from "vuefire";
 import { seoKeywords } from "~/seo.config";
 import type { ProjectWeb, ProjectWebRecord } from "~/types/projectWeb";
@@ -34,6 +34,10 @@ const projectSource = useCollection<ProjectWebRecord>(
 
 const pending = projectSource.pending;
 const loadError = projectSource.error;
+const projectScrollPosition = useState<number | null>(
+  "projects-scroll-position",
+  () => null,
+);
 
 const projects = computed<ProjectWeb[]>(() =>
   [...(projectSource.value ?? [])]
@@ -67,6 +71,53 @@ function projectPath(project: ProjectWeb) {
 function localizedProjectTitle(project: ProjectWeb) {
   return getProjectTitle(project, locale.value) || translate("Marine Project", "Proyek Kelautan");
 }
+
+function rememberProjectScrollPosition(event: MouseEvent, project: ProjectWeb) {
+  if (
+    !project.judul ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
+    return;
+  }
+
+  projectScrollPosition.value = window.scrollY;
+}
+
+async function restoreProjectScrollPosition(position: number) {
+  await nextTick();
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: position, left: 0, behavior: "auto" });
+      projectScrollPosition.value = null;
+    });
+  });
+}
+
+onMounted(() => {
+  const savedPosition = projectScrollPosition.value;
+  if (savedPosition === null) return;
+
+  if (!pending.value) {
+    void restoreProjectScrollPosition(savedPosition);
+    return;
+  }
+
+  const stopWatching = watch(
+    pending,
+    (isPending) => {
+      if (isPending) return;
+
+      stopWatching();
+      void restoreProjectScrollPosition(savedPosition);
+    },
+    { flush: "post" },
+  );
+});
 </script>
 
 <template>
@@ -155,6 +206,7 @@ function localizedProjectTitle(project: ProjectWeb) {
           :to="projectPath(project)"
           class="project-card"
           :aria-label="`${translate('Read project', 'Baca proyek')}: ${localizedProjectTitle(project)}`"
+          @click="rememberProjectScrollPosition($event, project)"
         >
           <div class="project-card-image">
             <img
@@ -718,11 +770,72 @@ function localizedProjectTitle(project: ProjectWeb) {
   }
 
   .project-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .project-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .project-card-image,
+  .skeleton-image {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .project-card-index {
+    right: 8px;
+    bottom: 8px;
+    width: 30px;
+    height: 30px;
+    font-size: 9px;
+  }
+
+  .project-card-body {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    padding: 14px;
+  }
+
+  .project-card-meta {
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 9px;
+    flex-direction: column;
+    font-size: 8px;
+  }
+
+  .project-card-body h3 {
+    overflow-wrap: anywhere;
+    font-size: 16px;
   }
 
   .project-card-body > p {
+    display: -webkit-box;
+    overflow: hidden;
     min-height: 0;
+    margin: 8px 0 14px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .project-card-link {
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  .project-card-link .v-icon {
+    flex: 0 0 auto;
   }
 
   .project-enquiry {
@@ -748,9 +861,5 @@ function localizedProjectTitle(project: ProjectWeb) {
     padding: 14px 16px;
   }
 
-  .project-card-image,
-  .skeleton-image {
-    height: 205px;
-  }
 }
 </style>

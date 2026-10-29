@@ -42,19 +42,19 @@ const offices = [
 
       <article class="site-info-card communication-card">
         <h2><v-icon icon="mdi-phone-in-talk" color="#dc2626" /> {{ translate("Direct contact", "Kontak langsung") }}</h2>
-        <a href="mailto:sales@dutarayamarine.com"><v-icon icon="mdi-email-outline" /> sales@dutarayamarine.com</a>
+        <a ><v-icon icon="mdi-email-outline" /> sales@dutarayamarine.com</a>
         <a href="https://www.dutarayamarine.com" target="_blank" rel="noreferrer"><v-icon icon="mdi-web" /> www.dutarayamarine.com</a>
       </article>
-    </section>
 
-    <section class="contact-prompt site-panel">
-      <div class="contact-prompt-icon"><v-icon icon="mdi-whatsapp" size="28" /></div>
-      <div>
-        <h2 class="site-section-title">{{ translate("Send us an inquiry", "Kirim inquiry kepada kami") }}</h2>
-        <p class="site-section-copy">
-          {{ translate("Use the WhatsApp button at the bottom of the page to share your company, vessel, and requirement details. You can also email sales@dutarayamarine.com.", "Gunakan tombol WhatsApp di bagian bawah halaman untuk membagikan detail perusahaan, kapal, dan kebutuhan Anda. Anda juga dapat mengirim email ke sales@dutarayamarine.com.") }}
-        </p>
-      </div>
+      <article class="site-info-card contact-prompt">
+        <div class="contact-prompt-icon"><v-icon icon="mdi-whatsapp" size="28" /></div>
+        <div>
+          <h2 class="site-section-title">{{ translate("Send us an inquiry", "Kirim inquiry kepada kami") }}</h2>
+          <p class="site-section-copy">
+            {{ translate("Use the WhatsApp button to share your company, vessel, and requirement details. You can also email sales@dutarayamarine.com.", "Gunakan tombol WhatsApp untuk membagikan detail perusahaan, kapal, dan kebutuhan Anda. Anda juga dapat mengirim email ke sales@dutarayamarine.com.") }}
+          </p>
+        </div>
+      </article>
     </section>
   </div>
 </template>
@@ -84,7 +84,7 @@ const offices = [
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-top: 28px;
+  border-color: #22c55e;
 }
 
 .contact-prompt-icon {

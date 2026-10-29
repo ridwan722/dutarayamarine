@@ -172,10 +172,14 @@ useHead(() => ({
       </header>
 
       <main class="detail-content site-container">
+        
         <article class="detail-article">
-          <p class="site-kicker">{{ translate("Project overview", "Gambaran proyek") }}</p>
-          <h2 class="site-section-title">{{ translate("The project story", "Cerita proyek") }}</h2>
-
+          <NuxtLink to="/projects" class="detail-back-link2">
+              <v-icon icon="mdi-arrow-left" size="16" /> {{ translate("All projects", "Semua proyek") }}
+            </NuxtLink>
+          <!-- <p class="site-kicker">{{ translate("Project overview", "Gambaran proyek") }}</p>
+          <h2 class="site-section-title">{{ translate("The project story", "Cerita proyek") }}</h2> -->
+            <h1 >{{ localizedTitle }}</h1>
           <div v-if="paragraphs.length" class="detail-paragraphs">
             <p v-for="(paragraph, index) in paragraphs" :key="index">
               {{ paragraph }}
@@ -396,7 +400,7 @@ useHead(() => ({
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-bottom: 42px;
+  margin-bottom: 32px;
   color: #b9c6d6;
   text-decoration: none;
   font-size: 11px;
@@ -406,6 +410,22 @@ useHead(() => ({
 
 .detail-back-link:hover {
   color: #fff;
+}
+
+.detail-back-link2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: #939393;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.detail-back-link2:hover {
+  color: #1e1e1e;
 }
 
 .detail-kicker {
@@ -692,6 +712,10 @@ useHead(() => ({
 
   .detail-back-link {
     margin-bottom: 32px;
+  }
+
+  .detail-back-link2 {
+    margin-bottom: 12px;
   }
 
   .detail-photo-count {
