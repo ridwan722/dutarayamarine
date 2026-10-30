@@ -41,7 +41,7 @@ useHead(() => ({
           {
             "@type": "PostalAddress",
             streetAddress:
-              "Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Sekupang",
+              "Ruko Dreamland H3 No. 05, Tanjung Riau, Sekupang, Kota Batam, Kepulauan Riau.",
             addressLocality: "Batam",
             addressRegion: "Kepulauan Riau",
             postalCode: "29425",

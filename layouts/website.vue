@@ -188,7 +188,7 @@
 
           <div class="footer-column footer-offices">
             <h2>{{ translate("Our offices", "Kantor kami") }}</h2>
-            <p><strong>Batam</strong><br />Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Sekupang, Batam 29425</p>
+            <p><strong>Batam</strong><br />Ruko Dreamland H3 No. 05, Tanjung Riau, Sekupang, Kota Batam, Kepulauan Riau.</p>
             <p><strong>Jakarta</strong><br />Jln. Raya Pasar Minggu No. 15A, Jakarta Selatan</p>
           </div>
         </div>

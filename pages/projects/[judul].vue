@@ -217,10 +217,10 @@ useHead(() => ({
               <dt>{{ translate("Documentation", "Dokumentasi") }}</dt>
               <dd>{{ photos.length }} {{ locale === "id" ? "foto" : photos.length === 1 ? "photo" : "photos" }}</dd>
             </div>
-            <div>
+            <!-- <div>
               <dt>{{ translate("Reference ID", "ID referensi") }}</dt>
               <dd>{{ project.id_project_web || project.id }}</dd>
-            </div>
+            </div> -->
           </dl>
           <NuxtLink to="/contact">
             {{ translate("Discuss a similar project", "Diskusikan proyek serupa") }} <v-icon icon="mdi-arrow-up-right" size="17" />

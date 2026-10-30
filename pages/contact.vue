@@ -15,7 +15,7 @@ usePageSeo({
 const offices = [
   {
     city: "Batam",
-    address: "Ruko Dream Land Blok H3 No. 05, Dreamland Square, Marina City Tanjung Riau, Sekupang, Batam, Kepulauan Riau 29425",
+    address: "Ruko Dreamland H3 No. 05, Tanjung Riau, Sekupang, Kota Batam, Kepulauan Riau.",
   },
   {
     city: "Jakarta",

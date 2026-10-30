@@ -130,7 +130,7 @@ onMounted(() => {
           </p>
           <h1>{{ translate("Marine work,", "Pekerjaan kelautan,") }}<br /><em>{{ translate("documented clearly.", "terdokumentasi dengan jelas.") }}</em></h1>
           <p>
-            {{ translate("Explore project documentation from our marine supply and technical service work, loaded directly from our project database.", "Jelajahi dokumentasi proyek dari pekerjaan pasokan kelautan dan layanan teknis kami, yang dimuat langsung dari database proyek.") }}
+            {{ translate("Explore project documentation from our marine supply and technical service work.", "Jelajahi dokumentasi proyek dari pekerjaan pasokan kelautan dan layanan teknis kami.") }}
           </p>
           <a href="#project-list" class="projects-primary-action">
             {{ translate("Explore projects", "Jelajahi proyek") }} <v-icon icon="mdi-arrow-down" size="18" />

@@ -9,7 +9,7 @@
       >
         <div class="panel-header">
           <div>
-            <span class="eyebrow">DUTA RAYA MARINE</span>
+            <!-- <span class="eyebrow">DUTA RAYA MARINE</span> -->
             <h2 id="whatsapp-title">{{ translate("Send an Inquiry", "Kirim Inquiry") }}</h2>
             <p class="header-copy">{{ translate("Complete the details and we’ll be ready to help.", "Lengkapi detail, kami siap membantu Anda.") }}</p>
           </div>
@@ -25,10 +25,10 @@
 
         <form class="inquiry-form" @submit.prevent="sendToWhatsapp">
           <div class="field-grid">
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.pic" :label="translate('Your name *', 'Nama Anda *')" autocomplete="name"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.nama_perusahaan" :label="translate('Company *', 'Perusahaan *')" autocomplete="organization"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.alamat" :label="translate('Address', 'Alamat')" autocomplete="street-address"></v-text-field>
-            <v-text-field hide-details variant="outlined" density="compact" v-model.trim="form.vessel" :label="translate('Vessel', 'Kapal')"></v-text-field>
+            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.pic" :label="translate('Your name *', 'Nama Anda *')" autocomplete="name"></v-text-field>
+            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.nama_perusahaan" :label="translate('Company *', 'Perusahaan *')" autocomplete="organization"></v-text-field>
+            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.vessel" :label="translate('Vessel', 'Kapal')"></v-text-field>
+            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.alamat" :label="translate('Address', 'Alamat')" autocomplete="street-address"></v-text-field>
           </div>
           <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" :label="translate('How can we help?', 'Apa yang dapat kami bantu?')"></v-textarea>
           
@@ -369,7 +369,7 @@ async function sendToWhatsapp() {
 
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -458,5 +458,6 @@ async function sendToWhatsapp() {
   .inquiry-panel {
     max-height: 72vh;
   }
+
 }
 </style>
