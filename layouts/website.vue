@@ -1680,12 +1680,6 @@ html.site-menu-open {
   }
 }
 
-@media (max-width: 400px) {
-  .brand-info {
-    display: none;
-  }
-}
-
 @media (max-width: 520px) {
   .site-nav-container {
     width: calc(100% - 24px);
@@ -1693,7 +1687,7 @@ html.site-menu-open {
   }
 
   .brand-mark {
-    width: 55px;
+    width: 60px;
   }
 
   .brand-info {
@@ -1701,7 +1695,7 @@ html.site-menu-open {
   }
 
   .brand-info strong {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .brand-info small {
@@ -1738,6 +1732,54 @@ html.site-menu-open {
   .scroll-top-button {
     min-height: 34px;
     padding: 0 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .site-nav-container {
+    width: calc(100% - 16px);
+    gap: 6px;
+  }
+
+  .site-brand {
+    gap: 7px;
+  }
+
+  .brand-mark {
+    width: 50px;
+    height: 36px;
+  }
+
+  .brand-info {
+    display: flex;
+    padding-left: 7px;
+  }
+
+  .brand-info strong {
+    font-size: 10px;
+    letter-spacing: .02em;
+  }
+
+  .brand-info small {
+    margin-top: 4px;
+    font-size: 6px;
+    letter-spacing: .05em;
+  }
+
+  .site-language-switcher {
+    gap: 1px;
+    padding: 2px;
+  }
+
+  .site-language-switcher button {
+    width: 25px;
+    height: 24px;
+    font-size: 8px;
+  }
+
+  .site-menu-toggle {
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

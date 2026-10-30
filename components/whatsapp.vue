@@ -25,12 +25,12 @@
 
         <form class="inquiry-form" @submit.prevent="sendToWhatsapp">
           <div class="field-grid">
-            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.pic" :label="translate('Your name *', 'Nama Anda *')" autocomplete="name"></v-text-field>
-            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.nama_perusahaan" :label="translate('Company *', 'Perusahaan *')" autocomplete="organization"></v-text-field>
-            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.vessel" :label="translate('Vessel', 'Kapal')"></v-text-field>
-            <v-text-field hide-details variant="underlined" density="compact" v-model.trim="form.alamat" :label="translate('Address', 'Alamat')" autocomplete="street-address"></v-text-field>
+            <v-text-field hide-details variant="underlined"  v-model.trim="form.pic" :label="translate('Your name *', 'Nama Anda *')" autocomplete="name"></v-text-field>
+            <v-text-field hide-details variant="underlined"  v-model.trim="form.nama_perusahaan" :label="translate('Company *', 'Perusahaan *')" autocomplete="organization"></v-text-field>
+            <v-text-field hide-details variant="underlined"  v-model.trim="form.vessel" :label="translate('Vessel', 'Kapal')"></v-text-field>
+            <v-textarea hide-details auto-grow rows="1" variant="underlined" v-model.trim="form.alamat" :label="translate('Address', 'Alamat')" autocomplete="street-address"></v-textarea>
           </div>
-          <v-textarea hide-details rows="2" variant="outlined" density="compact" v-model.trim="form.inquiry" :label="translate('How can we help?', 'Apa yang dapat kami bantu?')"></v-textarea>
+          <v-textarea hide-details rows="2" variant="outlined"  v-model.trim="form.inquiry" :label="translate('How can we help?', 'Apa yang dapat kami bantu?')"></v-textarea>
           
           <p class="required-note">{{ translate("Fields marked with an asterisk (*) are required", "Tanda Bintang (*) kolom wajib diisi") }}</p>
           <p v-if="submitError" class="submit-error" role="alert">{{ submitError }}</p>
@@ -379,9 +379,9 @@ async function sendToWhatsapp() {
 }
 
 .inquiry-form :deep(.v-field__input) {
-  min-height: 38px;
+  /* min-height: 38px;
   padding-top: 5px;
-  padding-bottom: 5px;
+  padding-bottom: 5px; */
   font-size: 12px;
 }
 
