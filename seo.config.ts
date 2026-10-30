@@ -57,4 +57,14 @@ export const seoKeywords = {
     "marine technical support",
     "emergency port support",
   ],
+  legal: [
+    "Duta Raya Marine legal notice",
+    "website terms Duta Raya Marine",
+    "marine supplier website terms",
+  ],
+  privacy: [
+    "Duta Raya Marine privacy policy",
+    "marine supplier privacy policy",
+    "personal data protection Indonesia",
+  ],
 } as const;

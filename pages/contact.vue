@@ -6,8 +6,8 @@ definePageMeta({ layout: "website" });
 const { translate } = useSiteLocale();
 
 usePageSeo({
-  title: computed(() => translate("Contact Our Marine Supply Team | Duta Raya Marine", "Hubungi Tim Pasokan Kelautan Kami | Duta Raya Marine")),
-  description: computed(() => translate("Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.", "Hubungi PT Duta Raya Marine di Batam atau Jakarta untuk peralatan kelautan, suku cadang kapal, layanan teknis, penawaran, dan dukungan darurat pelabuhan.")),
+  title: computed(() => translate("Contact Our Marine Supply Team | Duta Raya Marine", "Hubungi Tim Kelautan Kami | Duta Raya Marine")),
+  description: computed(() => translate("Contact PT Duta Raya Marine in Batam or Jakarta for marine equipment, ship spare parts, technical services, quotations, and emergency port support.", "Hubungi PT Duta Raya Marine di Batam atau Jakarta untuk peralatan kelautan, suku cadang kapal, layanan teknis, penawaran, dan dukungan darurat.")),
   path: "/contact",
   keywords: seoKeywords.contact,
 });
@@ -28,9 +28,9 @@ const offices = [
   <div class="site-container">
     <header class="site-page-heading">
       <p class="site-kicker">{{ translate("Contact", "Kontak") }}</p>
-      <h1 class="site-title">{{ translate("Contact our marine", "Hubungi tim pasokan") }}<br /><span>{{ translate("supply team.", "kelautan kami.") }}</span></h1>
+      <h1 class="site-title">{{ translate("Contact our marine", "Hubungi tim") }}<br /><span>{{ translate("supply team.", "kelautan kami.") }}</span></h1>
       <p class="site-lead">
-        {{ translate("Contact our team for procurement requests, engineering consultations, or round-the-clock emergency port support.", "Hubungi tim kami untuk permintaan pengadaan, konsultasi teknik, atau dukungan darurat pelabuhan sepanjang waktu.") }}
+        {{ translate("Contact our team for procurement requests, engineering consultations, or round-the-clock emergency port support.", "Hubungi tim kami untuk permintaan pengadaan, konsultasi teknik, atau dukungan darurat sepanjang waktu.") }}
       </p>
     </header>
 
@@ -51,7 +51,7 @@ const offices = [
         <div>
           <h2 class="site-section-title">{{ translate("Send us an inquiry", "Kirim inquiry kepada kami") }}</h2>
           <p class="site-section-copy">
-            {{ translate("Use the WhatsApp button to share your company, vessel, and requirement details. You can also email sales@dutarayamarine.com.", "Gunakan tombol WhatsApp untuk membagikan detail perusahaan, kapal, dan kebutuhan Anda. Anda juga dapat mengirim email ke sales@dutarayamarine.com.") }}
+            {{ translate("Click the WhatsApp button on the bottom right to share your company, vessel, and service details with our official WhatsApp account.", "Gunakan tombol WhatsApp di kanan bawah untuk membagikan detail perusahaan, kapal, dan kebutuhan Anda. Anda akan diarahkan ke Whatsapp Resmi kami.") }}
           </p>
         </div>
       </article>

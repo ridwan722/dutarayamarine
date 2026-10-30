@@ -236,7 +236,7 @@ onUnmounted(() => {
       <div class="home-contact-copy">
         <p class="site-kicker">{{ translate("Start a conversation", "Mulai percakapan") }}</p>
         <h2>{{ translate("Have a requirement?", "Memiliki kebutuhan?") }}<br /><span>{{ translate("We’re ready to help.", "Kami siap membantu.") }}</span></h2>
-        <p>{{ translate("Contact us for procurement, engineering consultation, or round-the-clock emergency port support.", "Hubungi kami untuk pengadaan, konsultasi teknik, atau dukungan darurat pelabuhan sepanjang waktu.") }}</p>
+        <p>{{ translate("Contact us for procurement, engineering consultation, or round-the-clock emergency port support.", "Hubungi kami untuk pengadaan, konsultasi teknik, atau dukungan darurat sepanjang waktu.") }}</p>
       </div>
     </section>
   </div>

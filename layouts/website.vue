@@ -36,7 +36,7 @@
               <span class="brand-mark"><img src="/main-logo.png" alt="" /></span>
               <span class="brand-info">
                 <strong>PT. DUTA RAYA MARINE</strong>
-                <small>{{ translate("Marine & Offshore Solutions", "Solusi Kelautan & Lepas Pantai") }}</small>
+                <small>{{ translate("Marine Partner, From Supply to Service", "Marine Partner, From Supply to Service") }}</small>
               </span>
             </NuxtLink>
 
@@ -193,9 +193,28 @@
           </div>
         </div>
 
-        <div class="site-footer-bottom">
-          <span>PT. Duta Raya Marine &copy; {{ new Date().getFullYear() }}. {{ translate("All rights reserved.", "Hak cipta dilindungi.") }}</span>
-          <span>Batam &amp; Jakarta, Indonesia</span>
+        <section
+          class="footer-assurance"
+          :aria-label="translate('Company statement', 'Pernyataan perusahaan')"
+        >
+          <div class="footer-assurance-inner">
+            <p class="footer-forward-message">
+              <span>YOUR MARINE PARTNER, FROM <strong>SUPPLY</strong> TO <strong>SERVICE</strong></span>
+              <!-- YOUR MARINE PARTNER, FROM SUPPLY TO SERVICE -->
+              <i class="footer-forward-arrows" aria-hidden="true"><b></b><b></b><b></b></i>
+            </p>
+          </div>
+        </section>
+
+        <div class="footer-legal-bar">
+          <div class="site-footer-bottom">
+            <span>Copyright &copy;{{ new Date().getFullYear() }} PT Duta Raya Marine. {{ translate("All Rights Reserved.", "Seluruh Hak Cipta Dilindungi.") }}</span>
+            <span class="footer-policy-links">
+              <NuxtLink to="/legal">Legal</NuxtLink>
+              <i aria-hidden="true"></i>
+              <NuxtLink to="/privacy-policy">{{ translate("Privacy Policy", "Kebijakan Privasi") }}</NuxtLink>
+            </span>
+          </div>
         </div>
       </footer>
 
@@ -548,9 +567,9 @@ html.site-menu-open {
 
 .brand-info small {
   margin-top: 6px;
-  color: #6b7788;
+  color: #555f6b;
   font-size: 8px;
-  font-weight: 750;
+  font-weight: 650;
   letter-spacing: .11em;
   text-transform: uppercase;
 }
@@ -1064,6 +1083,7 @@ html.site-menu-open {
 
 .footer-contact-cta-inner,
 .site-footer-main,
+.footer-assurance-inner,
 .site-footer-bottom {
   width: min(1200px, 100% - 48px);
   margin: 0 auto;
@@ -1218,15 +1238,94 @@ html.site-menu-open {
   border-left: 2px solid #dc2626;
 }
 
+.footer-assurance {
+  position: relative;
+  padding: 46px 0;
+  border-top: 5px solid #dc2626;
+  background: #fff;
+  color: #111827;
+}
+
+.footer-assurance-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(36px, 6vw, 84px);
+}
+
+.footer-forward-message {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: #111;
+  font-size: clamp(21px, 2.15vw, 31px);
+  font-style: italic;
+  font-weight: 950;
+  letter-spacing: -.055em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.footer-forward-message strong {
+  color: #dc2626;
+  font-weight: inherit;
+}
+
+.footer-forward-arrows {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1px;
+}
+
+.footer-forward-arrows b {
+  width: 13px;
+  height: 13px;
+  margin-left: -4px;
+  transform: rotate(-45deg);
+  border-right: 4px solid #dc2626;
+  border-bottom: 4px solid #dc2626;
+}
+
+.footer-legal-bar {
+  background: #f0f0f0;
+}
+
 .site-footer-bottom {
   display: flex;
+  min-height: 76px;
+  align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding-top: 18px;
-  padding-bottom: 20px;
-  border-top: 1px solid rgba(226, 232, 240, .12);
-  color: #94a3b8;
+  color: #515151;
   font-size: 11px;
+}
+
+.footer-policy-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  margin-right: 180px;
+  color: #515151;
+  white-space: nowrap;
+}
+
+.footer-policy-links a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.footer-policy-links a:hover,
+.footer-policy-links a:focus-visible {
+  color: #b91c1c;
+}
+
+.footer-policy-links i {
+  width: 1px;
+  height: 18px;
+  background: #777;
 }
 
 .scroll-top-button {
@@ -1278,6 +1377,10 @@ html.site-menu-open {
   .site-footer-main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 38px;
+  }
+
+  .footer-policy-links {
+    margin-right: 140px;
   }
 
   .site-utility-bar {
@@ -1491,6 +1594,7 @@ html.site-menu-open {
 
   .footer-contact-cta-inner,
   .site-footer-main,
+  .footer-assurance-inner,
   .site-footer-bottom {
     width: calc(100% - 32px);
   }
@@ -1518,6 +1622,10 @@ html.site-menu-open {
     flex-direction: column;
   }
 
+  .footer-policy-links {
+    margin-right: 0;
+  }
+
   .footer-contact-cta {
     padding: 34px 0;
   }
@@ -1532,6 +1640,28 @@ html.site-menu-open {
     gap: 36px 28px;
     padding-top: 42px;
     padding-bottom: 38px;
+  }
+
+  .footer-assurance {
+    padding: 38px 0;
+  }
+
+  .footer-forward-message {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-end;
+    white-space: normal;
+    line-height: 1.18;
+  }
+
+  .footer-forward-message > span {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .footer-forward-arrows {
+    flex: 0 0 auto;
+    margin-bottom: .12em;
   }
 
   .scroll-top-button {
@@ -1586,6 +1716,23 @@ html.site-menu-open {
 
   .site-footer-bottom {
     gap: 8px;
+    min-height: 0;
+    padding: 22px 0;
+  }
+
+  .footer-forward-message {
+    min-width: 0;
+    font-size: clamp(17px, 5.7vw, 24px);
+  }
+
+  .footer-forward-arrows b {
+    width: 10px;
+    height: 10px;
+    border-width: 0 3px 3px 0;
+  }
+
+  .footer-policy-links {
+    gap: 10px;
   }
 
   .scroll-top-button {
