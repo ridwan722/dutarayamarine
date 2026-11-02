@@ -64,20 +64,22 @@
 
                 <div v-if="link.children" class="nav-flyout">
                   <div class="nav-flyout-heading">
-                    <span>{{ link.eyebrow }}</span>
+                    <!-- <span>{{ link.eyebrow }}</span> -->
                     <strong>{{ link.flyoutTitle }}</strong>
                   </div>
-                  <NuxtLink
-                    v-for="child in link.children"
-                    :key="child.title"
-                    :to="child.to"
-                    class="nav-flyout-link"
-                    @click="closeMenu"
-                  >
-                    <span class="nav-flyout-icon"><v-icon :icon="child.icon" size="19" /></span>
-                    <span><strong>{{ child.title }}</strong><small>{{ child.description }}</small></span>
-                    <v-icon class="nav-flyout-arrow" icon="mdi-arrow-up-right" size="16" />
-                  </NuxtLink>
+                  <div class="nav-flyout-list">
+                    <NuxtLink
+                      v-for="child in link.children"
+                      :key="child.to"
+                      :to="child.to"
+                      class="nav-flyout-link"
+                      @click="closeMenu"
+                    >
+                      <span class="nav-flyout-icon"><v-icon :icon="child.icon" size="19" /></span>
+                      <span><strong>{{ child.title }}</strong><small>{{ child.description }}</small></span>
+                      <v-icon class="nav-flyout-arrow" icon="mdi-arrow-up-right" size="16" />
+                    </NuxtLink>
+                  </div>
                   <NuxtLink :to="link.to" class="nav-flyout-all" @click="closeMenu">
                     {{ translate("View all", "Lihat semua") }} {{ link.label.toLowerCase() }}
                     <v-icon icon="mdi-arrow-right" size="16" />
@@ -236,7 +238,23 @@
 </template>
 
 <script setup lang="ts">
+import { collection } from "firebase/firestore";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useCollection, useFirestore } from "vuefire";
+
+interface HeaderCategoryRecord {
+  id?: string;
+  id_category_product_service?: string;
+  category_product_service?: string;
+  category_product_service_en?: string;
+  nama_category_product_service?: string;
+  nama_category_product_service_en?: string;
+  nama_category?: string;
+  nama_category_en?: string;
+  nama?: string;
+  name?: string;
+  name_en?: string;
+}
 
 const { locale, setLocale, translate } = useSiteLocale();
 
@@ -334,6 +352,54 @@ type NavLink = {
   }>;
 };
 
+const db = useFirestore();
+const headerCategorySource = useCollection<HeaderCategoryRecord>(
+  collection(db, "category-product-service"),
+  {
+    ssrKey: "website-header-product-categories",
+    wait: true,
+  },
+);
+
+function headerCategoryId(category: HeaderCategoryRecord) {
+  return category.id || category.id_category_product_service || "";
+}
+
+function headerCategoryName(category: HeaderCategoryRecord, index = 0) {
+  const indonesian =
+    category.category_product_service ||
+    category.nama_category_product_service ||
+    category.nama_category ||
+    category.nama ||
+    category.name ||
+    `Kategori ${index + 1}`;
+  const english =
+    category.category_product_service_en ||
+    category.nama_category_product_service_en ||
+    category.nama_category_en ||
+    category.name_en ||
+    indonesian;
+
+  return translate(english, indonesian);
+}
+
+const productCategoryLinks = computed(() =>
+  [...(headerCategorySource.value ?? [])]
+    .filter((category) => headerCategoryId(category))
+    .sort((first, second) =>
+      headerCategoryName(first).localeCompare(headerCategoryName(second)),
+    )
+    .map((category, index) => ({
+      title: headerCategoryName(category, index),
+      description: translate(
+        "View products in this category.",
+        "Lihat produk dalam kategori ini.",
+      ),
+      icon: "mdi-package-variant-closed",
+      to: `/products/${encodeURIComponent(headerCategoryId(category))}`,
+    })),
+);
+
 const links = computed<NavLink[]>(() => [
   { label: translate("Home", "Beranda"), to: "/" },
   { label: translate("About Us", "Tentang Kami"), to: "/about" },
@@ -341,12 +407,8 @@ const links = computed<NavLink[]>(() => [
     label: translate("Products", "Produk"),
     to: "/products",
     eyebrow: translate("Product range", "Rangkaian produk"),
-    flyoutTitle: translate("Equipment for reliable operations", "Peralatan untuk operasional yang andal"),
-    children: [
-      { title: translate("Engine & machinery", "Mesin & permesinan"), description: translate("Parts for engines, pumps, generators, and auxiliaries.", "Suku cadang untuk mesin, pompa, generator, dan peralatan bantu."), icon: "mdi-engine-outline", to: "/products" },
-      { title: translate("Ship supplies", "Perlengkapan kapal"), description: translate("Deck, lifting, welding, coating, and consumables.", "Perlengkapan dek, pengangkatan, pengelasan, pelapisan, dan bahan habis pakai."), icon: "mdi-package-variant-closed", to: "/products" },
-      { title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), description: translate("Compressors, controls, AHUs, FCUs, and accessories.", "Kompresor, kontrol, AHU, FCU, dan aksesori."), icon: "mdi-snowflake", to: "/products" },
-    ],
+    flyoutTitle: translate("Browse by product category", "Jelajahi berdasarkan kategori produk"),
+    children: productCategoryLinks.value,
   },
   {
     label: translate("Services", "Layanan"),
@@ -704,6 +766,14 @@ html.site-menu-open {
   color: #101b2e;
   font-size: 13px;
   letter-spacing: -.01em;
+}
+
+.nav-flyout-list {
+  max-height: min(56vh, 450px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-width: thin;
 }
 
 .nav-flyout-link {

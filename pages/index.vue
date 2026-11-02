@@ -1,6 +1,27 @@
 <script setup lang="ts">
+import { collection } from "firebase/firestore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useCollection, useFirestore } from "vuefire";
 import { seoKeywords } from "~/seo.config";
+
+interface CategoryPhoto {
+  url?: string;
+}
+
+interface CategoryProductServiceRecord {
+  id?: string;
+  id_category_product_service?: string;
+  category_product_service?: string;
+  category_product_service_en?: string;
+  nama_category_product_service?: string;
+  nama_category_product_service_en?: string;
+  nama_category?: string;
+  nama_category_en?: string;
+  nama?: string;
+  name?: string;
+  name_en?: string;
+  foto?: Array<CategoryPhoto | string>;
+}
 
 definePageMeta({ layout: "website" });
 
@@ -94,12 +115,61 @@ const slides = computed(() => [
 const activeSlide = ref(0);
 const currentSlide = computed(() => slides.value[activeSlide.value]!);
 let slideTimer: ReturnType<typeof setInterval> | undefined;
-const productCategories = computed(() => [
-  { icon: "mdi-engine", title: translate("Engine & machinery", "Mesin & permesinan"), detail: translate("Genuine, OEM, and aftermarket parts for engines, generators, pumps, and machinery.", "Suku cadang genuine, OEM, dan aftermarket untuk mesin, generator, pompa, dan permesinan.") },
-  { icon: "mdi-package-variant-closed", title: translate("Ship supplies", "Perlengkapan kapal"), detail: translate("Mooring, lifting, welding, coating, maintenance, and deck consumables.", "Perlengkapan tambat, pengangkatan, pengelasan, pelapisan, perawatan, dan bahan habis pakai dek.") },
-  { icon: "mdi-pump", title: translate("Hydraulic & cooling", "Hidraulik & pendingin"), detail: translate("Hydraulic and gearbox parts, pumps, radiators, coolers, and filters.", "Suku cadang hidraulik dan gearbox, pompa, radiator, pendingin, dan filter.") },
-  { icon: "mdi-snowflake", title: translate("HVAC & refrigeration", "HVAC & refrigerasi"), detail: translate("Compressors, refrigeration components, AHUs, FCUs, controls, and accessories.", "Kompresor, komponen refrigerasi, AHU, FCU, kontrol, dan aksesori.") },
-]);
+
+const db = useFirestore();
+const categorySource = useCollection<CategoryProductServiceRecord>(
+  collection(db, "category-product-service"),
+  {
+    ssrKey: "public-home-category-product-service",
+    wait: true,
+  },
+);
+
+const categoriesPending = categorySource.pending;
+const categoriesError = categorySource.error;
+
+function categoryDocumentId(category: CategoryProductServiceRecord) {
+  return category.id || category.id_category_product_service || "";
+}
+
+function categoryName(category: CategoryProductServiceRecord, index = 0) {
+  const indonesian =
+    category.category_product_service ||
+    category.nama_category_product_service ||
+    category.nama_category ||
+    category.nama ||
+    category.name ||
+    `Kategori ${index + 1}`;
+  const english =
+    category.category_product_service_en ||
+    category.nama_category_product_service_en ||
+    category.nama_category_en ||
+    category.name_en ||
+    indonesian;
+
+  return translate(english, indonesian);
+}
+
+const categories = computed(() =>
+  [...(categorySource.value ?? [])]
+    .filter((category) => categoryDocumentId(category))
+    .sort((first, second) =>
+      categoryName(first).localeCompare(categoryName(second)),
+    ),
+);
+
+function categoryPhoto(category: CategoryProductServiceRecord) {
+  const photo = category.foto?.[0];
+  if (typeof photo === "string") return photo;
+  return typeof photo?.url === "string" ? photo.url : "";
+}
+
+function categoryRoute(category: CategoryProductServiceRecord) {
+  return {
+    name: "products-id",
+    params: { id: categoryDocumentId(category) },
+  };
+}
 
 const services = computed(() => [
   { icon: "mdi-cog-sync", title: translate("Mechanical & engine", "Mekanikal & mesin"), to: "/services" },
@@ -170,24 +240,57 @@ onUnmounted(() => {
       <div class="section-heading-row">
         <div>
           <p class="site-kicker">{{ translate("What we supply", "Yang kami sediakan") }}</p>
-          <h2 class="site-section-title">{{ translate("Marine parts &", "Suku cadang kelautan &") }}<br /><span class="site-red">{{ translate("equipment supply", "pasokan peralatan") }}</span></h2>
+          <h2 class="site-section-title">{{ translate("Marine parts &", "Suku cadang kelautan &") }} <span class="site-red"> {{ translate("equipment supply", "pasokan peralatan") }}</span></h2>
         </div>
-        <NuxtLink class="text-link" to="/products">{{ translate("View all products", "Lihat semua produk") }} <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
+        <NuxtLink class="text-link" to="/products">{{ translate("View all categories", "Lihat semua kategori") }} <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
       </div>
 
-      <div class="range-grid">
-        <NuxtLink v-for="(category, index) in productCategories" :key="category.title" to="/products" class="range-card">
-          <div class="range-image" :class="`range-image-${index + 1}`">
-            <span class="range-index">0{{ index + 1 }}</span>
-            <v-icon :icon="category.icon" size="54" />
-            <span class="range-image-line"></span>
+      <div v-if="categoriesPending" class="range-grid" aria-busy="true" :aria-label="translate('Loading categories', 'Memuat kategori')">
+        <article v-for="index in 4" :key="index" class="range-card range-card-skeleton">
+          <div class="range-image"></div>
+          <div class="range-card-copy">
+            <span class="range-skeleton-line range-skeleton-title"></span>
+          </div>
+        </article>
+      </div>
+
+      <div v-else-if="categoriesError" class="range-state" role="alert">
+        <v-icon icon="mdi-cloud-alert-outline" size="28" />
+        <div>
+          <strong>{{ translate("Categories are temporarily unavailable", "Kategori sementara tidak tersedia") }}</strong>
+          <p>{{ translate("Please try again in a moment.", "Silakan coba lagi beberapa saat.") }}</p>
+        </div>
+      </div>
+
+      <div v-else-if="categories.length" class="range-grid">
+        <NuxtLink
+          v-for="(category, index) in categories"
+          :key="categoryDocumentId(category)"
+          :to="categoryRoute(category)"
+          class="range-card"
+        >
+          <div class="range-image" :class="{ 'has-photo': categoryPhoto(category) }">
+            <img
+              v-if="categoryPhoto(category)"
+              class="range-photo"
+              :src="categoryPhoto(category)"
+              :alt="categoryName(category, index)"
+              loading="lazy"
+            />
+            <v-icon v-if="!categoryPhoto(category)" icon="mdi-package-variant-closed" size="54" />
           </div>
           <div class="range-card-copy">
-            <h3>{{ category.title }}</h3>
-            <p>{{ category.detail }}</p>
-            <span class="range-link">{{ translate("Explore range", "Jelajahi rangkaian") }} <v-icon icon="mdi-arrow-right" size="16" /></span>
+            <h3>{{ categoryName(category, index) }}</h3>
           </div>
         </NuxtLink>
+      </div>
+
+      <div v-else class="range-state">
+        <v-icon icon="mdi-package-variant" size="28" />
+        <div>
+          <strong>{{ translate("No categories published yet", "Belum ada kategori yang dipublikasikan") }}</strong>
+          <p>{{ translate("New categories will appear here automatically.", "Kategori baru akan tampil otomatis di sini.") }}</p>
+        </div>
       </div>
     </section>
 
@@ -464,7 +567,7 @@ onUnmounted(() => {
 }
 
 .range-section {
-  padding-top: 76px;
+  padding-top: 36px;
   padding-bottom: 78px;
 }
 
@@ -503,113 +606,113 @@ onUnmounted(() => {
 .range-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 15px;
+  gap: 32px 28px;
 }
 
 .range-card {
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #fff;
-  color: inherit;
+  min-width: 0;
+  color: #0b3c68;
+  text-align: center;
   text-decoration: none;
-  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.range-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, .1);
+.range-card:hover h3 {
+  color: #dc2626;
 }
 
 .range-image {
-  position: relative;
   display: grid;
-  height: 165px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   place-items: center;
-  background: linear-gradient(135deg, #1b2c46, #0e1728);
-  color: #fff;
+  background: #fff;
+  color: #64748b;
 }
 
-.range-image::before,
-.range-image::after {
-  position: absolute;
-  content: "";
+.range-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
 }
-
-.range-image::before {
-  top: -56px;
-  right: -38px;
-  width: 176px;
-  height: 176px;
-  border: 1px solid rgba(255, 255, 255, .16);
-  border-radius: 50%;
-}
-
-.range-image::after {
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  background: #dc2626;
-}
-
-.range-image-2 { background: linear-gradient(135deg, #233851, #101a2b); }
-.range-image-3 { background: linear-gradient(135deg, #293b51, #131d2e); }
-.range-image-4 { background: linear-gradient(135deg, #1b3048, #101827); }
 
 .range-image :deep(.v-icon) {
-  position: relative;
-  z-index: 1;
-  color: #e2e8f0;
-  filter: drop-shadow(0 7px 12px rgba(0, 0, 0, .3));
-}
-
-.range-index {
-  position: absolute;
-  top: 13px;
-  left: 15px;
-  color: rgba(255, 255, 255, .62);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .1em;
-}
-
-.range-image-line {
-  position: absolute;
-  bottom: 28px;
-  left: 20%;
-  width: 60%;
-  height: 1px;
-  background: rgba(255, 255, 255, .25);
+  color: #64748b;
 }
 
 .range-card-copy {
-  padding: 17px 17px 18px;
+  padding: 10px 4px 0;
 }
 
 .range-card-copy h3 {
-  margin: 0 0 8px;
-  color: #0f172a;
-  font-size: 15px;
-}
-
-.range-card-copy p {
-  min-height: 57px;
   margin: 0;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.6;
+  color: #0b3c68;
+  font-size: clamp(16px, 1.65vw, 20px);
+  font-weight: 650;
+  line-height: 1.35;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 160ms ease;
 }
 
-.range-link {
-  display: inline-flex;
+.range-state {
+  display: flex;
+  min-height: 150px;
   align-items: center;
-  gap: 5px;
-  margin-top: 13px;
-  color: #dc2626;
-  font-size: 11px;
-  font-weight: 800;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  text-align: left;
+}
+
+.range-state strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.range-state p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.range-card-skeleton {
+  pointer-events: none;
+}
+
+.range-card-skeleton .range-image,
+.range-skeleton-line {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 45%, #e2e8f0 65%);
+  background-size: 200% 100%;
+  animation: range-shimmer 1.4s infinite linear;
+}
+
+.range-card-skeleton .range-image::before,
+.range-card-skeleton .range-image::after {
+  display: none;
+}
+
+.range-skeleton-line {
+  display: block;
+  height: 10px;
+  margin-top: 10px;
+  border-radius: 999px;
+}
+
+.range-skeleton-title {
+  width: 68%;
+  height: 14px;
+  margin: 0 auto;
+}
+
+@keyframes range-shimmer {
+  to { background-position: -200% 0; }
 }
 
 .support-promo {
@@ -844,7 +947,7 @@ onUnmounted(() => {
   }
 
   .range-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .home-contact {
@@ -898,24 +1001,16 @@ onUnmounted(() => {
   }
 
   .range-grid {
-    gap: 12px;
-  }
-
-  .range-image {
-    height: 135px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 18px;
   }
 
   .range-card-copy {
-    padding: 14px;
+    padding: 9px 2px 0;
   }
 
   .range-card-copy h3 {
-    font-size: 13px;
-  }
-
-  .range-card-copy p {
-    min-height: 75px;
-    font-size: 11px;
+    font-size: 16px;
   }
 
   .home-contact {
@@ -930,14 +1025,7 @@ onUnmounted(() => {
 @media (max-width: 420px) {
   .range-grid {
     grid-template-columns: 1fr;
-  }
-
-  .range-image {
-    height: 165px;
-  }
-
-  .range-card-copy p {
-    min-height: 0;
+    gap: 30px;
   }
 
   .service-row {
