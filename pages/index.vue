@@ -236,6 +236,62 @@ onUnmounted(() => {
       <div class="hero-edge-label">{{ translate("BUILT FOR MARINE OPERATIONS", "DIBANGUN UNTUK OPERASI KELAUTAN") }}</div>
     </section>
 
+    <section class="home-intro site-container" aria-labelledby="home-intro-title">
+      <div class="home-intro-heading">
+        <div>
+          <p class="site-kicker">{{ translate("Marine supply & technical partner", "Mitra pasokan & teknis kelautan") }}</p>
+          <h2 id="home-intro-title">
+            {{ translate("Supporting vessel operations", "Mendukung operasional kapal") }}
+            <span>{{ translate("from requirement to delivery.", "dari kebutuhan hingga pengiriman.") }}</span>
+          </h2>
+        </div>
+        <div class="home-intro-summary">
+          <p>{{ translate("PT Duta Raya Marine supports shipowners, shipyards, offshore operators, and industrial projects with marine equipment, ship spare parts, consumables, and coordinated technical services.", "PT Duta Raya Marine mendukung pemilik kapal, galangan, operator lepas pantai, dan proyek industri melalui penyediaan peralatan kelautan, suku cadang kapal, bahan habis pakai, serta layanan teknis yang terkoordinasi.") }}</p>
+          <p>{{ translate("From our operations in Batam and Jakarta, we help customers identify suitable parts, review equipment details, and arrange practical support for planned maintenance or urgent vessel requirements.", "Melalui operasional kami di Batam dan Jakarta, kami membantu pelanggan mengidentifikasi suku cadang yang sesuai, memeriksa detail peralatan, serta mengatur dukungan praktis untuk pemeliharaan terencana maupun kebutuhan kapal yang mendesak.") }}</p>
+        </div>
+      </div>
+
+      <div class="home-intro-capabilities">
+        <article class="home-intro-capability">
+          <div class="home-intro-capability-top">
+            <span>01</span>
+            <v-icon icon="mdi-package-variant-closed" size="25" />
+          </div>
+          <h3>{{ translate("Parts & equipment sourcing", "Pengadaan suku cadang & peralatan") }}</h3>
+          <p>{{ translate("We source genuine, OEM, and aftermarket options for main and auxiliary engines, hydraulic systems, pumps, compressors, refrigeration equipment, and other onboard machinery.", "Kami menyediakan pilihan genuine, OEM, dan aftermarket untuk mesin utama dan bantu, sistem hidraulik, pompa, kompresor, peralatan refrigerasi, serta berbagai mesin di atas kapal.") }}</p>
+        </article>
+
+        <article class="home-intro-capability">
+          <div class="home-intro-capability-top">
+            <span>02</span>
+            <v-icon icon="mdi-wrench-cog-outline" size="25" />
+          </div>
+          <h3>{{ translate("Technical service coordination", "Koordinasi layanan teknis") }}</h3>
+          <p>{{ translate("Our scope includes mechanical repair, engine and turbocharger work, hydraulic maintenance, HVAC and refrigeration support, plus automation and control troubleshooting.", "Cakupan kami meliputi perbaikan mekanikal, pekerjaan mesin dan turbocharger, pemeliharaan hidraulik, dukungan HVAC dan refrigerasi, serta pemeriksaan sistem otomasi dan kontrol.") }}</p>
+        </article>
+
+        <article class="home-intro-capability">
+          <div class="home-intro-capability-top">
+            <span>03</span>
+            <v-icon icon="mdi-ferry" size="25" />
+          </div>
+          <h3>{{ translate("Support for vessel schedules", "Dukungan untuk jadwal kapal") }}</h3>
+          <p>{{ translate("We work around vessel schedules and project requirements, helping coordinate quotations, availability checks, delivery arrangements, and technical attendance when required.", "Kami menyesuaikan dukungan dengan jadwal kapal dan kebutuhan proyek, mulai dari penawaran, pemeriksaan ketersediaan, pengaturan pengiriman, hingga kehadiran teknis bila diperlukan.") }}</p>
+        </article>
+      </div>
+
+      <div class="home-intro-note">
+        <div>
+          <strong>{{ translate("To help us check your requirement", "Agar kebutuhan Anda dapat kami periksa") }}</strong>
+          <p>{{ translate("Share the equipment maker, model, serial number, part number, quantity, vessel location, and required delivery date. Photos or nameplate details are also helpful.", "Sampaikan merek peralatan, model, nomor seri, nomor suku cadang, jumlah, lokasi kapal, dan tanggal kebutuhan. Foto atau detail nameplate juga akan sangat membantu.") }}</p>
+        </div>
+        <div class="home-intro-links">
+          <NuxtLink to="/about">{{ translate("About our company", "Tentang perusahaan") }} <v-icon icon="mdi-arrow-right" size="17" /></NuxtLink>
+          <NuxtLink to="/contact">{{ translate("Discuss your requirement", "Diskusikan kebutuhan") }} <v-icon icon="mdi-arrow-up-right" size="17" /></NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section class="range-section site-container">
       <div class="section-heading-row">
         <div>
@@ -566,6 +622,153 @@ onUnmounted(() => {
   transform: translateY(-8px);
 }
 
+.home-intro {
+  padding-top: 76px;
+  padding-bottom: 72px;
+}
+
+.home-intro-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+  align-items: end;
+  gap: 70px;
+}
+
+.home-intro-heading .site-kicker {
+  margin-bottom: 15px;
+}
+
+.home-intro-heading h2 {
+  max-width: 650px;
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(34px, 4.5vw, 54px);
+  font-weight: 900;
+  letter-spacing: -.045em;
+  line-height: 1.05;
+}
+
+.home-intro-heading h2 span {
+  display: block;
+  color: #dc2626;
+}
+
+.home-intro-summary {
+  padding-left: 26px;
+  border-left: 3px solid #dc2626;
+}
+
+.home-intro-summary p {
+  margin: 0;
+  color: #526176;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.home-intro-summary p + p {
+  margin-top: 12px;
+}
+
+.home-intro-capabilities {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 46px;
+  border-top: 1px solid #dce3ec;
+  border-bottom: 1px solid #dce3ec;
+}
+
+.home-intro-capability {
+  min-width: 0;
+  padding: 30px 30px 32px;
+}
+
+.home-intro-capability + .home-intro-capability {
+  border-left: 1px solid #dce3ec;
+}
+
+.home-intro-capability-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.home-intro-capability-top > span {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.home-intro-capability-top :deep(.v-icon) {
+  color: #dc2626;
+}
+
+.home-intro-capability h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.home-intro-capability p {
+  margin: 12px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.home-intro-note {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+  margin-top: 28px;
+  padding: 23px 26px;
+  background: #f1f5f9;
+}
+
+.home-intro-note > div:first-child {
+  max-width: 750px;
+  margin-right: auto;
+}
+
+.home-intro-note strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.home-intro-note p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.home-intro-links {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 20px;
+}
+
+.home-intro-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #0f172a;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.home-intro-links a:hover {
+  color: #dc2626;
+}
+
 .range-section {
   padding-top: 36px;
   padding-bottom: 78px;
@@ -621,19 +824,22 @@ onUnmounted(() => {
 }
 
 .range-image {
-  display: grid;
+  display: flex;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   color: #64748b;
 }
 
 .range-photo {
   display: block;
-  width: 100%;
+  flex: 0 0 auto;
+  width: auto;
   height: 100%;
+  max-width: 100%;
   object-fit: contain;
   object-position: center center;
 }
@@ -946,6 +1152,26 @@ onUnmounted(() => {
     min-height: 530px;
   }
 
+  .home-intro-heading {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, .9fr);
+    gap: 38px;
+  }
+
+  .home-intro-capability {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .home-intro-note {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .home-intro-links {
+    flex-wrap: wrap;
+  }
+
   .range-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -976,6 +1202,46 @@ onUnmounted(() => {
 
   .hero-edge-label {
     display: none;
+  }
+
+  .home-intro {
+    padding-top: 56px;
+    padding-bottom: 55px;
+  }
+
+  .home-intro-heading {
+    grid-template-columns: 1fr;
+    gap: 27px;
+  }
+
+  .home-intro-heading h2 {
+    font-size: clamp(34px, 9vw, 46px);
+  }
+
+  .home-intro-summary {
+    padding-left: 20px;
+  }
+
+  .home-intro-capabilities {
+    grid-template-columns: 1fr;
+    margin-top: 34px;
+  }
+
+  .home-intro-capability {
+    padding: 26px 4px 28px;
+  }
+
+  .home-intro-capability + .home-intro-capability {
+    border-top: 1px solid #dce3ec;
+    border-left: 0;
+  }
+
+  .home-intro-capability-top {
+    margin-bottom: 18px;
+  }
+
+  .home-intro-note {
+    padding: 21px 20px;
   }
 
   .range-section,
@@ -1023,6 +1289,12 @@ onUnmounted(() => {
 }
 
 @media (max-width: 420px) {
+  .home-intro-links {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .range-grid {
     grid-template-columns: 1fr;
     gap: 30px;

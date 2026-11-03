@@ -192,7 +192,7 @@ const compressorBrands = ["Bitzer", "Carrier", "Copeland", "Danfoss", "Carlyle",
 .category-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 32px 28px;
+  gap: 30px 10px;
 }
 
 .category-card {
@@ -207,31 +207,34 @@ const compressorBrands = ["Bitzer", "Carrier", "Copeland", "Danfoss", "Carlyle",
 }
 
 .category-card-media {
-  display: grid;
+  display: flex;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   color: #64748b;
 }
 
 .category-card-media img {
   display: block;
-  width: 100%;
+  flex: 0 0 auto;
+  width: auto;
   height: 100%;
+  max-width: 100%;
   object-fit: contain;
   object-position: center center;
 }
 
 .category-card-content {
-  padding: 10px 4px 0;
+  padding: 12px 4px 0;
 }
 
 .category-card-content h2 {
   margin: 0;
   color: #0b3c68;
-  font-size: clamp(16px, 1.65vw, 20px);
+  font-size: clamp(13px, 1.35vw, 16px);
   font-weight: 650;
   line-height: 1.35;
   text-decoration: underline;
@@ -331,7 +334,7 @@ const compressorBrands = ["Bitzer", "Carrier", "Copeland", "Danfoss", "Carlyle",
   }
 
   .category-card-content {
-    padding: 9px 2px 0;
+    padding: 10px 2px 0;
   }
 
   .category-card-content h2 {
